@@ -2,24 +2,22 @@
 using Assets.Source.Scripts.MagicCells;
 using Assets.Source.Scripts.Tutorial;
 using System.Threading;
+using System.Collections.Generic;
 using System;
 
 namespace Assets.Source.Scripts.Vessels
 {
     class MagicCellDelayHandler
     {
-        private readonly AsyncTimer _timer;
         private readonly float _delay;
-        private bool _isProcessing;
         private readonly CancellationTokenSource _lifetimeCts;
+        private readonly List<AsyncTimer> _timers = new();
 
         public MagicCellDelayHandler(float delay)
         {
             Guard.Positive((int)delay, nameof(delay));
 
             _delay = delay;
-            _timer = new AsyncTimer();
-            _isProcessing = false;
             _lifetimeCts = new CancellationTokenSource();
         }
 
@@ -28,25 +26,26 @@ namespace Assets.Source.Scripts.Vessels
             Guard.NotNull(cell, nameof(cell));
             Guard.NotNull(onComplete, nameof(onComplete));
 
-            if (_isProcessing)
-                return;
+            var timer = new AsyncTimer();
 
-            _isProcessing = true;
+            _timers.Add(timer);
 
-            _timer.StartTimer(_delay, () =>
-            {
-                _isProcessing = false;
-
-                onComplete?.Invoke();
-            }, 
-            _lifetimeCts.Token);
+            timer.StartTimer(
+                _delay,
+                () =>
+                {
+                    _timers.Remove(timer);
+                    onComplete.Invoke();
+                },
+                _lifetimeCts.Token);
         }
 
         public void Cancel()
         {
-            _timer.StopTimer();
+            foreach (var timer in _timers)
+                timer.StopTimer();
 
-            _isProcessing = false;
+            _timers.Clear();
         }
 
         public void Dispose()

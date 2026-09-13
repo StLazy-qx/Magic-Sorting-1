@@ -2,7 +2,6 @@ using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.MagicCells;
 using System;
-using System.Collections;
 using UnityEngine;
 
 namespace Assets.Source.Scripts.Vessels
@@ -19,8 +18,7 @@ namespace Assets.Source.Scripts.Vessels
 
         private Color _mainColor;
         private VolumeAggregator _aggregator;
-        //private MagicCellDelayHandler _deliveryHandler;
-        private WaitForSeconds _deliveryWait;
+        private MagicCellDelayHandler _deliveryHandler;
 
         public event Action<Vector3> Filled;
         public event Action<Vector3, int, Color> RewardIssued;
@@ -39,32 +37,29 @@ namespace Assets.Source.Scripts.Vessels
 
             Guard.NotNull(_aggregator, nameof(_aggregator));
 
-            //_deliveryHandler = new MagicCellDelayHandler(DeliveryDelay);
-            _deliveryWait = new WaitForSeconds(DeliveryDelay);
+            _deliveryHandler = new MagicCellDelayHandler(DeliveryDelay);
 
             _aggregator.InitParameters(_maxSize, _liquid);
 
             IsFilled = false;
         }
 
-        //private void OnDisable()
-        //{
-        //    _deliveryHandler?.Cancel();
-        //}
+        private void OnDisable()
+        {
+            _deliveryHandler?.Cancel();
+        }
 
-        //private void OnDestroy()
-        //{
-        //    _deliveryHandler?.Dispose();
-        //}
+        private void OnDestroy()
+        {
+            _deliveryHandler?.Dispose();
+        }
 
         public void TakeMagic(MagicCell cell)
         {
             if (cell == null)
                 return;
 
-            //_deliveryHandler.TakeMagic(cell, HandleMagicDelivered);
-
-            StartCoroutine(ExecuteAfterDelay());
+            _deliveryHandler.TakeMagic(cell, HandleMagicDelivered);
         }
 
         public void SetColor(Color color)
@@ -80,22 +75,6 @@ namespace Assets.Source.Scripts.Vessels
 
                 RewardIssued?.Invoke(transform.position, 
                     _points, _mainColor);
-                Filled?.Invoke(transform.position);
-                gameObject.SetActive(false);
-            }
-        }
-
-        private IEnumerator ExecuteAfterDelay()
-        {
-            yield return _deliveryWait;
-
-            _aggregator.GrowUpVolume();
-
-            if (_aggregator.IsFull)
-            {
-                IsFilled = true;
-
-                RewardIssued?.Invoke(transform.position, _points, _mainColor);
                 Filled?.Invoke(transform.position);
                 gameObject.SetActive(false);
             }

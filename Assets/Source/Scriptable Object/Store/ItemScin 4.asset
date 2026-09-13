@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: ItemScin 4
   m_EditorClassIdentifier: 
   _id: 55555
-  _prefabView: {fileID: 5726828821464473346, guid: 21393050d5cf17441a7fc20158e8fae5,
+  _prefabView: {fileID: -8753675738059599640, guid: 4e84684cfbf799f4cb1175985115b2cd,
     type: 3}
-  _item: {fileID: 2346628275988406105, guid: 21393050d5cf17441a7fc20158e8fae5, type: 3}
+  _item: {fileID: 2346628275988406105, guid: 4e84684cfbf799f4cb1175985115b2cd, type: 3}
   _price: 8000
   _icon: {fileID: 21300000, guid: 95696e975e889bc4a8083c490e6150ab, type: 3}
   _texture: {fileID: 2800000, guid: dbd3e9d128d3df441a6e97b77a75236c, type: 3}

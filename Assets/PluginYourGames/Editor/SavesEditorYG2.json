@@ -1,0 +1,45 @@
+{
+  "stringKeys": [],
+  "stringValues": [],
+  "floatKeys": [],
+  "floatValues": [],
+  "intKeys": [],
+  "intValues": [],
+  "intExample": 5,
+  "strExample": "Hello!",
+  "boolExample": [
+    false,
+    false,
+    false,
+    false
+  ],
+  "idSave": 892,
+  "MainPoints": 6750,
+  "ActualRoundNumber": 1,
+  "MasterVolume": 1.0,
+  "AmbientVolume": 0.1903506,
+  "EffectVolume": 1.0,
+  "EquippedItem": "11111",
+  "ItemIDs": [
+    "22222",
+    "11111",
+    "33333",
+    "44444"
+  ],
+  "Score": {
+    "Points": 6750
+  },
+  "Round": {
+    "ActualRoundNumber": 1
+  },
+  "Audio": {
+    "MasterVolume": 1.0,
+    "AmbientVolume": 0.1903506,
+    "EffectVolume": 1.0
+  },
+  "Inventory": {
+    "EquippedItemID": "11111"
+  },
+  "Points": 6750,
+  "EquippedItemID": "11111"
+}

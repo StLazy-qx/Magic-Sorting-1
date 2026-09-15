@@ -70,7 +70,7 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         public virtual void OpenMainMenu()
         {
-            SceneLoader.LoadMainMenu();
+            SceneLoader.LoadMainMenuScene();
         }
 
         public virtual void QuitGame()

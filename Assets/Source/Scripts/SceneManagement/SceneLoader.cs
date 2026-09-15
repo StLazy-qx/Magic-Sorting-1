@@ -1,4 +1,3 @@
-using Assets.Source.Scripts.EntryPoint;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,12 +6,13 @@ namespace Assets.Source.Scripts.SceneManagement
 {
     public class SceneLoader
     {
-        private const int GameSceneIndex = 1;
         private const int MainMenuIndex = 0;
+        private const int GameSceneIndex = 1;
+        private const int TutorialScene = 2;
 
         private AsyncOperation _currentOperation;
 
-        public void LoadMainMenu()
+        public void LoadMainMenuScene()
         {
             LoadScene(MainMenuIndex);
         }
@@ -20,6 +20,11 @@ namespace Assets.Source.Scripts.SceneManagement
         public void LoadGameScene()
         {
             LoadScene(GameSceneIndex);
+        }
+
+        public void LoadTutorialScene()
+        {
+            LoadScene(TutorialScene);
         }
 
         private  void LoadScene(int sceneIndex)

@@ -134,7 +134,364 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: WizardImageAtlas_0
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 666
+        width: 324
+        height: 330
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc31db7f550139d438fa789bb9cbc6dd
+      internalID: 456010786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_1
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 666
+        width: 297
+        height: 326
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8090239c6c71d3a48b9cc658ae96cc22
+      internalID: 1231768956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_2
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 336
+        width: 311
+        height: 312
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93e0ce8cf43dc0b469066438fdac24c1
+      internalID: -1031592965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_3
+      rect:
+        serializedVersion: 2
+        x: 980
+        y: 331
+        width: 289
+        height: 317
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fac10dd6459f1c4ab3bb77e73aa00b4
+      internalID: 950068620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_4
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 486
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31d07d59c9c90124db0d96a9c0c9689f
+      internalID: -1583052890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_5
+      rect:
+        serializedVersion: 2
+        x: 1290
+        y: 330
+        width: 234
+        height: 264
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1eda14522019ac544a358185ea06794f
+      internalID: 1724541813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_6
+      rect:
+        serializedVersion: 2
+        x: 1074
+        y: 312
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e6630ced8a0c33489cf1729c48e15fc
+      internalID: -759429986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_7
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 24
+        width: 312
+        height: 288
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67a1d4332679baf4394692a76a102d2c
+      internalID: 538912085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_8
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 24
+        width: 306
+        height: 287
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42cbeb491d4fc9e428ea93196f5d7345
+      internalID: -2119309807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_9
+      rect:
+        serializedVersion: 2
+        x: 651
+        y: 30
+        width: 344
+        height: 269
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef0da52a186000347a438b0d46c679d8
+      internalID: -644180728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_10
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 18
+        width: 249
+        height: 288
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd62f150a3b9ef7448683f1ad1de12c5
+      internalID: 990915260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_11
+      rect:
+        serializedVersion: 2
+        x: 1248
+        y: 18
+        width: 270
+        height: 279
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13da0c500c3692d4da884750295688c5
+      internalID: -374777802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_12
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 667
+        width: 329
+        height: 328
+      alignment: 9
+      pivot: {x: 0.4999999, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8398dc76cb097624d9c1924254563fad
+      internalID: 1454581552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_13
+      rect:
+        serializedVersion: 2
+        x: 947
+        y: 669
+        width: 269
+        height: 326
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d04e5cd5af0f5547a34f944b46b3182
+      internalID: -110689118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_14
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 667
+        width: 277
+        height: 326
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5113cb42bdb2c8740b20337308cb4a65
+      internalID: 1557759562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_15
+      rect:
+        serializedVersion: 2
+        x: 699
+        y: 335
+        width: 282
+        height: 317
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6e0eb833c3de6e4dab4c624d5858627
+      internalID: 966762750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WizardImageAtlas_16
+      rect:
+        serializedVersion: 2
+        x: 323
+        y: 335
+        width: 376
+        height: 317
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 503dc5fbaffafef499352c3137f2af71
+      internalID: -74416931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -145,7 +502,24 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      WizardImageAtlas_0: 456010786
+      WizardImageAtlas_1: 1231768956
+      WizardImageAtlas_10: 990915260
+      WizardImageAtlas_11: -374777802
+      WizardImageAtlas_12: 1454581552
+      WizardImageAtlas_13: -110689118
+      WizardImageAtlas_14: 1557759562
+      WizardImageAtlas_15: 966762750
+      WizardImageAtlas_16: -74416931
+      WizardImageAtlas_2: -1031592965
+      WizardImageAtlas_3: 950068620
+      WizardImageAtlas_4: -1583052890
+      WizardImageAtlas_5: 1724541813
+      WizardImageAtlas_6: -759429986
+      WizardImageAtlas_7: 538912085
+      WizardImageAtlas_8: -2119309807
+      WizardImageAtlas_9: -644180728
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

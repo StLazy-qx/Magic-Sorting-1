@@ -13,11 +13,11 @@
     false,
     false
   ],
-  "idSave": 925,
-  "MainPoints": 750,
-  "ActualRoundNumber": 8,
+  "idSave": 932,
+  "MainPoints": 1000,
+  "ActualRoundNumber": 1,
   "MasterVolume": 1.0,
-  "AmbientVolume": 1.0,
+  "AmbientVolume": 0.1303129,
   "EffectVolume": 1.0,
   "EquippedItem": "55555",
   "ItemIDs": [
@@ -28,15 +28,15 @@
     "55555"
   ],
   "Score": {
-    "Points": 750
+    "Points": 1000
   },
   "Round": {
-    "ActualRoundNumber": 8
+    "ActualRoundNumber": 1
   },
   "Audio": {},
   "Inventory": {
     "EquippedItemID": "55555"
   },
-  "Points": 750,
+  "Points": 1000,
   "EquippedItemID": "55555"
 }

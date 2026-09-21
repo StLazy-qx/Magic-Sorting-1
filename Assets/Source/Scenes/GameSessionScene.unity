@@ -120205,6 +120205,37 @@ Transform:
   - {fileID: 1734743530}
   m_Father: {fileID: 1654794847}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &278425132
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 278425133}
+  m_Layer: 0
+  m_Name: Camera Target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &278425133
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278425132}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: -7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &281552609
 GameObject:
   m_ObjectHideFlags: 0
@@ -292382,6 +292413,8 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194231}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -292448,13 +292481,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5132765, y: -0.0038680187, z: 0.0023059868, w: 0.8582115}
-  m_LocalPosition: {x: 0.23083045, y: 7.425501, z: -10.556}
+  m_LocalRotation: {x: 0.51327914, y: 0, z: 0, w: 0.85822177}
+  m_LocalPosition: {x: 0.218, y: 7, z: -8.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 43.89, y: -0.001, z: -0.001}
+  m_LocalEulerAnglesHint: {x: 61.765, y: 0, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292499,6 +292532,38 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53fad541d1f4ad444b54050ddd081f0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _widthWatcher: {fileID: 963194231}
+  _target: {fileID: 278425133}
+  _mainCamera: {fileID: 963194227}
+  _maxAngle: 76
+  _minRadiusMultiplier: 1
+  _maxRadiusMultiplier: 2
+--- !u!114 &963194231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38626f8268979f54587b593a8de76643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _activeWidth: 900
+  _minWidth: 150
 --- !u!1001 &964522940
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -312626,8 +312691,8 @@ MonoBehaviour:
   _player: {fileID: 2066365345}
   _chair: {fileID: 1861908054}
   _columnsPoints: {fileID: 1381043772}
-  _cameraPosition: {x: 0.218, y: 6.556, z: -9.274}
-  _cameraRotation: {x: 58.766, y: -0.635, z: -0.135}
+  _cameraPosition: {x: 0.218, y: 7, z: -8.9}
+  _cameraRotation: {x: 58.766, y: 0, z: 0}
   _playerPosition: {x: 1.52, y: 0.05, z: -1.54}
   _playerRotation: {x: 5, y: 195, z: 0}
   _chairPosition: {x: 3.11, y: 0.82, z: -6.796}
@@ -492960,7 +493025,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.11000001, y: 0.061111115}
   m_AnchorMax: {x: 0.39900002, y: 0.36222222}
-  m_AnchoredPosition: {x: 2.9997559, y: 9.499939}
+  m_AnchoredPosition: {x: 2.9995728, y: 9.499935}
   m_SizeDelta: {x: 28, y: 76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1582914854
@@ -666832,7 +666897,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.15472312, y: 0.037}
   m_AnchorMax: {x: 0.8616364, y: 0.86}
-  m_AnchoredPosition: {x: -2, y: 0.7817383}
+  m_AnchoredPosition: {x: -2.000061, y: 0.7817383}
   m_SizeDelta: {x: 18.84613, y: 17.833557}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2059952680
@@ -741491,5 +741556,6 @@ SceneRoots:
   - {fileID: 919005560}
   - {fileID: 1406069145}
   - {fileID: 908648325}
+  - {fileID: 278425133}
   - {fileID: 404364795}
   - {fileID: 1879778023}

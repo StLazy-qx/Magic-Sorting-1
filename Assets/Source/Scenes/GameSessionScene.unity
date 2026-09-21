@@ -162960,7 +162960,6 @@ GameObject:
   - component: {fileID: 503799562}
   - component: {fileID: 503799561}
   - component: {fileID: 503799563}
-  - component: {fileID: 503799564}
   m_Layer: 5
   m_Name: ReverseButton
   m_TagString: Untagged
@@ -163101,20 +163100,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &503799563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 503799555}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1168d69b5a5cac48a45d926ce41c008, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _levelCounter: {fileID: 1139587301}
-  _iconView: {fileID: 1552301325}
---- !u!114 &503799564
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -178215,12 +178200,12 @@ PrefabInstance:
     - target: {fileID: 4432526039738413149, guid: 4eeaf34ff5fddaa4ba7404e4b0953003,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 42
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 4432526039738413149, guid: 4eeaf34ff5fddaa4ba7404e4b0953003,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 42
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 4432526039738413149, guid: 4eeaf34ff5fddaa4ba7404e4b0953003,
         type: 3}
@@ -312699,8 +312684,8 @@ MonoBehaviour:
   _reverseButtonMobile: {fileID: 503799561}
   _rewardedIconDesktop: {fileID: 2023562556}
   _rewardedIconMobile: {fileID: 1552301325}
-  _reverseButtonViewDesktop: {fileID: 1828248178}
-  _reverseButtonViewMobile: {fileID: 503799564}
+  _reverseButtonViewDesktop: {fileID: 1828248177}
+  _reverseButtonViewMobile: {fileID: 503799563}
   _magicCellDesktop: {fileID: 39147150}
   _magicCellMobile: {fileID: 512643703}
   _magicCellsFactory: {fileID: 8416172468163468308}
@@ -544675,6 +544660,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2160894392820331379, guid: a59c2681ef553684f873a45adb7aac2a,
+        type: 3}
+      propertyPath: clearBehavior
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2160894392820331379, guid: a59c2681ef553684f873a45adb7aac2a,
+        type: 3}
+      propertyPath: cameraShake.enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4774671002966491076, guid: a59c2681ef553684f873a45adb7aac2a,
         type: 3}
       propertyPath: m_Range
@@ -570444,7 +570439,6 @@ GameObject:
   - component: {fileID: 1828248175}
   - component: {fileID: 1828248176}
   - component: {fileID: 1828248177}
-  - component: {fileID: 1828248178}
   m_Layer: 5
   m_Name: ReverseButton
   m_TagString: Untagged
@@ -570585,20 +570579,6 @@ MonoBehaviour:
   DefaultColor: {r: 1, g: 1, b: 1, a: 1}
   IncludeColor: {r: 0.49803922, g: 0.33333334, b: 0.69411767, a: 1}
 --- !u!114 &1828248177
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1828248169}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1168d69b5a5cac48a45d926ce41c008, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _levelCounter: {fileID: 1139587301}
-  _iconView: {fileID: 2023562556}
---- !u!114 &1828248178
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -736569,12 +736549,12 @@ PrefabInstance:
     - target: {fileID: 4432526039738413149, guid: 4eeaf34ff5fddaa4ba7404e4b0953003,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 34
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 4432526039738413149, guid: 4eeaf34ff5fddaa4ba7404e4b0953003,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 34
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 4432526039738413149, guid: 4eeaf34ff5fddaa4ba7404e4b0953003,
         type: 3}

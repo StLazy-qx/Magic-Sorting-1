@@ -162959,7 +162959,6 @@ GameObject:
   - component: {fileID: 503799558}
   - component: {fileID: 503799562}
   - component: {fileID: 503799561}
-  - component: {fileID: 503799563}
   - component: {fileID: 503799564}
   m_Layer: 5
   m_Name: ReverseButton
@@ -163100,20 +163099,6 @@ MonoBehaviour:
   OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &503799563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 503799555}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1168d69b5a5cac48a45d926ce41c008, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _levelCounter: {fileID: 1139587301}
-  _iconView: {fileID: 1552301325}
 --- !u!114 &503799564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -570444,7 +570429,6 @@ GameObject:
   - component: {fileID: 1828248171}
   - component: {fileID: 1828248175}
   - component: {fileID: 1828248176}
-  - component: {fileID: 1828248177}
   - component: {fileID: 1828248178}
   m_Layer: 5
   m_Name: ReverseButton
@@ -570585,20 +570569,6 @@ MonoBehaviour:
   Button: {fileID: 1828248171}
   DefaultColor: {r: 1, g: 1, b: 1, a: 1}
   IncludeColor: {r: 0.49803922, g: 0.33333334, b: 0.69411767, a: 1}
---- !u!114 &1828248177
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1828248169}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1168d69b5a5cac48a45d926ce41c008, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _levelCounter: {fileID: 1139587301}
-  _iconView: {fileID: 2023562556}
 --- !u!114 &1828248178
 MonoBehaviour:
   m_ObjectHideFlags: 0

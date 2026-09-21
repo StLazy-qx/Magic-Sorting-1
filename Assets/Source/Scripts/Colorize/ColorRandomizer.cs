@@ -8,7 +8,7 @@ namespace Assets.Source.Scripts.Colorize
 {
     public class ColorRandomizer : MonoBehaviour
     {
-        private const int BeginCountColors = 3;
+        private const int BeginCountColors = 2;
 
         private EnumColor[] _allColors = 
             (EnumColor[])Enum.GetValues(typeof(EnumColor));

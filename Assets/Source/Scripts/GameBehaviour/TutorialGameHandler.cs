@@ -7,14 +7,14 @@ using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Extensions;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Zenject;
-using YG;
 
 namespace Assets.Source.Scripts.GameBehaviour
 {
-    public class GameSessionHandler : BaseGameHandler
+    public class TutorialGameHandler : BaseGameHandler
     {
         [SerializeField] private ColumnsFactory _columnsFactory;
         [SerializeField] private VesselFactory _vesselFactory;
@@ -29,34 +29,22 @@ namespace Assets.Source.Scripts.GameBehaviour
         private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private DifficultyState _difficultyState;
         private DifficultySettings _currentSettings;
-        private bool _isInterstitialPending;
-        private bool _isAdShowing = false;
+        
+        private IReadOnlyList<DifficultyLevel> _tutorialSequence;
+        private int _currentTutorialIndex;
+        private bool _isTutorialCompleted;
 
         public event Action GameLaunching;
-        private Action _pendingRoundAction = null;
+        public event Action TutorialCompleted;
 
         private void Awake()
         {
             ValidateObjects();
         }
 
-        private void OnEnable()
-        {
-            YG2.onCloseInterAdv += OnCloseInterAdv;
-            YG2.onCloseInterAdvWasShow += OnCloseInterAdvWasShow;
-            YG2.onErrorInterAdv += OnErrorInterAdv;
-        }
-
-        private void OnDisable()
-        {
-            YG2.onCloseInterAdv -= OnCloseInterAdv;
-            YG2.onCloseInterAdvWasShow -= OnCloseInterAdvWasShow;
-            YG2.onErrorInterAdv -= OnErrorInterAdv;
-        }
-
         [Inject]
         private void Construct(
-            DifficultyState difficultyState,
+            DifficultyState difficultyState, 
             SequenceDifficultyLevel level)
         {
             Guard.NotNull(difficultyState, nameof(difficultyState));
@@ -66,18 +54,23 @@ namespace Assets.Source.Scripts.GameBehaviour
             _sequenceDifficultyLevel = level;
         }
 
-        public void ShowInterstitialAd()
+        protected override void ExtendInitialize()
         {
-            if (_isAdShowing)
-                return;
-
-            _isAdShowing = true;
-
-            YG2.InterstitialAdvShow();
+            _tutorialSequence = _sequenceDifficultyLevel.GetTutorialSequence();
+            _currentTutorialIndex = 0;
+            _isTutorialCompleted = false;
+            
+            _waitingPoint.Reset();
         }
 
         public void BeginNewRound()
         {
+            if (_isTutorialCompleted)
+            {
+                OnTutorialCompleted();
+                return;
+            }
+
             ChangeDifficultyBySequence();
             LaunchCurrentDifficulty();
         }
@@ -87,9 +80,27 @@ namespace Assets.Source.Scripts.GameBehaviour
             LaunchCurrentDifficulty();
         }
 
-        protected override void ExtendInitialize()
+        private void ChangeDifficultyBySequence()
         {
-            _waitingPoint.Reset();
+            if (_currentTutorialIndex >= _tutorialSequence.Count)
+            {
+                _isTutorialCompleted = true;
+                
+                OnTutorialCompleted();
+                
+                return;
+            }
+
+            DifficultyLevel nextLevel = _tutorialSequence[_currentTutorialIndex];
+            
+            _difficultyState.SetDifficulty(nextLevel);
+            
+            _currentTutorialIndex++;
+        }
+
+        private void OnTutorialCompleted()
+        {
+            TutorialCompleted?.Invoke();
         }
 
         private void LaunchCurrentDifficulty()
@@ -98,7 +109,6 @@ namespace Assets.Source.Scripts.GameBehaviour
                 .GetSettings(DifficultyState.CurrentDifficulty);
 
             _colorRandomizer.CrateArrayColors(_currentSettings.ColorsCount);
-
             StartRound();
             GameLaunching?.Invoke();
         }
@@ -108,40 +118,6 @@ namespace Assets.Source.Scripts.GameBehaviour
             ContinueGame();
             ResetEntity();
             StartCoroutine(BeginRoundRoutine());
-        }
-
-        private void OnCloseInterAdv()
-        {
-            HandleAdClosed();
-        }
-
-        private void OnCloseInterAdvWasShow(bool wasShown)
-        {
-            HandleAdClosed();
-        }
-
-        private void OnErrorInterAdv()
-        {
-            HandleAdClosed();
-        }
-
-        private void HandleAdClosed()
-        {
-            _isAdShowing = false;
-
-            if (_pendingRoundAction != null)
-            {
-                var action = _pendingRoundAction;
-                _pendingRoundAction = null;
-                action?.Invoke();
-            }
-        }
-
-        private void ChangeDifficultyBySequence()
-        {
-            DifficultyLevel nextLevel = _sequenceDifficultyLevel.GetNext();
-
-            DifficultyState.SetDifficulty(nextLevel);
         }
 
         private IEnumerator BeginRoundRoutine()

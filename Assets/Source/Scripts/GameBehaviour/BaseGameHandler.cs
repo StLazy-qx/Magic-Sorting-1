@@ -73,10 +73,11 @@ namespace Assets.Source.Scripts.GameBehaviour
             SceneLoader.LoadMainMenuScene();
         }
 
-        public virtual void QuitGame()
+        // может стоит написать класс презентер, который подписывает методы переключения сцен на клики по кнопкам
+        // чтобы не использовать методы в открытую 
+        public void OpenTutorialScene()
         {
-            GameClosed?.Invoke();
-            Application.Quit();
+            SceneLoader.LoadTutorialScene();
         }
 
         protected virtual void ExtendInitialize() { }

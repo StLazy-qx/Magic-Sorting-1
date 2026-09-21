@@ -58,6 +58,8 @@ namespace Assets.Source.Scripts.ActionsHandlers
 
             _rewardFlow.Ended += () => RewardedEnded?.Invoke();
             _reverseButtonView.ButtonClicked += OnToggleMode;
+            _modeTracker.ReverseButtonActivated += 
+                _reverseButtonView.ActivateRewardedIcon;
         }
 
         public void Reverse()
@@ -98,6 +100,29 @@ namespace Assets.Source.Scripts.ActionsHandlers
             {
                 _modeTracker.ActivateReverseMode();
             }
+        }
+
+        public void SetButtonForTutorial(ReverseButtonView reverseButtonView)
+        {
+            Guard.NotNull(reverseButtonView, nameof(reverseButtonView));
+
+            _reverseButtonView = reverseButtonView;
+            _reverseButtonView.HideRewardedIconPermanently();
+            _reverseButtonView.ButtonClicked += OnToggleModeTutorial;
+        }
+
+        public void OnToggleModeTutorial()
+        {
+            Guard.NotNull(_reverseButtonView, nameof(_reverseButtonView));
+
+            if (CurrentMode == ClickImpactMode.ModeReverse)
+            {
+                _modeTracker.ActivateDistributionMode();
+
+                return;
+            }
+
+            _modeTracker.ActivateReverseMode();
         }
 
         private void UpdateButtonState()

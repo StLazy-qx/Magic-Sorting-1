@@ -33,6 +33,15 @@ namespace Assets.Source.Scripts.EntryPoint
 
             IsInitialized = true;
         }
+        
+        public IReadOnlyList<DifficultyLevel> GetTutorialSequence()
+		{
+			return new List<DifficultyLevel>
+				{
+					DifficultyLevel.Easy,
+					DifficultyLevel.MediumEasy
+				}.AsReadOnly();
+		}
 
         public DifficultyLevel GetNext()
         {
@@ -49,10 +58,18 @@ namespace Assets.Source.Scripts.EntryPoint
 
             return level;
         }
+        
+        public void ResetTutorialSequence()
+        {
+        	// отдельные переменные для индексов для нумерации туториала 
+        	_currentIndex = 0;
+        	_roundNumber = 0;
+		}
 
         private void LoadRound()
         {
             _roundNumber = YG2.saves.GetRoundNumber();
+            
             RoundChanged?.Invoke(_roundNumber);
         }
 
@@ -99,70 +116,5 @@ namespace Assets.Source.Scripts.EntryPoint
 
             return DifficultyLevel.Hard;
         }
-
-        //private void InitSequence()
-        //{
-        //    DifficultyLevel[] sequence = new DifficultyLevel[]
-        //        {
-        //        DifficultyLevel.Easy,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Easy,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Easy,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Hard,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Easy,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Hard,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Easy,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Hard,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.Hard,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Hard,
-        //        DifficultyLevel.Hard,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Easy,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Hard,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.Hard,
-        //        DifficultyLevel.Medium,
-        //        DifficultyLevel.MediumEasy,
-        //        DifficultyLevel.MediumHard,
-        //        DifficultyLevel.Hard
-        //        };
-
-        //    _sequence.AddRange(sequence);
-        //}
     }
 }

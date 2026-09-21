@@ -8,7 +8,6 @@ namespace Assets.Source.Scripts.ActionsHandlers
     {
         public ClickImpactMode CurrentMode { get; private set; }
         public bool IsReverseUsed { get; private set; }
-        public bool ReverseEventFired { get; private set; }
 
         public event Action<ClickImpactMode> ModeChanged;
         public event Action ReverseButtonActivated;
@@ -25,13 +24,6 @@ namespace Assets.Source.Scripts.ActionsHandlers
             CurrentMode = ClickImpactMode.ModeReverse;
 
             ModeChanged?.Invoke(CurrentMode);
-
-            if (ReverseEventFired == false)
-            {
-                ReverseEventFired = true;
-
-                ReverseButtonActivated?.Invoke();
-            }
         }
 
         public void MarkReverseUsed()
@@ -46,7 +38,6 @@ namespace Assets.Source.Scripts.ActionsHandlers
         public void Reset()
         {
             IsReverseUsed = false;
-            ReverseEventFired = false;
 
             ActivateDistributionMode();
         }

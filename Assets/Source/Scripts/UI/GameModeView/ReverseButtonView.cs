@@ -17,6 +17,7 @@ namespace Assets.Source.Scripts.UI.GameModeView
         private void OnEnable()
         {
             _reverseButton.OnClick.AddListener(RaiseButtonClicked);
+            _rewardedIcon.Disable();
         }
 
         private void OnDisable()
@@ -46,6 +47,18 @@ namespace Assets.Source.Scripts.UI.GameModeView
         {
             if (_reverseButton != null)
                 _reverseButton.Enable();
+        }
+
+        public void ActivateRewardedIcon()
+        {
+            if (_rewardedIcon != null)
+                _rewardedIcon.Enable();
+        }
+
+        public void HideRewardedIconPermanently()
+        {
+            if (_rewardedIcon != null)
+                _rewardedIcon.Disable();
         }
 
         public void SetButtonInteractable(bool interactable)

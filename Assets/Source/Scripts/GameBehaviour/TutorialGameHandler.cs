@@ -6,21 +6,20 @@ using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Extensions;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Zenject;
+using Cysharp.Threading.Tasks;
 
 namespace Assets.Source.Scripts.GameBehaviour
 {
-    public class TutorialGameHandler : BaseGameHandler
+    public class TutorialGameHandler : BaseGameHandler, IGameHandler
     {
         [SerializeField] private ColumnsFactory _columnsFactory;
         [SerializeField] private VesselFactory _vesselFactory;
         [SerializeField] private EntryColorListsFactory _entryColorListsFactory;
         [SerializeField] private ColorRandomizer _colorRandomizer;
-        [SerializeField] private LevelCounter _levelCounter;
         [SerializeField] private WaitingPoint _waitingPoint;
         [SerializeField] private ClickModeSwitcher _clickImpactHandler;
         [SerializeField] private ColorColumnDistributor _columnDistributor;
@@ -31,15 +30,23 @@ namespace Assets.Source.Scripts.GameBehaviour
         private DifficultySettings _currentSettings;
         
         private IReadOnlyList<DifficultyLevel> _tutorialSequence;
-        private int _currentTutorialIndex;
+        private RoundLauncher _roundLauncher;
+        private int _currentTutorialRoundIndex;
         private bool _isTutorialCompleted;
 
         public event Action GameLaunching;
         public event Action TutorialCompleted;
+        public event Action<int> TutorialRoundStarted;
 
         private void Awake()
         {
             ValidateObjects();
+
+            _roundLauncher = new RoundLauncher(
+                _columnsFactory,
+                _vesselFactory,
+                _entryColorListsFactory,
+                _columnDistributor);
         }
 
         [Inject]
@@ -57,21 +64,24 @@ namespace Assets.Source.Scripts.GameBehaviour
         protected override void ExtendInitialize()
         {
             _tutorialSequence = _sequenceDifficultyLevel.GetTutorialSequence();
-            _currentTutorialIndex = 0;
+            _currentTutorialRoundIndex = 0;
             _isTutorialCompleted = false;
             
             _waitingPoint.Reset();
         }
 
-        public void BeginNewRound()
+        public void BeginRound()
         {
             if (_isTutorialCompleted)
             {
                 OnTutorialCompleted();
+
                 return;
             }
 
-            ChangeDifficultyBySequence();
+            if (TryAdvanceToNextTutorialRound() == false)
+                return;
+
             LaunchCurrentDifficulty();
         }
 
@@ -80,22 +90,41 @@ namespace Assets.Source.Scripts.GameBehaviour
             LaunchCurrentDifficulty();
         }
 
-        private void ChangeDifficultyBySequence()
+        private bool TryAdvanceToNextTutorialRound()
         {
-            if (_currentTutorialIndex >= _tutorialSequence.Count)
+            if (_tutorialSequence == null)
             {
-                _isTutorialCompleted = true;
-                
-                OnTutorialCompleted();
-                
-                return;
+                if (_sequenceDifficultyLevel == null)
+                    return false;
+
+                _tutorialSequence = _sequenceDifficultyLevel.
+                    GetTutorialSequence();
+                _currentTutorialRoundIndex = 0;
             }
 
-            DifficultyLevel nextLevel = _tutorialSequence[_currentTutorialIndex];
-            
+            if (_sequenceDifficultyLevel == null 
+                || _difficultyState == null)
+                return false;
+
+            if (_currentTutorialRoundIndex >= _tutorialSequence.Count)
+            {
+                _isTutorialCompleted = true;
+
+                OnTutorialCompleted();
+
+                return false;
+            }
+
+            DifficultyLevel nextLevel = 
+                _tutorialSequence[_currentTutorialRoundIndex];
+
             _difficultyState.SetDifficulty(nextLevel);
-            
-            _currentTutorialIndex++;
+
+            _currentTutorialRoundIndex++;
+
+            TutorialRoundStarted?.Invoke(_currentTutorialRoundIndex);
+
+            return true;
         }
 
         private void OnTutorialCompleted()
@@ -108,7 +137,11 @@ namespace Assets.Source.Scripts.GameBehaviour
             _currentSettings = _difficultyDatabase
                 .GetSettings(DifficultyState.CurrentDifficulty);
 
-            _colorRandomizer.CrateArrayColors(_currentSettings.ColorsCount);
+            if (_currentSettings == null)
+                return;
+
+            _colorRandomizer.CrateArrayColors(
+                _currentSettings.ColorsCount);
             StartRound();
             GameLaunching?.Invoke();
         }
@@ -117,30 +150,11 @@ namespace Assets.Source.Scripts.GameBehaviour
         {
             ContinueGame();
             ResetEntity();
-            StartCoroutine(BeginRoundRoutine());
-        }
-
-        private IEnumerator BeginRoundRoutine()
-        {
-            ResetFactories();
-            _vesselFactory.InitRandomizer(_colorRandomizer);
-            _entryColorListsFactory.Initialize(
-                _colorRandomizer.BeginColors,
-                _colorRandomizer.RemainingColors);
-            _vesselFactory.Spawn();
-
-            yield return new WaitUntil(() => _vesselFactory.IsReady);
-
-            if (_vesselFactory.Objects != null && _vesselFactory.Objects.Count > 0)
-            {
-                _columnsFactory.Initialize(
-                    _vesselFactory.Objects,
-                    _currentSettings.ColumnsCount,
-                    _currentSettings.MaxCellsPerColumn);
-                _columnsFactory.Spawn();
-            }
-
-            _columnDistributor.Distribute();
+            _roundLauncher.LaunchAsync(
+                _colorRandomizer,
+                _currentSettings,
+                DifficultyState.CurrentDifficulty,
+                this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         private void ResetEntity()
@@ -148,13 +162,6 @@ namespace Assets.Source.Scripts.GameBehaviour
             Wallet.Reset();
             _waitingPoint.Reset();
             _clickImpactHandler.Reset();
-        }
-
-        private void ResetFactories()
-        {
-            _entryColorListsFactory.Reset();
-            _vesselFactory.ResetFactory(DifficultyState.CurrentDifficulty);
-            _columnsFactory.ResetFactory(DifficultyState.CurrentDifficulty);
         }
 
         private void ValidateObjects()

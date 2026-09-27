@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Zenject;
+using Assets.Source.Scripts.GameBehaviour;
 
 namespace Assets.Source.Scripts.EntryPoint
 {
@@ -20,6 +21,7 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private ColumnsFactory _columnsFactory;
         [SerializeField] private VesselFactory _vesselFactory;
         [SerializeField] private ColorColumnDistributor _columnDistributor;
+        [SerializeField] private TutorialGameHandler _tutorialGameHandler;
         [SerializeField] private MonoBehaviour[] _objectsToInitializeMono;
 
         private DifficultyState _difficultyState;
@@ -31,6 +33,7 @@ namespace Assets.Source.Scripts.EntryPoint
         private void Awake()
         {
             ValidateDependencies();
+            _tutorialGameHandler.Initialize();
             _sequenceDifficultyLevel.ResetTutorialSequence();
             _difficultyState.SetDifficulty(DifficultyLevel.Easy);
             

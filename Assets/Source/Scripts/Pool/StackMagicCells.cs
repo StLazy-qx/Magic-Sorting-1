@@ -25,15 +25,13 @@ namespace Assets.Source.Scripts.Pool
         private Transform _parent;
         private int _maxVolumeCells;
         private float _prefabHeight;
-        //private bool _isPaused;
         private Stack<MagicCell> _cellsStack = new();
 
-        public event Action CellSented;
-
-        //private void OnDisable()
-        //{
-        //    _gameHandler.PauseStateChanged -= OnGamePause;
-        //}
+        private void Awake()
+        {
+            Guard.NotNull(_gameHandler, nameof(_gameHandler));
+            Guard.NotNull(_columnRevercer, nameof(_columnRevercer));
+        }
 
         public void Initialize(
             MagicCellsFactory factory,
@@ -45,7 +43,13 @@ namespace Assets.Source.Scripts.Pool
             int maxVolumeCells,
             float prefabHeight)
         {
-            ValidateArguments(factory, cellRouter, colorSource, clickHandler, parent);
+            ValidateArguments(
+                factory, 
+                cellRouter, 
+                colorSource,
+                listColorPool,
+                clickHandler, 
+                parent);
             ValidateValues(maxVolumeCells, prefabHeight);
             ClearStack();
 
@@ -57,8 +61,6 @@ namespace Assets.Source.Scripts.Pool
             _parent = parent;
             _maxVolumeCells = maxVolumeCells;
             _prefabHeight = prefabHeight;
-
-            //_gameHandler.PauseStateChanged += OnGamePause;
         }
 
         public void CreateCell(Color color)
@@ -128,11 +130,6 @@ namespace Assets.Source.Scripts.Pool
             return HasMoreOneCell() && AreDifferentColor();
         }
 
-        //private void OnGamePause(bool isPaused)
-        //{
-        //    _isPaused = isPaused;
-        //}
-
         private void ClearStack()
         {
             while (_cellsStack.Count > 0)
@@ -150,9 +147,6 @@ namespace Assets.Source.Scripts.Pool
             if (_gameHandler.IsPaused)
                 return;
 
-            //if (_isPaused)
-            //    return;
-
             if (_clickImpactHandler.CurrentMode == ClickImpactMode.ModeDistribution)
             {
                 if (_cellsStack.Count == 0)
@@ -169,7 +163,6 @@ namespace Assets.Source.Scripts.Pool
                 }
 
                 _cellRouter.DeliverMagicCell(cell);
-                CellSented?.Invoke();
                 cell.Disable();
             }
             else if (
@@ -209,32 +202,23 @@ namespace Assets.Source.Scripts.Pool
         MagicCellsFactory factory,
         MagicCellRouter cellRouter,
         ShuffledColorDistributor colorSource,
+        EntryListColorPool listColorPool,
         ClickModeSwitcher clickImpactHandler,
         Transform parent)
         {
-            if (factory == null)
-                throw new ArgumentNullException(nameof(factory));
-
-            if (cellRouter == null)
-                throw new ArgumentNullException(nameof(cellRouter));
-
-            if (colorSource == null)
-                throw new ArgumentNullException(nameof(colorSource));
-
-            if (clickImpactHandler == null)
-                throw new ArgumentNullException(nameof(clickImpactHandler));
-
-            if (parent == null)
-                throw new ArgumentNullException(nameof(parent));
+            Guard.NotNull(factory, nameof(factory));
+            Guard.NotNull(cellRouter, nameof(cellRouter));
+            Guard.NotNull(colorSource, nameof(colorSource));
+            Guard.NotNull(listColorPool, nameof(listColorPool));
+            Guard.NotNull(clickImpactHandler, nameof(clickImpactHandler));
+            Guard.NotNull(parent, nameof(parent));
         }
 
         private void ValidateValues(int countCells, float prefabHeight)
         {
-            if (countCells <= 0)
-                throw new ArgumentException(nameof(countCells));
-
-            if (prefabHeight <= 0)
-                throw new ArgumentException(nameof(prefabHeight));
+            Guard.Positive(countCells, nameof(countCells));
+            Guard.IsTrue(prefabHeight > 0, nameof(prefabHeight),
+                "Значение должно быть положительным.");
         }
     }
 }

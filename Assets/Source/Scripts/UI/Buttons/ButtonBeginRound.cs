@@ -2,15 +2,15 @@ using Assets.Source.Scripts.GameBehaviour;
 
 namespace Assets.Source.Scripts.UI.Buttons
 {
-    public class ButtonNewRoundBeginner : BaseButton
+    public class ButtonBeginRound : BaseButton
     {
         protected override void OnButtonClick()
         {
-            if (GameHandler is GameSessionHandler sessionHandler)
+            if (GameHandler is IGameHandler gameHandler)
             {
                 CurrentPanel?.Close();
                 TargetPanel?.Open();
-                sessionHandler.BeginNewRound();
+                gameHandler.BeginRound();
             }
         }
     }

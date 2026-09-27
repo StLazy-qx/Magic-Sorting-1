@@ -14,7 +14,7 @@ using YG;
 
 namespace Assets.Source.Scripts.GameBehaviour
 {
-    public class GameSessionHandler : BaseGameHandler
+    public class GameSessionHandler : BaseGameHandler, IGameHandler
     {
         [SerializeField] private ColumnsFactory _columnsFactory;
         [SerializeField] private VesselFactory _vesselFactory;
@@ -76,7 +76,7 @@ namespace Assets.Source.Scripts.GameBehaviour
             YG2.InterstitialAdvShow();
         }
 
-        public void BeginNewRound()
+        public void BeginRound()
         {
             ChangeDifficultyBySequence();
             LaunchCurrentDifficulty();

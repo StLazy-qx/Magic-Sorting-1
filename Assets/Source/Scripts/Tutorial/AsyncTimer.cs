@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Assets.Source.Scripts.Tutorial
 {
-    class AsyncTimer
+    public class AsyncTimer
     {
         private CancellationTokenSource _cancellationTokenSource;
 

@@ -13,11 +13,11 @@
     false,
     false
   ],
-  "idSave": 960,
-  "MainPoints": 3000,
+  "idSave": 977,
+  "MainPoints": 6750,
   "ActualRoundNumber": 3,
   "MasterVolume": 1.0,
-  "AmbientVolume": 0.95547837,
+  "AmbientVolume": 0.160746753,
   "EffectVolume": 1.0,
   "EquippedItem": "11111",
   "ItemIDs": [
@@ -28,7 +28,7 @@
     "55555"
   ],
   "Score": {
-    "Points": 3000
+    "Points": 6750
   },
   "Round": {
     "ActualRoundNumber": 3
@@ -37,6 +37,6 @@
   "Inventory": {
     "EquippedItemID": "11111"
   },
-  "Points": 3000,
+  "Points": 6750,
   "EquippedItemID": "11111"
 }

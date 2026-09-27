@@ -9,7 +9,7 @@ using Zenject;
 
 namespace Assets.Source.Scripts.GameBehaviour
 {
-    public abstract class BaseGameHandler : MonoBehaviour, IObjectInitilizable, IGameHandler
+    public abstract class BaseGameHandler : MonoBehaviour, IObjectInitilizable
     {
         protected readonly int MainMenuIndex = 0;
         protected readonly int GameSessionIndex = 1;
@@ -22,6 +22,9 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         public event Action<bool> PauseStateChanged;
         public event Action GameClosed;
+        public event Action GameLaunching;
+
+        public bool IsPaused { get; private set; }
 
         public bool IsInitialized { get; protected set; }
 
@@ -51,14 +54,14 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         public virtual void ContinueGame()
         {
-            PauseStateChanged?.Invoke(false);
+            IsPaused = false;
 
-            Time.timeScale = GameResume;
+            PauseStateChanged?.Invoke(false);
         }
 
         public void PauseGame()
         {
-            //Time.timeScale = GamePause;
+            IsPaused = true;
 
             PauseStateChanged?.Invoke(true);
         }
@@ -66,7 +69,13 @@ namespace Assets.Source.Scripts.GameBehaviour
         public void ResumeGame()
         {
             SceneLoader.LoadGameScene();
+
+            IsPaused = false;
+
+            PauseStateChanged?.Invoke(false);
         }
+
+        //Открытие сцен в отдельный класс
 
         public virtual void OpenMainMenu()
         {

@@ -14,7 +14,7 @@ namespace Assets.Source.Scripts.Pool
 {
     public class StackMagicCells : MonoBehaviour
     {
-        [SerializeField] private GameSessionHandler _gameHandler;
+        [SerializeField] private BaseGameHandler _gameHandler;
         [SerializeField] private ColumnRevercer _columnRevercer;
 
         private MagicCellsFactory _factory;
@@ -25,13 +25,15 @@ namespace Assets.Source.Scripts.Pool
         private Transform _parent;
         private int _maxVolumeCells;
         private float _prefabHeight;
-        private bool _isPaused;
+        //private bool _isPaused;
         private Stack<MagicCell> _cellsStack = new();
 
-        private void OnDisable()
-        {
-            _gameHandler.PauseStateChanged -= OnGamePause;
-        }
+        public event Action CellSented;
+
+        //private void OnDisable()
+        //{
+        //    _gameHandler.PauseStateChanged -= OnGamePause;
+        //}
 
         public void Initialize(
             MagicCellsFactory factory,
@@ -56,7 +58,7 @@ namespace Assets.Source.Scripts.Pool
             _maxVolumeCells = maxVolumeCells;
             _prefabHeight = prefabHeight;
 
-            _gameHandler.PauseStateChanged += OnGamePause;
+            //_gameHandler.PauseStateChanged += OnGamePause;
         }
 
         public void CreateCell(Color color)
@@ -126,10 +128,10 @@ namespace Assets.Source.Scripts.Pool
             return HasMoreOneCell() && AreDifferentColor();
         }
 
-        private void OnGamePause(bool isPaused)
-        {
-            _isPaused = isPaused;
-        }
+        //private void OnGamePause(bool isPaused)
+        //{
+        //    _isPaused = isPaused;
+        //}
 
         private void ClearStack()
         {
@@ -145,8 +147,11 @@ namespace Assets.Source.Scripts.Pool
 
         private void OnCellClicked()
         {
-            if (_isPaused)
+            if (_gameHandler.IsPaused)
                 return;
+
+            //if (_isPaused)
+            //    return;
 
             if (_clickImpactHandler.CurrentMode == ClickImpactMode.ModeDistribution)
             {
@@ -164,6 +169,7 @@ namespace Assets.Source.Scripts.Pool
                 }
 
                 _cellRouter.DeliverMagicCell(cell);
+                CellSented?.Invoke();
                 cell.Disable();
             }
             else if (

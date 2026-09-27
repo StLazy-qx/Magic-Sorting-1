@@ -1,46 +1,71 @@
-﻿using UnityEngine;
+﻿using Assets.Source.Scripts.Extensions;
+using UnityEngine;
 
 namespace Assets.Source.Scripts.Camera_Optimized
 {
     public class CameraOrbitPose
     {
-        private readonly Transform _target;
-        private readonly Camera _camera;
+        private const float MinRadiusSqr = 1e-8f;
+        private const float MinHorizontal = 1e-5f;
 
-        private float _radius;
-        private float _azimuth;
-        private float _initialAngle;
-        private Vector3 _offset;
+        private readonly Transform _target;
+        private readonly Transform _cameraTransform;
+
+        private Vector3 _initialOffset;
         private Quaternion _initialRotation;
+        private float _radius;
+        private float _initialAngleDeg;
+        private float _cosAzimuth;
+        private float _sinAzimuth;
+        private float _initialYaw;
 
         public CameraOrbitPose(Transform target, Camera camera)
         {
+            Guard.NotNull(target, nameof(target));
+            Guard.NotNull(camera, nameof(camera));
+
             _target = target;
-            _camera = camera;
+            _cameraTransform = camera.transform;
         }
 
         public void CaptureCurrentAsInitial()
         {
-            Vector3 offset = _camera.transform.position - _target.position;
-            _radius = offset.magnitude;
+            Vector3 offset = _cameraTransform.position - _target.position;
+            float sqrRadius = offset.sqrMagnitude;
 
-            if (_radius < Mathf.Epsilon)
+            if (sqrRadius < MinRadiusSqr)
             {
-                _radius = 1f;
                 offset = Vector3.back;
+                sqrRadius = 1f;
             }
 
-            _offset = offset;
-            _initialRotation = _camera.transform.rotation;
-            _azimuth = Mathf.Atan2(offset.z, offset.x);
-            Vector3 flat = new Vector3(offset.x, 0f, offset.z);
-            _initialAngle = Mathf.Atan2(offset.y, flat.magnitude) * Mathf.Rad2Deg;
+            float horizontal = Mathf.Sqrt
+                (offset.x * offset.x + offset.z * offset.z);
+            _radius = Mathf.Sqrt(sqrRadius);
+            _initialOffset = offset;
+            _initialRotation = _cameraTransform.rotation;
+            _initialYaw = _initialRotation.eulerAngles.y;
+            _initialAngleDeg = Mathf.Atan2(offset.y, horizontal) * Mathf.Rad2Deg;
+
+            if (horizontal > MinHorizontal)
+            {
+                float invHorizontal = 1f / horizontal;
+                _cosAzimuth = offset.x * invHorizontal;
+                _sinAzimuth = offset.z * invHorizontal;
+            }
+            else
+            {
+                _cosAzimuth = 1f;
+                _sinAzimuth = 0f;
+            }
         }
 
         public void RestoreInitial()
         {
-            _camera.transform.position = _target.position + _offset;
-            _camera.transform.rotation = _initialRotation;
+            _cameraTransform.SetPositionAndRotation(
+                _target.position + _initialOffset,
+                _initialRotation
+            );
         }
 
         public void ApplyForNormalizedWidth(
@@ -49,45 +74,40 @@ namespace Assets.Source.Scripts.Camera_Optimized
             float minRadiusMultiplier,
             float maxRadiusMultiplier)
         {
-            float angle = Mathf.Lerp(
-                maxAngle, 
-                _initialAngle, 
-                normalizedWidth);
-            float radiusMultiplier = Mathf.Lerp(
-                maxRadiusMultiplier, 
-                minRadiusMultiplier, 
-                normalizedWidth);
+            Guard.InRange(normalizedWidth, 0f, 1f, nameof(normalizedWidth));
+            Guard.InRange(maxAngle, 0f, 90f, nameof(maxAngle));
+            Guard.IsTrue(minRadiusMultiplier > 0f, nameof(minRadiusMultiplier), "Значение должно быть больше 0.");
+            Guard.IsTrue(maxRadiusMultiplier > 0f, nameof(maxRadiusMultiplier), "Значение должно быть больше 0.");
+            Guard.IsTrue(minRadiusMultiplier <= maxRadiusMultiplier, nameof(minRadiusMultiplier),
+                "Значение не должно превышать maxRadiusMultiplier.");
 
-            ApplyPose(angle, radiusMultiplier);
+            float t = Mathf.Clamp01(normalizedWidth);
+            float angleDeg = maxAngle + (_initialAngleDeg - maxAngle) * t;
+            float radiusMultiplier =
+                maxRadiusMultiplier + (minRadiusMultiplier - maxRadiusMultiplier) * t;
+
+            ApplyPose(angleDeg, radiusMultiplier);
         }
 
         private void ApplyPose(float angleDeg, float radiusMultiplier)
         {
-            Vector3 worldOffset = CalculateOffset(angleDeg, radiusMultiplier);
-            _camera.transform.position = _target.position + worldOffset;
-            _camera.transform.rotation = CalculateRotation(worldOffset);
-        }
-
-        private Vector3 CalculateOffset(float angleDeg, float radiusMultiplier)
-        {
             float scaledRadius = _radius * radiusMultiplier;
-            float rad = angleDeg * Mathf.Deg2Rad;
-            float horizontal = Mathf.Cos(rad) * scaledRadius;
-            float vertical = Mathf.Sin(rad) * scaledRadius;
+            float angleRad = angleDeg * Mathf.Deg2Rad;
+            float sinAngle = Mathf.Sin(angleRad);
+            float cosAngle = Mathf.Cos(angleRad);
+            float horizontalDistance = cosAngle * scaledRadius;
+            float verticalDistance = sinAngle * scaledRadius;
+            Vector3 worldOffset = new Vector3(
+                _cosAzimuth * horizontalDistance,
+                verticalDistance,
+                _sinAzimuth * horizontalDistance
+            );
+            Quaternion rotation = Quaternion.Euler(angleDeg, _initialYaw, 0f);
 
-            return new Vector3(
-                Mathf.Cos(_azimuth) * horizontal,
-                vertical,
-                Mathf.Sin(_azimuth) * horizontal);
-        }
-
-        private Quaternion CalculateRotation(Vector3 worldOffset)
-        {
-            Vector3 lookDir = -worldOffset.normalized;
-            Vector3 lookEuler = Quaternion.LookRotation(lookDir, Vector3.up).eulerAngles;
-            lookEuler.y = _initialRotation.eulerAngles.y;
-
-            return Quaternion.Euler(lookEuler);
+            _cameraTransform.SetPositionAndRotation(
+                _target.position + worldOffset,
+                rotation
+            );
         }
     }
 }

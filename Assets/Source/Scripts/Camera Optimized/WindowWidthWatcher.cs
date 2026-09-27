@@ -1,3 +1,4 @@
+using Assets.Source.Scripts.Extensions;
 using System;
 using UnityEngine;
 
@@ -18,6 +19,14 @@ public class WindowWidthWatcher : MonoBehaviour
     public bool IsActive => _isActive;
     public float NormalizedWidth => _normalizedWidth;
 
+    private void Awake()
+    {
+        Guard.Positive(_activeWidth, nameof(_activeWidth));
+        Guard.Positive(_minWidth, nameof(_minWidth));
+        Guard.IsTrue(_minWidth <= _activeWidth, nameof(_minWidth),
+            "Значение не должно превышать activeWidth.");
+    }
+
     private void OnEnable()
     {
         _lastWidth = Screen.width;
@@ -37,6 +46,8 @@ public class WindowWidthWatcher : MonoBehaviour
 
     private void Evaluate(int width)
     {
+        Guard.Positive(width, nameof(width));
+
         if (width <= _activeWidth)
         {
             _normalizedWidth = Mathf.InverseLerp(_minWidth, _activeWidth, width);

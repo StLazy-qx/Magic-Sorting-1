@@ -8,7 +8,7 @@ namespace Assets.Source.Scripts.GameBehaviour
 {
     public class FinalGameSession : MonoBehaviour, IObjectInitilizable
     {
-        [SerializeField] private GameSessionHandler _gameHandler;
+        [SerializeField] private BaseGameHandler _handler;
 
         private Panel _currentPanel;
 
@@ -16,7 +16,7 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         public void Initialize()
         {
-            Guard.NotNull(_gameHandler, nameof(_gameHandler));
+            Guard.NotNull(_handler, nameof(_handler));
             _currentPanel.Close();
 
             IsInitialized = true;
@@ -32,7 +32,7 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         public void ShowEndRoundPanel()
         {
-            _gameHandler.PauseGame();
+            _handler.PauseGame();
             _currentPanel.Open();
         }
     }

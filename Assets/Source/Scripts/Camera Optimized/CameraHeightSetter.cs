@@ -1,4 +1,5 @@
 using Assets.Source.Scripts.Camera_Optimized;
+using Assets.Source.Scripts.Extensions;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -12,11 +13,15 @@ public class CameraHeightSetter : MonoBehaviour
     [SerializeField] private float _minRadiusMultiplier = 1f;
     [SerializeField] private float _maxRadiusMultiplier = 2f;
 
-    private CameraOrbitPose _pose;
     private bool _isInitialized;
-
+    private CameraOrbitPose _pose;
+    
     private void Awake()
     {
+        Guard.NotNull(_target, nameof(_target));
+        Guard.NotNull(_mainCamera, nameof(_mainCamera));
+        ValidateSettings();
+
         if (_target == null || _mainCamera == null)
         {
             enabled = false;
@@ -25,17 +30,10 @@ public class CameraHeightSetter : MonoBehaviour
         }
 
         _pose = new CameraOrbitPose(_target, _mainCamera);
+
         _pose.CaptureCurrentAsInitial();
+
         _isInitialized = true;
-    }
-
-    private void Start()
-    {
-        if (_isInitialized == false)
-            return;
-
-        Subscribe();
-        ApplyCurrentWidthState();
     }
 
     private void OnEnable()
@@ -50,14 +48,6 @@ public class CameraHeightSetter : MonoBehaviour
     private void OnDisable()
     {
         Unsubscribe();
-    }
-
-    public void CaptureRoundStartPose()
-    {
-        if (_isInitialized == false)
-            return;
-
-        _pose.CaptureCurrentAsInitial();
     }
 
     private void Subscribe()
@@ -97,6 +87,12 @@ public class CameraHeightSetter : MonoBehaviour
         if (_isInitialized == false)
             return;
 
+        Guard.InRange(
+            normalizedWidth, 
+            0f, 
+            1f, 
+            nameof(normalizedWidth));
+
         _pose.ApplyForNormalizedWidth(
             normalizedWidth, _maxAngle, _minRadiusMultiplier, _maxRadiusMultiplier);
     }
@@ -107,5 +103,14 @@ public class CameraHeightSetter : MonoBehaviour
             return;
 
         _pose.RestoreInitial();
+    }
+
+    private void ValidateSettings()
+    {
+        Guard.InRange(_maxAngle, 0f, 90f, nameof(_maxAngle));
+        Guard.IsTrue(_minRadiusMultiplier > 0f, nameof(_minRadiusMultiplier), "Значение должно быть больше 0.");
+        Guard.IsTrue(_maxRadiusMultiplier > 0f, nameof(_maxRadiusMultiplier), "Значение должно быть больше 0.");
+        Guard.IsTrue(_minRadiusMultiplier <= _maxRadiusMultiplier, nameof(_minRadiusMultiplier),
+            "Значение не должно превышать maxRadiusMultiplier.");
     }
 }

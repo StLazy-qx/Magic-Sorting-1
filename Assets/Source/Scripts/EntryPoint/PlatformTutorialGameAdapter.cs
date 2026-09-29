@@ -1,4 +1,4 @@
-using Assets.Source.Scripts.UI.GamePanel;
+﻿using Assets.Source.Scripts.UI.GamePanel;
 using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Vessels;
@@ -6,13 +6,12 @@ using Assets.Source.Scripts.UI.GameModeView;
 using Assets.Source.Scripts.UI.Buttons;
 using Assets.Source.Scripts.MagicCells;
 using Assets.Source.Scripts.Factory;
-using Assets.Source.Scripts.Tutorial;
 using UnityEngine;
 using System;
 
 namespace Assets.Source.Scripts.EntryPoint
 {
-    public class PlatformGameAdapter : BasePlatformAdapter
+    public class PlatformTutorialGameAdapter : BasePlatformAdapter
     {
         [Header("Begin Objects Position")]
         [SerializeField] private ObjectsBeginPositionSetter _desktopObjectsPosition;
@@ -20,6 +19,8 @@ namespace Assets.Source.Scripts.EntryPoint
         [Header("UI Elements")]
         [SerializeField] private Panel _finalMatchPanelDesktop;
         [SerializeField] private Panel _finalMatchPanelMobile;
+        [SerializeField] private Panel _finishTutorialPanelDesktop;
+        [SerializeField] private Panel _finishTutorialPanelMobile;
         [SerializeField] private ReverseButton _reverseButtonDesktop;
         [SerializeField] private ReverseButton _reverseButtonMobile;
         [SerializeField] private IconRewardedAdvertisement _rewardedIconDesktop;
@@ -34,7 +35,6 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private VesselStateTracker _vesselsFulling;
         [SerializeField] private FinalGameSession _finalGameSession;
         [SerializeField] private ClickModeSwitcher _clickModeSwitcher;
-        [SerializeField] private TutorialMatchHighlighter _seeker;
 
         public void Initialize()
         {
@@ -48,8 +48,8 @@ namespace Assets.Source.Scripts.EntryPoint
             _mobileObjectsPosition.Initialize();
             _vesselsFulling.SetPanel(_finalMatchPanelMobile);
             _finalGameSession.SetPanel(_finalMatchPanelMobile);
+            _finalGameSession.SetTutorialPanel(_finishTutorialPanelMobile);
             _clickModeSwitcher.SetButton(_reverseButtonViewMobile);
-            _seeker.SetButtonRewarded(_rewardedIconMobile, _reverseButtonMobile);
         }
 
         protected override void OnDesktopSelected()
@@ -58,8 +58,8 @@ namespace Assets.Source.Scripts.EntryPoint
             _desktopObjectsPosition.Initialize();
             _vesselsFulling.SetPanel(_finalMatchPanelDesktop);
             _finalGameSession.SetPanel(_finalMatchPanelDesktop);
+            _finalGameSession.SetTutorialPanel(_finishTutorialPanelDesktop);
             _clickModeSwitcher.SetButton(_reverseButtonViewDesktop);
-            _seeker.SetButtonRewarded(_rewardedIconDesktop, _reverseButtonDesktop);
         }
 
         private void ValidateRequiredDependencies()
@@ -69,6 +69,12 @@ namespace Assets.Source.Scripts.EntryPoint
 
             if (_mobileObjectsPosition == null)
                 throw new ArgumentNullException(nameof(_mobileObjectsPosition));
+
+            if (_finishTutorialPanelDesktop == null)
+                throw new ArgumentNullException(nameof(_finishTutorialPanelDesktop));
+
+            if (_finishTutorialPanelMobile == null)
+                throw new ArgumentNullException(nameof(_finishTutorialPanelMobile));
 
             if (_finalMatchPanelDesktop == null)
                 throw new ArgumentNullException(nameof(_finalMatchPanelDesktop));

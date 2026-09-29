@@ -38,6 +38,8 @@ namespace Assets.Source.Scripts.GameBehaviour
         public event Action TutorialCompleted;
         public event Action<int> TutorialRoundStarted;
 
+        public bool IsTutorialCompleted => _isTutorialCompleted;
+
         private void Awake()
         {
             ValidateObjects();

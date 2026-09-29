@@ -15,7 +15,7 @@ namespace Assets.Source.Scripts.EntryPoint
     public class EntryPointTutorialSession : MonoBehaviour
     {
         [SerializeField] private DifficultyDatabase _difficultyDatabase;
-        [SerializeField] private PlatformGameAdapter _platformDependentSetter;
+        [SerializeField] private PlatformTutorialGameAdapter _platformSetter;
         [SerializeField] private ColorRandomizer _colorRandomizer;
         [SerializeField] private EntryColorListsFactory _entryColorListsFactory;
         [SerializeField] private ColumnsFactory _columnsFactory;
@@ -40,7 +40,7 @@ namespace Assets.Source.Scripts.EntryPoint
             _currentSettings = _difficultyDatabase.GetSettings(_difficultyState.CurrentDifficulty);
 
             _colorRandomizer.CrateArrayColors(_currentSettings.ColorsCount);
-            _platformDependentSetter.Initialize();
+            _platformSetter.Initialize();
             _entryColorListsFactory.Initialize(
                 _colorRandomizer.BeginColors, 
                 _colorRandomizer.RemainingColors);
@@ -119,7 +119,7 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private void ValidateDependencies()
         {
-            if (_platformDependentSetter == null) throw new ArgumentNullException(nameof(_platformDependentSetter));
+            if (_platformSetter == null) throw new ArgumentNullException(nameof(_platformSetter));
             if (_columnsFactory == null) throw new ArgumentNullException(nameof(_columnsFactory));
             if (_vesselFactory == null) throw new ArgumentNullException(nameof(_vesselFactory));
             if (_objectsToInitializeMono == null) throw new ArgumentNullException(nameof(_objectsToInitializeMono));

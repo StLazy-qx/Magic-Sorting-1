@@ -2,13 +2,13 @@ using Assets.Source.Scripts.EntryPoint;
 using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.UI.GamePanel;
+using Assets.Source.Scripts.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using System.Linq;
-using Assets.Source.Scripts.Extensions;
 
 namespace Assets.Source.Scripts.Vessels
 {
@@ -71,7 +71,7 @@ namespace Assets.Source.Scripts.Vessels
             _effecter.Initialize(vessels.Count);
         }
 
-        public void ApplyPanel(Panel panel)
+        public void SetPanel(Panel panel)
         {
             Guard.NotNull(panel, nameof(panel));
 

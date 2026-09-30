@@ -1,5 +1,6 @@
 using Zenject;
 using Assets.Source.Scripts.UI.GameDifficultyView;
+using Assets.Source.Scripts.GameDifficulty;
 
 namespace Assets.Source.Scripts.Installers
 {

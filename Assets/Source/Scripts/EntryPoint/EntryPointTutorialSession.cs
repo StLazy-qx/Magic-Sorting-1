@@ -9,6 +9,7 @@ using UnityEngine;
 using System;
 using Zenject;
 using Assets.Source.Scripts.GameBehaviour;
+using Assets.Source.Scripts.Extensions;
 
 namespace Assets.Source.Scripts.EntryPoint
 {
@@ -27,7 +28,6 @@ namespace Assets.Source.Scripts.EntryPoint
         private DifficultyState _difficultyState;
         private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private DifficultySettings _currentSettings;
-        
         private List<IObjectInitilizable> _objectsInitilizable = new();
 
         private void Awake()
@@ -54,6 +54,9 @@ namespace Assets.Source.Scripts.EntryPoint
             DifficultyState difficultyState, 
             SequenceDifficultyLevel sequenceDifficultyLevel)
         {
+            Guard.NotNull(difficultyState, nameof(difficultyState));
+            Guard.NotNull(sequenceDifficultyLevel, nameof(sequenceDifficultyLevel));
+
             _difficultyState = difficultyState;
             _sequenceDifficultyLevel = sequenceDifficultyLevel;
         }

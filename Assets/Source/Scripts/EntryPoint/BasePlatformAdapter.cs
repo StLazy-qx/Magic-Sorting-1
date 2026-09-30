@@ -6,7 +6,7 @@ using UnityEngine;
 using System;
 using YG;
 using Assets.Source.Scripts.UI.StoreView;
-using Assets.Source.Scripts.Pool;
+using Assets.Source.Scripts.Extensions;
 
 namespace Assets.Source.Scripts.EntryPoint
 {
@@ -35,6 +35,8 @@ namespace Assets.Source.Scripts.EntryPoint
             if (YG2.envir.isMobile)
             {
                 UseMobileMode();
+                Guard.NotNull(_mobileAudioViewHandler, 
+                    nameof(_mobileAudioViewHandler));
                 ItemFactory.Initialize(MobileContent, 
                     MobileSelectItemPresenter);
                 _soundSetter.ApplyAudioHandler(_mobileAudioViewHandler);
@@ -43,6 +45,8 @@ namespace Assets.Source.Scripts.EntryPoint
             else
             {
                 UseDesktopMode();
+                Guard.NotNull(_desktopAudioViewHandler, 
+                    nameof(_desktopAudioViewHandler));
                 ItemFactory.Initialize(DesktopContent, 
                     DesktopSelectItemPresenter);
                 _soundSetter.ApplyAudioHandler(_desktopAudioViewHandler);
@@ -66,26 +70,16 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private void ValidateRequiredObjects()
         {
-            if (MobileCanvas == null)
-                throw new ArgumentNullException(nameof(MobileCanvas));
-
-            if (DesktopCanvas == null)
-                throw new ArgumentNullException(nameof(DesktopCanvas));
-
-            if (ItemFactory == null)
-                throw new ArgumentNullException(nameof(ItemFactory));
-
-            if (MobileContent == null)
-                throw new ArgumentNullException(nameof(MobileContent));
-
-            if (DesktopContent == null)
-                throw new ArgumentNullException(nameof(DesktopContent));
-
-            if (DesktopSelectItemPresenter == null)
-                throw new ArgumentNullException(nameof(DesktopSelectItemPresenter));
-
-            if (MobileSelectItemPresenter == null)
-                throw new ArgumentNullException(nameof(MobileSelectItemPresenter));
+            Guard.NotNull(MobileCanvas, nameof(MobileCanvas));
+            Guard.NotNull(DesktopCanvas, nameof(DesktopCanvas));
+            Guard.NotNull(ItemFactory, nameof(ItemFactory));
+            Guard.NotNull(MobileContent, nameof(MobileContent));
+            Guard.NotNull(DesktopContent, nameof(DesktopContent));
+            Guard.NotNull(DesktopSelectItemPresenter, 
+                nameof(DesktopSelectItemPresenter));
+            Guard.NotNull(MobileSelectItemPresenter, 
+                nameof(MobileSelectItemPresenter));
+            Guard.NotNull(_soundSetter, nameof(_soundSetter));
         }
     }
 }

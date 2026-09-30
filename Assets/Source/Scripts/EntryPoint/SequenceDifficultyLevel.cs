@@ -16,11 +16,16 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private int _currentIndex;
         private int _roundNumber;
+        private int _tutorialCurrentIndex;
+        private int _tutorialRoundNumber;
+        private bool _isTutorialMode;
         private List<DifficultyLevel> _sequence = new();
+        private IReadOnlyList<DifficultyLevel> _tutorialSequence;
 
         public event Action<int> RoundChanged;
 
-        public int RoundNumber => _roundNumber;
+        public int RoundNumber => _isTutorialMode ? _tutorialRoundNumber : _roundNumber;
+        public bool IsTutorialMode => _isTutorialMode;
         public bool IsInitialized { get; private set; }
 
         public void Initialize()
@@ -37,13 +42,34 @@ namespace Assets.Source.Scripts.EntryPoint
         public IReadOnlyList<DifficultyLevel> GetTutorialSequence()
 		{
 			return new List<DifficultyLevel>
-				{
-					DifficultyLevel.Easy,
-					DifficultyLevel.MediumEasy
-				}.AsReadOnly();
+			{
+				DifficultyLevel.Easy,
+				DifficultyLevel.MediumEasy
+			}.AsReadOnly();
 		}
 
         public DifficultyLevel GetNext()
+        {
+            return _isTutorialMode ? GetNextTutorial() : GetNextMain();
+        }
+
+        //public DifficultyLevel GetNext()
+        //{
+        //    if (_currentIndex >= _sequence.Count)
+        //    {
+        //        ExtendSequence(ExtendBatchSize, _currentIndex);
+        //    }
+
+        //    DifficultyLevel level = _sequence[_currentIndex];
+        //    _currentIndex++;
+        //    _roundNumber++;
+
+        //    SaveRound();
+
+        //    return level;
+        //}
+
+        private DifficultyLevel GetNextMain()
         {
             if (_currentIndex >= _sequence.Count)
             {
@@ -58,13 +84,46 @@ namespace Assets.Source.Scripts.EntryPoint
 
             return level;
         }
-        
+
+        private DifficultyLevel GetNextTutorial()
+        {
+            if (_tutorialSequence == null)
+            {
+                _tutorialSequence = GetTutorialSequence();
+                _tutorialCurrentIndex = 0;
+                _tutorialRoundNumber = 0;
+            }
+
+            if (_tutorialCurrentIndex >= _tutorialSequence.Count)
+            {
+                return _tutorialSequence[_tutorialSequence.Count - 1];
+            }
+
+            DifficultyLevel level = _tutorialSequence[_tutorialCurrentIndex];
+            _tutorialCurrentIndex++;
+            _tutorialRoundNumber++;
+
+            RoundChanged?.Invoke(_tutorialRoundNumber);
+
+            return level;
+        }
+
         public void ResetTutorialSequence()
         {
-        	// отдельные переменные для индексов для нумерации туториала 
-        	_currentIndex = 0;
-        	_roundNumber = 0;
-		}
+            _isTutorialMode = true;
+            _tutorialCurrentIndex = 0;
+            _tutorialRoundNumber = 0;
+            _tutorialSequence = GetTutorialSequence();
+
+            RoundChanged?.Invoke(_tutorialRoundNumber);
+        }
+
+        public void ExitTutorialMode()
+        {
+            _isTutorialMode = false;
+
+            RoundChanged?.Invoke(_roundNumber);
+        }
 
         private void LoadRound()
         {
@@ -92,27 +151,19 @@ namespace Assets.Source.Scripts.EntryPoint
             float randomValue = UnityEngine.Random.Range(0f, 100f);
 
             if (randomValue < EasyProbability)
-            {
                 return DifficultyLevel.Easy;
-            }
 
             if (randomValue < EasyProbability + MediumEasyProbability)
-            {
                 return DifficultyLevel.MediumEasy;
-            }
 
             if (randomValue < EasyProbability +
                 MediumEasyProbability + MediumProbability)
-            {
                 return DifficultyLevel.Medium;
-            }
 
             if (randomValue < EasyProbability +
                 MediumEasyProbability + MediumProbability +
                 MediumHardProbability)
-            {
                 return DifficultyLevel.MediumHard;
-            }
 
             return DifficultyLevel.Hard;
         }

@@ -152284,6 +152284,7 @@ MonoBehaviour:
   _columnsFactory: {fileID: 946066169}
   _vesselFactory: {fileID: 654057274}
   _entryColorListsFactory: {fileID: 1086977958}
+  _tutorialLevelCounter: {fileID: 1139587301}
   _colorRandomizer: {fileID: 1009920594}
   _waitingPoint: {fileID: 1861908055}
   _clickImpactHandler: {fileID: 923747164}
@@ -481722,7 +481723,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.22018412, g: 0.11458706, b: 0.23584908, a: 0.9607843}
+  m_Color: {r: 0.13207549, g: 0.13207549, b: 0.13207549, a: 0.9607843}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -503841,12 +503842,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60
+  m_fontSize: 70
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 60
+  m_fontSizeMax: 70
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -524992,7 +524993,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.042000003, y: 0.44184378}
   m_AnchorMax: {x: 0.17952085, y: 0.5447032}
-  m_AnchoredPosition: {x: 1.4997559, y: 3.5}
+  m_AnchoredPosition: {x: 1.5, y: 3.5}
   m_SizeDelta: {x: -17.300049, y: -11.4309845}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1535726889
@@ -544914,7 +544915,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.11000001, y: 0.061111115}
   m_AnchorMax: {x: 0.39900002, y: 0.36222222}
-  m_AnchoredPosition: {x: 2.9996948, y: 9.499939}
+  m_AnchoredPosition: {x: 2.9997559, y: 9.499939}
   m_SizeDelta: {x: 28, y: 76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1582914854
@@ -754254,7 +754255,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2085977722
 RectTransform:
   m_ObjectHideFlags: 0

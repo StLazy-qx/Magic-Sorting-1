@@ -6,11 +6,11 @@ using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Extensions;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
-using Zenject;
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
+using Zenject;
 
 namespace Assets.Source.Scripts.GameBehaviour
 {
@@ -19,6 +19,7 @@ namespace Assets.Source.Scripts.GameBehaviour
         [SerializeField] private ColumnsFactory _columnsFactory;
         [SerializeField] private VesselFactory _vesselFactory;
         [SerializeField] private EntryColorListsFactory _entryColorListsFactory;
+        [SerializeField] private TutorialLevelCounter _tutorialLevelCounter;
         [SerializeField] private ColorRandomizer _colorRandomizer;
         [SerializeField] private WaitingPoint _waitingPoint;
         [SerializeField] private ClickModeSwitcher _clickImpactHandler;
@@ -28,17 +29,15 @@ namespace Assets.Source.Scripts.GameBehaviour
         private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private DifficultyState _difficultyState;
         private DifficultySettings _currentSettings;
-        
+
         private IReadOnlyList<DifficultyLevel> _tutorialSequence;
         private RoundLauncher _roundLauncher;
         private int _currentTutorialRoundIndex;
-        private bool _isTutorialCompleted;
 
         public event Action GameLaunching;
-        public event Action TutorialCompleted;
         public event Action<int> TutorialRoundStarted;
 
-        public bool IsTutorialCompleted => _isTutorialCompleted;
+        public bool IsTutorialCompleted => _tutorialLevelCounter.IsFinishTutorialRound;
 
         private void Awake()
         {
@@ -53,7 +52,7 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         [Inject]
         private void Construct(
-            DifficultyState difficultyState, 
+            DifficultyState difficultyState,
             SequenceDifficultyLevel level)
         {
             Guard.NotNull(difficultyState, nameof(difficultyState));
@@ -67,20 +66,12 @@ namespace Assets.Source.Scripts.GameBehaviour
         {
             _tutorialSequence = _sequenceDifficultyLevel.GetTutorialSequence();
             _currentTutorialRoundIndex = 0;
-            _isTutorialCompleted = false;
-            
+
             _waitingPoint.Reset();
         }
 
         public void BeginRound()
         {
-            if (_isTutorialCompleted)
-            {
-                OnTutorialCompleted();
-
-                return;
-            }
-
             if (TryAdvanceToNextTutorialRound() == false)
                 return;
 
@@ -104,20 +95,14 @@ namespace Assets.Source.Scripts.GameBehaviour
                 _currentTutorialRoundIndex = 0;
             }
 
-            if (_sequenceDifficultyLevel == null 
+            if (_sequenceDifficultyLevel == null
                 || _difficultyState == null)
                 return false;
 
             if (_currentTutorialRoundIndex >= _tutorialSequence.Count)
-            {
-                _isTutorialCompleted = true;
-
-                OnTutorialCompleted();
-
                 return false;
-            }
 
-            DifficultyLevel nextLevel = 
+            DifficultyLevel nextLevel =
                 _tutorialSequence[_currentTutorialRoundIndex];
 
             _difficultyState.SetDifficulty(nextLevel);
@@ -127,11 +112,6 @@ namespace Assets.Source.Scripts.GameBehaviour
             TutorialRoundStarted?.Invoke(_currentTutorialRoundIndex);
 
             return true;
-        }
-
-        private void OnTutorialCompleted()
-        {
-            TutorialCompleted?.Invoke();
         }
 
         private void LaunchCurrentDifficulty()
@@ -155,6 +135,7 @@ namespace Assets.Source.Scripts.GameBehaviour
             _roundLauncher.LaunchAsync(
                 _colorRandomizer,
                 _currentSettings,
+                _tutorialLevelCounter,
                 DifficultyState.CurrentDifficulty,
                 this.GetCancellationTokenOnDestroy()).Forget();
         }

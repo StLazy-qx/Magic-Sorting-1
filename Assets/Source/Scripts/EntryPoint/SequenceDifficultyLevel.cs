@@ -24,19 +24,23 @@ namespace Assets.Source.Scripts.EntryPoint
 
         public event Action<int> RoundChanged;
 
-        public int RoundNumber => _isTutorialMode ? _tutorialRoundNumber : _roundNumber;
-        public bool IsTutorialMode => _isTutorialMode;
+        public int RoundNumber => _isTutorialMode
+            ? _tutorialRoundNumber
+            : YG2.saves.GetRoundNumber();
         public bool IsInitialized { get; private set; }
 
         public void Initialize()
         {
+            _roundNumber = YG2.saves.Round.GetRoundNumber();    
             _currentIndex = 0;
             _sequence = new List<DifficultyLevel>(InitialSequenceLength);
 
             ExtendSequence(InitialSequenceLength, _currentIndex);
-            LoadRound();
+            //LoadRound();
 
             IsInitialized = true;
+
+            RoundChanged?.Invoke(RoundNumber);
         }
         
         public IReadOnlyList<DifficultyLevel> GetTutorialSequence()
@@ -121,6 +125,7 @@ namespace Assets.Source.Scripts.EntryPoint
         public void ExitTutorialMode()
         {
             _isTutorialMode = false;
+            _roundNumber = YG2.saves.GetRoundNumber();
 
             RoundChanged?.Invoke(_roundNumber);
         }

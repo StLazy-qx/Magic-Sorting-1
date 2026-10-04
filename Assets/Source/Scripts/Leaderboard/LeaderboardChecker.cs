@@ -37,7 +37,8 @@ namespace Assets.Source.Scripts.Leaderboard
         private void RequestLeaderboard()
         {
             int checkTopQuantity = 1;
-            int checkAroundQuantity = 0;
+            //проверить
+            int checkAroundQuantity = 7;
 
             if (string.IsNullOrEmpty(_leaderboardYG.nameLB) == false)
             {

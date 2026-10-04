@@ -20,10 +20,13 @@ namespace Assets.Source.Scripts.GameBehaviour
             Guard.NotNull(level, nameof(level));
 
             _currentLevel = level;
-            RoundNumber = _currentLevel.RoundNumber;
+            //RoundNumber = _currentLevel.RoundNumber;
             _currentLevel.RoundChanged += OnRoundChange;
 
-            OnRoundChange(RoundNumber);
+            if (_currentLevel.IsInitialized)
+                OnRoundChange(_currentLevel.RoundNumber);
+
+            //OnRoundChange(RoundNumber);
         }
 
         private void OnDisable()
@@ -34,7 +37,9 @@ namespace Assets.Source.Scripts.GameBehaviour
         private void OnRoundChange(int roundNumber)
         {
             Guard.NotNull(roundNumber, nameof(roundNumber));
+
             RoundNumber = roundNumber;
+
             RoundChanged?.Invoke(RoundNumber);
         }
     }

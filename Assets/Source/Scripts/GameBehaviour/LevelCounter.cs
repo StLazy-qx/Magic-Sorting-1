@@ -2,6 +2,7 @@
 using Assets.Source.Scripts.Extensions;
 using System;
 using UnityEngine;
+using YG;
 using Zenject;
 
 namespace Assets.Source.Scripts.GameBehaviour
@@ -9,10 +10,11 @@ namespace Assets.Source.Scripts.GameBehaviour
     public class LevelCounter : MonoBehaviour
     {
         private SequenceDifficultyLevel _currentLevel;
+		private int _roundNumber;
+		
+        public event Action RoundChanged;
 
-        public event Action<int> RoundChanged;
-
-        public int RoundNumber { get; private set; }
+        public int RoundNumber => _roundNumber;
 
         [Inject]
         public void Initialize(SequenceDifficultyLevel level)
@@ -20,27 +22,24 @@ namespace Assets.Source.Scripts.GameBehaviour
             Guard.NotNull(level, nameof(level));
 
             _currentLevel = level;
-            //RoundNumber = _currentLevel.RoundNumber;
+            _roundNumber = YG2.saves.GetRoundNumber();
             _currentLevel.RoundChanged += OnRoundChange;
 
-            if (_currentLevel.IsInitialized)
-                OnRoundChange(_currentLevel.RoundNumber);
-
-            //OnRoundChange(RoundNumber);
+            RoundChanged?.Invoke();
         }
 
         private void OnDisable()
         {
-            _currentLevel.RoundChanged -= OnRoundChange;
+        	if (_currentLevel != null)
+                _currentLevel.RoundChanged -= OnRoundChange;
         }
 
-        private void OnRoundChange(int roundNumber)
+        private void OnRoundChange()
         {
-            Guard.NotNull(roundNumber, nameof(roundNumber));
-
-            RoundNumber = roundNumber;
-
-            RoundChanged?.Invoke(RoundNumber);
+        	_roundNumber++;
+        
+            YG2.saves.SaveRoundNumber(_roundNumber);
+            RoundChanged?.Invoke();
         }
     }
 }

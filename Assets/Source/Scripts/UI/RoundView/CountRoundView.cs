@@ -31,16 +31,20 @@ namespace Assets.Source.Scripts.UI.RoundView
         private void OnEnable()
         {
             _levelCounter.RoundChanged += OnRoundNumberChanged;
-            _gameHandler.GameLaunching += OnTextFade;
+
+            if(_gameHandler is GameSessionHandler sessionHandler)
+                sessionHandler.GameLaunching += OnTextFade;
         }
 
         private void OnDisable()
         {
             _levelCounter.RoundChanged -= OnRoundNumberChanged;
-            _gameHandler.GameLaunching -= OnTextFade;
+
+            if (_gameHandler is GameSessionHandler sessionHandler)
+                sessionHandler.GameLaunching -= OnTextFade;
         }
 
-        public void OnTextFade()
+        private void OnTextFade()
         {
             FadeText(_mainText);
             FadeText(_countText);
@@ -61,9 +65,9 @@ namespace Assets.Source.Scripts.UI.RoundView
                 .SetEase(Ease.OutQuad);
         }
 
-        private void OnRoundNumberChanged(int roundNumber)
+        private void OnRoundNumberChanged()
         {
-            _countText.text = roundNumber.ToString();
+            _countText.text = _levelCounter.RoundNumber.ToString();
         }
     }
 }

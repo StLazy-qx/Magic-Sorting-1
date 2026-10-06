@@ -4,12 +4,12 @@ using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.InteractiveObjects;
 using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.GameDifficulty;
+using Assets.Source.Scripts.Tutorial;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Extensions;
 using UnityEngine;
 using System;
 using Cysharp.Threading.Tasks;
-using System.Collections.Generic;
 using Zenject;
 
 namespace Assets.Source.Scripts.GameBehaviour
@@ -26,18 +26,16 @@ namespace Assets.Source.Scripts.GameBehaviour
         [SerializeField] private ColorColumnDistributor _columnDistributor;
         [SerializeField] private DifficultyDatabase _difficultyDatabase;
 
-        private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private DifficultyState _difficultyState;
-        private DifficultySettings _currentSettings;
-
-        private IReadOnlyList<DifficultyLevel> _tutorialSequence;
+		private DifficultySetProvider _settingsProvider;
         private RoundLauncher _roundLauncher;
-        private int _currentTutorialRoundIndex;
+        private TutorialProgress _tutorialProgress;
 
         public event Action GameLaunching;
+        public event Action TutorialCompleted;
         public event Action<int> TutorialRoundStarted;
 
-        public bool IsTutorialCompleted => _tutorialLevelCounter.IsFinishTutorialRound;
+        public bool IsTutorialCompleted => _tutorialProgress.IsLastRoundStarted;
 
         private void Awake()
         {
@@ -50,29 +48,49 @@ namespace Assets.Source.Scripts.GameBehaviour
                 _columnDistributor);
         }
 
+        private void OnEnable()
+        {
+            _tutorialProgress.RoundStarted += OnTutorialRoundStarted;
+            _tutorialProgress.Completed += OnTutorialProgressCompleted;
+        }
+
+        private void OnDisable()
+        {
+            _tutorialProgress.RoundStarted -= OnTutorialRoundStarted;
+            _tutorialProgress.Completed -= OnTutorialProgressCompleted;
+        }
+
         [Inject]
         private void Construct(
             DifficultyState difficultyState,
-            SequenceDifficultyLevel level)
+            SequenceDifficultyLevel difficultyLevel)
         {
             Guard.NotNull(difficultyState, nameof(difficultyState));
-            Guard.NotNull(level, nameof(level));
+            Guard.NotNull(difficultyLevel, nameof(difficultyLevel));
 
             _difficultyState = difficultyState;
-            _sequenceDifficultyLevel = level;
+            _settingsProvider = new DifficultySetProvider(
+                _difficultyDatabase,
+                _difficultyState);
+            _tutorialProgress = new TutorialProgress(difficultyLevel);
+
+            _tutorialLevelCounter.Initialize(_tutorialProgress);
         }
 
         protected override void ExtendInitialize()
         {
-            _tutorialSequence = _sequenceDifficultyLevel.GetTutorialSequence();
-            _currentTutorialRoundIndex = 0;
-
             _waitingPoint.Reset();
+        }
+
+        public void RegisterFirstRound()
+        {
+            _tutorialProgress.Reset();
+            TryAdvanceNextTutorialRound();
         }
 
         public void BeginRound()
         {
-            if (TryAdvanceToNextTutorialRound() == false)
+            if (TryAdvanceNextTutorialRound() == false)
                 return;
 
             LaunchCurrentDifficulty();
@@ -83,63 +101,50 @@ namespace Assets.Source.Scripts.GameBehaviour
             LaunchCurrentDifficulty();
         }
 
-        private bool TryAdvanceToNextTutorialRound()
+        private bool TryAdvanceNextTutorialRound()
         {
-            if (_tutorialSequence == null)
-            {
-                if (_sequenceDifficultyLevel == null)
-                    return false;
-
-                _tutorialSequence = _sequenceDifficultyLevel.
-                    GetTutorialSequence();
-                _currentTutorialRoundIndex = 0;
-            }
-
-            if (_sequenceDifficultyLevel == null
-                || _difficultyState == null)
+        	if (_tutorialProgress.TryGetNextLevel(out DifficultyLevel nextLevel) == false)
                 return false;
-
-            if (_currentTutorialRoundIndex >= _tutorialSequence.Count)
-                return false;
-
-            DifficultyLevel nextLevel =
-                _tutorialSequence[_currentTutorialRoundIndex];
 
             _difficultyState.SetDifficulty(nextLevel);
 
-            _currentTutorialRoundIndex++;
-
-            TutorialRoundStarted?.Invoke(_currentTutorialRoundIndex);
-
-            return true;
+            return true;	
         }
+        
+        private void OnTutorialRoundStarted(int roundIndex)
+        {
+            TutorialRoundStarted?.Invoke(roundIndex);
+        }
+        
+        private void OnTutorialProgressCompleted()
+    	{
+			TutorialCompleted?.Invoke();
+   	    }
 
         private void LaunchCurrentDifficulty()
         {
-            _currentSettings = _difficultyDatabase
-                .GetSettings(DifficultyState.CurrentDifficulty);
+        	DifficultySettings currentSettings = _settingsProvider.Current;
 
-            if (_currentSettings == null)
+            if (currentSettings == null)
                 return;
-
-            _colorRandomizer.CrateArrayColors(
-                _currentSettings.ColorsCount);
-            StartRound();
+            
+            _colorRandomizer.CrateArrayColors(currentSettings.ColorsCount);
+        	StartRound(currentSettings);
             GameLaunching?.Invoke();
         }
 
-        private void StartRound()
+		private void StartRound(DifficultySettings currentSettings)
         {
             ContinueGame();
             ResetEntity();
             _roundLauncher.LaunchAsync(
                 _colorRandomizer,
-                _currentSettings,
+                currentSettings,
                 _tutorialLevelCounter,
                 DifficultyState.CurrentDifficulty,
                 this.GetCancellationTokenOnDestroy()).Forget();
         }
-
+		
         private void ResetEntity()
         {
             Wallet.Reset();

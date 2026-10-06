@@ -1,4 +1,5 @@
 ﻿using Assets.Source.Scripts.Extensions;
+using Assets.Source.Scripts.Tutorial;
 using System;
 using UnityEngine;
 
@@ -8,26 +9,28 @@ namespace Assets.Source.Scripts.GameBehaviour
     {
         private const int EndTutorialRoundNumber = 1;
 
-        [SerializeField] private TutorialGameHandler _gameHandler;
+        private TutorialProgress _tutorialProgress;
 
         public event Action RoundChanged;
 
         public int RoundNumber { get; private set; }
-        public bool IsFinishTutorialRound => RoundNumber == EndTutorialRoundNumber;
-
-        private void Awake()
-        {
-            Guard.NotNull(_gameHandler, nameof(_gameHandler));
-        }
+        public bool IsLastRound => RoundNumber == EndTutorialRoundNumber;
 
         private void OnEnable()
         {
-            _gameHandler.TutorialRoundStarted += OnRoundStarted;
+            _tutorialProgress.RoundStarted += OnRoundStarted;
         }
 
         private void OnDisable()
         {
-            _gameHandler.TutorialRoundStarted -= OnRoundStarted;
+            _tutorialProgress.RoundStarted -= OnRoundStarted;
+        }
+
+        public void Initialize(TutorialProgress tutorialProgress)
+        {
+            Guard.NotNull(tutorialProgress, nameof(tutorialProgress));
+
+            _tutorialProgress = tutorialProgress;
         }
 
         private void OnRoundStarted(int roundNumber)

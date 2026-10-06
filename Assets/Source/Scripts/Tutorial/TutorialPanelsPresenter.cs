@@ -85,9 +85,7 @@ namespace Assets.Source.Scripts.Tutorial
         private void OnContinueTraining()
         {
             if (_tutorialLevelCounter.RoundNumber == ReverseMechanicsRoundNumber)
-            {
                 ShowReverseMechanicsPanel();
-            }
         }
 
         private void OnAddCellAction()

@@ -1,3 +1,3 @@
-﻿Build path: F:/ST/Unity project/Builds/Magic Sorting
-Build number: 59
+﻿Build path: F:/ST/Unity project/Games Builds/Magic Sorting
+Build number: 60
 PluginYG version: 2.0092

@@ -26,7 +26,7 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private MonoBehaviour[] _objectsToInitializeMono;
 
         private DifficultyState _difficultyState;
-        private SequenceDifficultyLevel _sequenceDifficultyLevel;
+        //private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private DifficultySettings _currentSettings;
         private List<IObjectInitilizable> _objectsInitilizable = new();
 
@@ -34,9 +34,9 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             ValidateDependencies();
             _tutorialGameHandler.Initialize();
-            _sequenceDifficultyLevel.ResetTutorialSequence();
-            _difficultyState.SetDifficulty(DifficultyLevel.Easy);
-            
+            _tutorialGameHandler.RegisterFirstRound();
+            //_difficultyState.SetDifficulty(DifficultyLevel.Easy);
+
             _currentSettings = _difficultyDatabase.GetSettings(_difficultyState.CurrentDifficulty);
 
             _colorRandomizer.CrateArrayColors(_currentSettings.ColorsCount);
@@ -58,7 +58,7 @@ namespace Assets.Source.Scripts.EntryPoint
             Guard.NotNull(sequenceDifficultyLevel, nameof(sequenceDifficultyLevel));
 
             _difficultyState = difficultyState;
-            _sequenceDifficultyLevel = sequenceDifficultyLevel;
+            //_sequenceDifficultyLevel = sequenceDifficultyLevel;
         }
 
         private void CollectInitializableObjects()

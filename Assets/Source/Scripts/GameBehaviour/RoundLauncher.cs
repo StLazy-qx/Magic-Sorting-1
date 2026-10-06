@@ -35,54 +35,6 @@ namespace Assets.Source.Scripts.GameBehaviour
             _columnDistributor = columnDistributor;
         }
 
-        //public async UniTask LaunchAsync(
-        //    ColorRandomizer colorRandomizer,
-        //    DifficultySettings settings,
-        //    DifficultyLevel difficulty,
-        //    bool swapColors,
-        //    CancellationToken cancellationToken)
-        //{
-        //    Guard.NotNull(colorRandomizer, nameof(colorRandomizer));
-        //    Guard.NotNull(settings, nameof(settings));
-        //    Guard.NotNull(difficulty, nameof(difficulty));
-        //    Guard.Positive(settings.ColumnsCount, 
-        //        nameof(settings.ColumnsCount));
-        //    Guard.Positive(settings.MaxCellsPerColumn, 
-        //        nameof(settings.MaxCellsPerColumn));
-
-        //    ResetFactories(difficulty);
-
-        //    _vesselFactory.InitRandomizer(colorRandomizer);
-
-        //    IReadOnlyList<Color> beginColors = colorRandomizer.BeginColors;
-        //    IReadOnlyList<Color> remainingColors = colorRandomizer.RemainingColors;
-
-        //    Guard.NotNull(beginColors, nameof(colorRandomizer.BeginColors));
-        //    Guard.NotNull(remainingColors, nameof(colorRandomizer.RemainingColors));
-
-        //    if (swapColors)
-        //    {
-        //        (beginColors, remainingColors) = (remainingColors, beginColors);
-        //    }
-
-        //    _entryColorListsFactory.Initialize(beginColors, remainingColors);
-        //    _vesselFactory.Spawn();
-
-        //    await UniTask.WaitUntil(() => _vesselFactory.IsReady,
-        //        cancellationToken: cancellationToken);
-
-        //    if (_vesselFactory.Objects != null && _vesselFactory.Objects.Count > 0)
-        //    {
-        //        _columnsFactory.Initialize(
-        //            _vesselFactory.Objects,
-        //            settings.ColumnsCount,
-        //            settings.MaxCellsPerColumn);
-        //        _columnsFactory.Spawn();
-        //    }
-
-        //    _columnDistributor.Distribute();
-        //}
-
         public async UniTask LaunchAsync(
             ColorRandomizer colorRandomizer,
             DifficultySettings settings,
@@ -97,10 +49,9 @@ namespace Assets.Source.Scripts.GameBehaviour
             IReadOnlyList<Color> beginColors = colorRandomizer.BeginColors;
             IReadOnlyList<Color> remainingColors = colorRandomizer.RemainingColors;
 
-            if (tutorialLevelCounter.IsFinishTutorialRound)
+            if (tutorialLevelCounter.IsLastRound)
             {
-                (beginColors, remainingColors) =
-                    (remainingColors, beginColors);
+                (beginColors, remainingColors) =(remainingColors, beginColors);
             }
 
             _entryColorListsFactory.Initialize(beginColors, remainingColors);

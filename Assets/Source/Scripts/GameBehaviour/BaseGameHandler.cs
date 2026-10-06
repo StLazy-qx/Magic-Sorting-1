@@ -3,7 +3,6 @@ using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.SceneManagement;
 using Assets.Source.Scripts.GameDifficulty;
-using Assets.Source.Scripts.Enums;
 using System;
 using UnityEngine;
 using Zenject;
@@ -23,68 +22,10 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         public event Action<bool> PauseStateChanged;
         public event Action GameClosed;
-        public event Action GameLaunching;
 
         public bool IsPaused { get; private set; }
 
         public bool IsInitialized { get; protected set; }
-
-        //public void Initialize()
-        //{
-        //    if (SceneLoader == null)
-        //        throw new ArgumentNullException(nameof(SceneLoader));
-
-        //    if (Wallet == null)
-        //        throw new InvalidOperationException(
-        //            "Wallet not injected via Construct().");
-
-        //    ContinueGame();
-        //    Wallet.Reset();
-        //    ExtendInitialize();
-
-        //    IsInitialized = true;
-        //}
-
-        //public virtual void ContinueGame()
-        //{
-        //    IsPaused = false;
-        //    PauseStateChanged?.Invoke(false);
-        //}
-
-        //public void PauseGame()
-        //{
-        //    IsPaused = true;
-        //    PauseStateChanged?.Invoke(true);
-        //}
-
-        //public void ResumeGame()
-        //{
-        //    SceneLoader.LoadGameScene();
-        //    IsPaused = false;
-        //    PauseStateChanged?.Invoke(false);
-        //}
-
-        //public virtual void OpenMainMenu()
-        //{
-        //    SceneLoader.LoadMainMenuScene();
-        //}
-
-        //public void OpenTutorialScene()
-        //{
-        //    SceneLoader.LoadTutorialScene();
-        //}
-
-        //protected virtual void ExtendInitialize() { }
-
-        //[Inject]
-        //private void Construct(
-        //    SceneLoader sceneLoader,
-        //    Wallet wallet)
-        //{
-        //    SceneLoader = sceneLoader;
-        //    Wallet = wallet;
-        //}
-
 
         public void Initialize()
         {
@@ -132,8 +73,6 @@ namespace Assets.Source.Scripts.GameBehaviour
 
             PauseStateChanged?.Invoke(false);
         }
-
-        //Открытие сцен в отдельный класс
 
         public virtual void OpenMainMenu()
         {

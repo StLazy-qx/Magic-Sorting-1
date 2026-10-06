@@ -85,6 +85,7 @@ namespace Assets.Source.Scripts.GameBehaviour
         public void ResetCurrentRound()
         {
             LaunchCurrentDifficulty();
+
         }
 
         protected override void ExtendInitialize()
@@ -97,8 +98,8 @@ namespace Assets.Source.Scripts.GameBehaviour
             _currentSettings = _difficultyDatabase
                 .GetSettings(DifficultyState.CurrentDifficulty);
 
-            _colorRandomizer.CrateArrayColors(_currentSettings.ColorsCount);
-
+            _colorRandomizer.CrateArrayColors(
+                _currentSettings.ColorsCount);
             StartRound();
             GameLaunching?.Invoke();
         }

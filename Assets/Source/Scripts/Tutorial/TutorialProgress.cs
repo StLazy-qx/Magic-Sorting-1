@@ -1,8 +1,8 @@
 ﻿using Assets.Source.Scripts.EntryPoint;
 using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
-using System;
 using System.Collections.Generic;
+using System;
 
 namespace Assets.Source.Scripts.Tutorial
 {
@@ -17,8 +17,9 @@ namespace Assets.Source.Scripts.Tutorial
         public event Action<int> RoundStarted;
         public event Action Completed;
 
-        public bool IsFinishRound => _sequence != null
-            && _currentIndex >= _sequence.Count;
+		public bool IsFinishRound => _isCompleted;
+        public bool IsLastRoundStarted =>
+            _sequence != null && _currentIndex >= _sequence.Count;
 
         public TutorialProgress(SequenceDifficultyLevel sequenceDifficultyLevel)
         {
@@ -34,7 +35,7 @@ namespace Assets.Source.Scripts.Tutorial
             _isCompleted = false;
         }
 
-        public bool TryMoveNext(out DifficultyLevel level)
+        public bool TryGetNextLevel(out DifficultyLevel level)
         {
             level = default;
 
@@ -51,9 +52,10 @@ namespace Assets.Source.Scripts.Tutorial
             }
 
             level = _sequence[_currentIndex];
-            _currentIndex++;
-
+            
             RoundStarted?.Invoke(_currentIndex);
+            
+            _currentIndex++;
 
             return true;
         }

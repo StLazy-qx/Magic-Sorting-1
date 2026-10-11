@@ -20,6 +20,7 @@ namespace Assets.Source.Scripts.MagicCells
 
         public event Action<Vector3, Vector3, Color> CellDelivering;
         public event Action CellDeparturing;
+        public event Action WaitingPointUsing;
 
         private void Awake()
         {
@@ -52,6 +53,7 @@ namespace Assets.Source.Scripts.MagicCells
             }
             else if (_waitingPoint.IsFreePlace)
             {
+                WaitingPointUsing?.Invoke();
                 Deliver(cell, _waitingPoint.transform);
                 _waitingPoint.AcceptStorageCell(cell);
                 _waitingPoint.ShowWaitingCellWithDelay();

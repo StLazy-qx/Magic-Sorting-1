@@ -47,12 +47,14 @@ namespace Assets.Source.Scripts.Tutorial
         private void OnEnable()
         {
             _magicCellRouter.CellDeparturing += OnAddCellAction;
+            _magicCellRouter.WaitingPointUsing += OnWaitingPointPlaceUsed;
             _tutorialLevelCounter.RoundChanged += OnContinueTraining;
         }
 
         private void OnDisable()
         {
             _magicCellRouter.CellDeparturing -= OnAddCellAction;
+            _magicCellRouter.WaitingPointUsing -= OnWaitingPointPlaceUsed;
             _tutorialLevelCounter.RoundChanged -= OnContinueTraining;
         }
 
@@ -70,7 +72,41 @@ namespace Assets.Source.Scripts.Tutorial
             _reverseButton.Enable();
         }
 
-        public void ShowWaitPointMechanicsPanel()
+        private void OnWaitingPointPlaceUsed()
+        {
+            TryShowWaitPointMechanicsPanel();
+        }
+
+        private void OnContinueTraining()
+        {
+            if (_tutorialLevelCounter.RoundNumber
+                == ReverseMechanicsRoundNumber)
+            {
+                ShowReverseMechanicsPanel();
+            }
+        }
+
+        private void OnAddCellAction()
+        {
+            _cellActionCount++;
+
+            if (_cellActionCount >= AmountCellActionToMainMechanics)
+            {
+                TryShowWaitPointMechanicsPanel();
+            }
+        }
+
+        private void TryShowWaitPointMechanicsPanel()
+        {
+            if (_IsShowWaitPointMechanics)
+                return;
+
+            _IsShowWaitPointMechanics = true;
+
+            ShowWaitPointMechanicsPanel();
+        }
+
+        private void ShowWaitPointMechanicsPanel()
         {
             _asyncTimer.StopTimer();
             _asyncTimer.StartTimer(
@@ -80,25 +116,6 @@ namespace Assets.Source.Scripts.Tutorial
                     _gameHandler.PauseGame();
                     _panels[WaitPointMechanicsPanelIndex].Open();
                 });
-        }
-
-        private void OnContinueTraining()
-        {
-            if (_tutorialLevelCounter.RoundNumber == ReverseMechanicsRoundNumber)
-                ShowReverseMechanicsPanel();
-        }
-
-        private void OnAddCellAction()
-        {
-            _cellActionCount++;
-
-            if (_cellActionCount >= AmountCellActionToMainMechanics
-                && _IsShowWaitPointMechanics == false)
-            {
-                ShowWaitPointMechanicsPanel();
-
-                _IsShowWaitPointMechanics = true;
-            }
         }
     }
 }

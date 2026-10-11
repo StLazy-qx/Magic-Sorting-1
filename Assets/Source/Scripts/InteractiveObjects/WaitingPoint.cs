@@ -2,6 +2,7 @@ using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.MagicCells;
+using System;
 using UnityEngine;
 
 namespace Assets.Source.Scripts.InteractiveObjects
@@ -10,7 +11,6 @@ namespace Assets.Source.Scripts.InteractiveObjects
     {
         private const float RotationX = 90f;
 
-        [SerializeField] private int _seatsNumber;
         [SerializeField] private Transform _storagePoint;
         [SerializeField] private MagicCellRouter _cellRouter;
         [SerializeField] private ClickModeSwitcher _clickModeSwitcher;
@@ -43,9 +43,7 @@ namespace Assets.Source.Scripts.InteractiveObjects
         }
 
         public void ShowWaitingCell()
-        {
-            _waitingCell.gameObject.SetActive(true);
-        }
+            => _waitingCell.gameObject.SetActive(true);
 
         public void ShowWaitingCellWithDelay()
         {
@@ -87,7 +85,6 @@ namespace Assets.Source.Scripts.InteractiveObjects
 
         private void ValidateObjects()
         {
-            Guard.Positive(_seatsNumber, nameof(_seatsNumber));
             Guard.NotNull(_storagePoint, nameof(_storagePoint));
             Guard.NotNull(_cellRouter, nameof(_cellRouter));
             Guard.NotNull(_delayDispatcher, nameof(_delayDispatcher));

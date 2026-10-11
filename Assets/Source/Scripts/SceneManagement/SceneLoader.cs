@@ -9,23 +9,24 @@ namespace Assets.Source.Scripts.SceneManagement
         private const int MainMenuIndex = 0;
         private const int GameSceneIndex = 1;
         private const int TutorialScene = 2;
+        private const float MaxAsyncProgress = 0.9f;
 
         private AsyncOperation _currentOperation;
 
+        public bool IsLoading => 
+            _currentOperation != null && _currentOperation.isDone == false;
+        public float Progress => _currentOperation == null
+            ? 0f
+            : Mathf.Clamp01(_currentOperation.progress / MaxAsyncProgress);
+
         public void LoadMainMenuScene()
-        {
-            LoadScene(MainMenuIndex);
-        }
+            => LoadScene(MainMenuIndex);
 
         public void LoadGameScene()
-        {
-            LoadScene(GameSceneIndex);
-        }
+            => LoadScene(GameSceneIndex);
 
         public void LoadTutorialScene()
-        {
-            LoadScene(TutorialScene);
-        }
+            => LoadScene(TutorialScene);
 
         private  void LoadScene(int sceneIndex)
         {

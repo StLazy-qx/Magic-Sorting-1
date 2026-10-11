@@ -6,11 +6,11 @@ using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Extensions;
-using System.Collections;
 using UnityEngine;
 using System;
 using Zenject;
 using YG;
+using Cysharp.Threading.Tasks;
 
 namespace Assets.Source.Scripts.GameBehaviour
 {
@@ -28,16 +28,21 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private DifficultyState _difficultyState;
-        private DifficultySettings _currentSettings;
-        private bool _isInterstitialPending;
-        private bool _isAdShowing = false;
+        private DifficultySetProvider _settingsProvider;
+        private RoundLauncher _roundLauncher;
+        private bool _isAdShowing;
 
         public event Action GameLaunching;
-        private Action _pendingRoundAction = null;
 
         private void Awake()
         {
             ValidateObjects();
+
+            _roundLauncher = new RoundLauncher(
+                _columnsFactory,
+                _vesselFactory,
+                _entryColorListsFactory,
+                _columnDistributor);
         }
 
         private void OnEnable()
@@ -64,6 +69,9 @@ namespace Assets.Source.Scripts.GameBehaviour
 
             _difficultyState = difficultyState;
             _sequenceDifficultyLevel = level;
+            _settingsProvider = new DifficultySetProvider(
+                _difficultyDatabase,
+                _difficultyState);
         }
 
         public void ShowInterstitialAd()
@@ -85,7 +93,6 @@ namespace Assets.Source.Scripts.GameBehaviour
         public void ResetCurrentRound()
         {
             LaunchCurrentDifficulty();
-
         }
 
         protected override void ExtendInitialize()
@@ -95,20 +102,33 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         private void LaunchCurrentDifficulty()
         {
-            _currentSettings = _difficultyDatabase
-                .GetSettings(DifficultyState.CurrentDifficulty);
+            DifficultySettings currentSettings = _settingsProvider.Current;
 
-            _colorRandomizer.CrateArrayColors(
-                _currentSettings.ColorsCount);
-            StartRound();
+            if (currentSettings == null)
+                return;
+
+            _colorRandomizer.CrateArrayColors(currentSettings.ColorsCount);
+            StartRound(currentSettings);
             GameLaunching?.Invoke();
         }
 
-        private void StartRound()
+        private void StartRound(DifficultySettings currentSettings)
         {
             ContinueGame();
             ResetEntity();
-            StartCoroutine(BeginRoundRoutine());
+
+            _roundLauncher.LaunchAsync(
+                _colorRandomizer,
+                currentSettings,
+                DifficultyState.CurrentDifficulty,
+                this.GetCancellationTokenOnDestroy()).Forget();
+        }
+
+        private void ResetEntity()
+        {
+            Wallet.Reset();
+            _waitingPoint.Reset();
+            _clickImpactHandler.Reset();
         }
 
         private void OnCloseInterAdv()
@@ -129,13 +149,6 @@ namespace Assets.Source.Scripts.GameBehaviour
         private void HandleAdClosed()
         {
             _isAdShowing = false;
-
-            if (_pendingRoundAction != null)
-            {
-                var action = _pendingRoundAction;
-                _pendingRoundAction = null;
-                action?.Invoke();
-            }
         }
 
         private void ChangeDifficultyBySequence()
@@ -143,43 +156,6 @@ namespace Assets.Source.Scripts.GameBehaviour
             DifficultyLevel nextLevel = _sequenceDifficultyLevel.GetNext();
 
             DifficultyState.SetDifficulty(nextLevel);
-        }
-
-        private IEnumerator BeginRoundRoutine()
-        {
-            ResetFactories();
-            _vesselFactory.InitRandomizer(_colorRandomizer);
-            _entryColorListsFactory.Initialize(
-                _colorRandomizer.BeginColors,
-                _colorRandomizer.RemainingColors);
-            _vesselFactory.Spawn();
-
-            yield return new WaitUntil(() => _vesselFactory.IsReady);
-
-            if (_vesselFactory.Objects != null && _vesselFactory.Objects.Count > 0)
-            {
-                _columnsFactory.Initialize(
-                    _vesselFactory.Objects,
-                    _currentSettings.ColumnsCount,
-                    _currentSettings.MaxCellsPerColumn);
-                _columnsFactory.Spawn();
-            }
-
-            _columnDistributor.Distribute();
-        }
-
-        private void ResetEntity()
-        {
-            Wallet.Reset();
-            _waitingPoint.Reset();
-            _clickImpactHandler.Reset();
-        }
-
-        private void ResetFactories()
-        {
-            _entryColorListsFactory.Reset();
-            _vesselFactory.ResetFactory(DifficultyState.CurrentDifficulty);
-            _columnsFactory.ResetFactory(DifficultyState.CurrentDifficulty);
         }
 
         private void ValidateObjects()

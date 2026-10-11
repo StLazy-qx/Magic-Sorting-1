@@ -2,7 +2,6 @@ using Assets.Source.Scripts.Factory;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.Player;
-using Assets.Source.Scripts.Enums;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,7 +25,6 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private MonoBehaviour[] _objectsToInitializeMono;
 
         private DifficultyState _difficultyState;
-        //private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private DifficultySettings _currentSettings;
         private List<IObjectInitilizable> _objectsInitilizable = new();
 
@@ -35,7 +33,6 @@ namespace Assets.Source.Scripts.EntryPoint
             ValidateDependencies();
             _tutorialGameHandler.Initialize();
             _tutorialGameHandler.RegisterFirstRound();
-            //_difficultyState.SetDifficulty(DifficultyLevel.Easy);
 
             _currentSettings = _difficultyDatabase.GetSettings(_difficultyState.CurrentDifficulty);
 

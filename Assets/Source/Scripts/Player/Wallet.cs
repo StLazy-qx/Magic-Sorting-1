@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 using YG;
 
 namespace Assets.Source.Scripts.Player

@@ -4,10 +4,10 @@ namespace Assets.Source.Scripts.GameDifficulty
 {
     class RandomDifficultyProvider
     {
-        private float _easyProbability = 40f;
+        private float _easyProbability = 35f;
         private float _mediumEasyProbability = 25f;
-        private float _mediumProbability = 20f;
-        private float _mediumHardProbability = 10f;
+        private float _mediumProbability = 25f;
+        //private float _mediumHardProbability = 10f;
 
         public bool IsInitialized { get; private set; }
 
@@ -30,12 +30,14 @@ namespace Assets.Source.Scripts.GameDifficulty
                 _mediumEasyProbability + _mediumProbability)
                 return DifficultyLevel.Medium;
 
-            if (randomValue < _easyProbability +
-                _mediumEasyProbability + _mediumProbability +
-                _mediumHardProbability)
-                return DifficultyLevel.MediumHard;
+            //if (randomValue < _easyProbability +
+            //    _mediumEasyProbability + _mediumProbability +
+            //    _mediumHardProbability)
+            //    return DifficultyLevel.MediumHard;
 
-            return DifficultyLevel.Hard;
+            //return DifficultyLevel.Hard;
+
+            return DifficultyLevel.MediumHard;
         }
     }
 }

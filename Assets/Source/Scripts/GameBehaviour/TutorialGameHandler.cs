@@ -103,8 +103,11 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         private bool TryAdvanceNextTutorialRound()
         {
-        	if (_tutorialProgress.TryGetNextLevel(out DifficultyLevel nextLevel) == false)
+        	if (_tutorialProgress.TryGetNextLevel
+                (out DifficultyLevel nextLevel) == false)
+            {
                 return false;
+            }
 
             _difficultyState.SetDifficulty(nextLevel);
 

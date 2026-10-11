@@ -14,17 +14,20 @@ namespace YG
         public float AmbientVolume = BeginVolume;
         public float EffectVolume = BeginVolume;
         public string EquippedItem;
+        public string SavedLanguage;
         public List<string> ItemIDs = new();
 
         private ScoreSection _score;
         private RoundSection _round;
         private AudioSettingsSection _audio;
         private InventorySection _inventory;
+        private LanguageSection _language;
 
         public ScoreSection Score => _score ??= new ScoreSection(this);
         public RoundSection Round => _round ??= new RoundSection(this);
         public AudioSettingsSection Audio => _audio ??= new AudioSettingsSection(this);
         public InventorySection Inventory => _inventory ??= new InventorySection(this);
+        public LanguageSection Language => _language ??= new LanguageSection(this);
 
         public int Points => Score.Points;
         public string EquippedItemID => Inventory.EquippedItemID;
@@ -71,6 +74,9 @@ namespace YG
 
         public void ForceSaveAudio()
            => Audio.ForceSaver();
+
+        public void SaveLanguage(string language)
+        => Language.SaveLanguage(language);
 
         private void OnApplicationQuit()
         {

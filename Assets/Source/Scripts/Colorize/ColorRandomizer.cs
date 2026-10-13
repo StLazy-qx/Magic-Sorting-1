@@ -10,7 +10,9 @@ namespace Assets.Source.Scripts.Colorize
     {
         private const int BeginCountColors = 2;
 
-        private EnumColor[] _allColors = 
+        private readonly ColorConverter _colorConverter = new ColorConverter();
+
+        private EnumColor[] _allColors =
             (EnumColor[])Enum.GetValues(typeof(EnumColor));
         private Color[] _beginRoundColors;
         private Color[] _remainingColors;
@@ -34,11 +36,15 @@ namespace Assets.Source.Scripts.Colorize
             FillColorsArray(_remainingColors, shuffledIndices, beginCount);
         }
 
-        private void FillColorsArray(Color[] targetArray, int[] shuffledIndices, int startIndex)
+        private void FillColorsArray(
+			Color[] targetArray, 
+			int[] shuffledIndices, 
+			int startIndex)
         {
             for (int i = 0; i < targetArray.Length; i++)
             {
-                targetArray[i] = TransformEnumToColor(_allColors[shuffledIndices[startIndex + i]]);
+                targetArray[i] = _colorConverter.TransformEnumToColor
+					(_allColors[shuffledIndices[startIndex + i]]);
             }
         }
 
@@ -56,50 +62,10 @@ namespace Assets.Source.Scripts.Colorize
             for (int i = length - 1; i > 0; i--)
             {
                 int index = UnityEngine.Random.Range(0, i + 1);
-
                 (indices[i], indices[index]) = (indices[index], indices[i]);
             }
 
             return indices;
-        }
-
-        private Color TransformEnumToColor(EnumColor randomColor)
-        {
-            switch (randomColor)
-            {
-                case EnumColor.Red:
-                    return new Color(1f, 0f, 0f);
-
-                case EnumColor.Green:
-                    return new Color(0f, 1f, 0f);
-
-                case EnumColor.Blue:
-                    return new Color(0f, 0f, 1f);
-
-                case EnumColor.Yellow:
-                    return new Color(1f, 1f, 0f);
-
-                case EnumColor.Orange:
-                    return new Color(1f, 0.5f, 0f);
-
-                case EnumColor.Purple:
-                    return new Color(0.5f, 0f, 0.5f);
-
-                case EnumColor.Pink: 
-                    return new Color(1f, 0.15f, 0.55f);
-
-                case EnumColor.Grey:
-                    return new Color(0.6f, 0.6f, 0.6f);
-
-                case EnumColor.Cyan: 
-                    return new Color(0.2f, 1f, 1f);
-
-                case EnumColor.Lavender:
-                    return new Color(0.7f, 0.5f, 0.9f);
-
-                default:
-                    return new Color(1f, 1f, 1f);
-            }
         }
     }
 }

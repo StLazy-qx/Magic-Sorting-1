@@ -16,6 +16,7 @@ namespace Assets.Source.Scripts.Vessels
         public event Action<int> SizeChanged;
 
         public bool IsFull => _currentSize >= _vesselVolume;
+        public int CurrentVolume => _currentSize;
 
         public void InitParameters(int vesselVolume, Liquid liquid)
         {

@@ -77,16 +77,28 @@ namespace Assets.Source.Scripts.Vessels
 
             _currentPanel = panel;
         }
+        
+        public void CompleteAllVessels()
+		{
+  		  if (_vessels == null)
+  		      return;
+
+  		  foreach (Vessel vessel in _vessels)
+  		  {
+  		      if (vessel != null && vessel.IsActive && !vessel.IsFilled)
+  		          vessel.CompleteVessel();
+  		  }
+		}
 
         private void OnPerformEffectCoroutine(Vector3 position, int points, Color color)
         {
-            _veselsCount++;
+        	    _veselsCount++;
 
-            if (IsAllVesselsComplete())
-                VictoryAudioClipEnabled?.Invoke();
+    		if (IsAllVesselsComplete())
+     		   VictoryAudioClipEnabled?.Invoke();
 
-            _wallet.AddPoints(points);
-            StartCoroutine(PerformEffect(position, color));
+		    _wallet.AddPoints(points);
+  		  StartCoroutine(PerformEffect(position, color));
         }
 
         private IEnumerator PerformEffect(Vector3 position, Color color)

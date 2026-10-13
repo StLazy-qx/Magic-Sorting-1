@@ -9,6 +9,7 @@ namespace Assets.Source.Scripts.SceneManagement
         private const int MainMenuIndex = 0;
         private const int GameSceneIndex = 1;
         private const int TutorialScene = 2;
+        private const int RatingSceneIndex = 3;
         private const float MaxAsyncProgress = 0.9f;
 
         private AsyncOperation _currentOperation;
@@ -27,6 +28,9 @@ namespace Assets.Source.Scripts.SceneManagement
 
         public void LoadTutorialScene()
             => LoadScene(TutorialScene);
+            
+         public void LoadRatingScene()
+            => LoadScene(RatingSceneIndex);
 
         private  void LoadScene(int sceneIndex)
         {

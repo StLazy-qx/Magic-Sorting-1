@@ -19,8 +19,10 @@ namespace Assets.Source.Scripts.Player
         }
 
         public event Action<int> TotalScoreChanged;
+        public event Action<int> LastRoundScoreChanged;
 
         public int TotalScore => _totalScore;
+        public int LastRoundScore { get; private set; }
         public int DisplayScore => _totalScore + _currentScore;
 
         public void AddPoints(int value)
@@ -38,10 +40,11 @@ namespace Assets.Source.Scripts.Player
 
         public void ConfirmPoints()
         {
+            LastRoundScore = _currentScore;
             _totalScore += _currentScore;
 
             YG2.saves.SaveScore(_totalScore);
-            TotalScoreChanged?.Invoke(_totalScore);
+            LastRoundScoreChanged?.Invoke(LastRoundScore);
             YG2.SetLeaderboard(leaderboardName, YG2.saves.Points);
         }
 

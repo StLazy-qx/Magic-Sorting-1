@@ -11,6 +11,9 @@ namespace Assets.Source.Scripts.Enums
         Pink,
         Grey,
         Cyan,
-        Lavender
+        Lavender,
+        White,
+        Black,
+        Magenta
     }
 }

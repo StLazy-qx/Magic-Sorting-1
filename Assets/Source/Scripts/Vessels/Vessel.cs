@@ -15,7 +15,7 @@ namespace Assets.Source.Scripts.Vessels
         [SerializeField] private Liquid _liquid;
         [SerializeField] private int _maxSize;
         [SerializeField] private int _points;
-
+        
         private Color _mainColor;
         private VolumeAggregator _aggregator;
         private MagicCellDelayHandler _deliveryHandler;
@@ -64,21 +64,40 @@ namespace Assets.Source.Scripts.Vessels
 
         public void SetColor(Color color)
             => _mainColor = color;
-
+            
         private void HandleMagicDelivered()
-        {
-            _aggregator.GrowUpVolume();
+    	{
+     	   _aggregator.GrowUpVolume();
 
-            if (_aggregator.IsFull)
-            {
-                IsFilled = true;
+     	   if (_aggregator.IsFull)
+     	       CompleteVessel();
+ 	   }
 
-                RewardIssued?.Invoke(transform.position, 
-                    _points, _mainColor);
-                Filled?.Invoke(transform.position);
-                gameObject.SetActive(false);
-            }
-        }
+	    public void CompleteVessel()
+	    {
+	        if (IsFilled)
+	            return;
+	
+	        IsFilled = true;
+
+	        int reward = GetCountReward();
+	
+	        RewardIssued?.Invoke(transform.position, reward, _mainColor);
+	        Filled?.Invoke(transform.position);
+	
+	        gameObject.SetActive(false);
+	    }
+
+	    private int GetCountReward()
+	    {
+	        if (_maxSize <= 0)
+	            return 0;
+	
+	        int currentVolume = _aggregator.CurrentVolume;
+	        int reward = _points * currentVolume / _maxSize;
+	
+	        return Mathf.Clamp(reward, 0, _points);
+	    }
 
         private void ValidateInitializeArguments()
         {

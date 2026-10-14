@@ -1,3 +1,4 @@
+using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.MagicCells;
@@ -8,7 +9,7 @@ namespace Assets.Source.Scripts.Vessels
 {
     [RequireComponent(typeof(VolumeAggregator))]
 
-    public class Vessel : MonoBehaviour, IColorable, IVesselable
+    public class Vessel : MonoBehaviour, IColorable, IVesselable, IInteractable
     {
         private const float DeliveryDelay = 1.2f;
 
@@ -22,6 +23,7 @@ namespace Assets.Source.Scripts.Vessels
 
         public event Action<Vector3> Filled;
         public event Action<Vector3, int, Color> RewardIssued;
+        public event Action Interacted;
 
         public int Count => _maxSize;
         public bool IsActive => gameObject.activeSelf;
@@ -53,6 +55,17 @@ namespace Assets.Source.Scripts.Vessels
         {
             _deliveryHandler?.Dispose();
         }
+        
+        private void OnMouseDown() 
+			=> OnClick();
+
+        public void OnClick()
+        {
+            if (IsFilled || !IsActive)
+                return;
+
+            Interacted?.Invoke();
+        }
 
         public void TakeMagic(MagicCell cell)
         {
@@ -72,21 +85,21 @@ namespace Assets.Source.Scripts.Vessels
      	   if (_aggregator.IsFull)
      	       CompleteVessel();
  	   }
+		
+		public void CompleteVessel()
+        {
+            if (IsFilled)
+                return;
 
-	    public void CompleteVessel()
-	    {
-	        if (IsFilled)
-	            return;
-	
-	        IsFilled = true;
+            IsFilled = true;
 
-	        int reward = GetCountReward();
-	
-	        RewardIssued?.Invoke(transform.position, reward, _mainColor);
-	        Filled?.Invoke(transform.position);
-	
-	        gameObject.SetActive(false);
-	    }
+            int reward = GetCountReward();
+
+            RewardIssued?.Invoke(transform.position, reward, _mainColor);
+            Filled?.Invoke(transform.position);
+
+            gameObject.SetActive(false);
+        }
 
 	    private int GetCountReward()
 	    {

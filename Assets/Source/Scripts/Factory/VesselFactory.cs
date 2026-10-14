@@ -3,11 +3,12 @@ using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.MagicCells;
 using Assets.Source.Scripts.Vessels;
 using Assets.Source.Scripts.Pool;
+using System.Collections.Generic;
+using Assets.Source.Scripts.Extensions;
+using Assets.Source.Scripts.ActionsHandlers;
 using System.Linq;
 using UnityEngine;
 using System;
-using System.Collections.Generic;
-using Assets.Source.Scripts.Extensions;
 
 namespace Assets.Source.Scripts.Factory
 {
@@ -16,6 +17,7 @@ namespace Assets.Source.Scripts.Factory
         [SerializeField] private VesselStateTracker _gameFullingBehaviour;
         [SerializeField] private VesselPool _vesselPool;
         [SerializeField] private MagicCellRouter _distributerMagicCell;
+        [SerializeField] private VesselInteractionCoordinator _interactionCoordinator;
 
         private ColorRandomizer _colorRandomizer;
 
@@ -23,10 +25,13 @@ namespace Assets.Source.Scripts.Factory
 
         protected override void OnDestroy()
         {
-            foreach (var vesell in Objects)
+            foreach (var vessel in Objects)
             {
-                if (vesell != null)
-                    vesell.Filled -= OnPutRemainingVessel;
+                if (vessel == null)
+                    continue;
+
+                vessel.Filled -= OnPutRemainingVessel;
+                _interactionCoordinator?.Unsubscribe(vessel);
             }
 
             base.OnDestroy();
@@ -53,7 +58,10 @@ namespace Assets.Source.Scripts.Factory
             for (int i = 0; i < settings.VesselsCount; i++)
             {
                 Vessel vessel = Instantiate(Prefab);
+
+                // Единая точка подписки: и на закрытие, и на клик.
                 vessel.Filled += OnPutRemainingVessel;
+                _interactionCoordinator.Subscribe(vessel);
 
                 vessel.gameObject.SetActive(false);
                 Add(vessel);

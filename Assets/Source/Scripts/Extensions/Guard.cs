@@ -48,6 +48,15 @@ namespace Assets.Source.Scripts.Extensions
             }
         }
 
+        public static void Positive(float argument, string argumentName)
+        {
+            if (argument <= 0)
+            {
+                throw new ArgumentOutOfRangeException(argumentName, argument,
+                    "Значение должно быть положительным.");
+            }
+        }
+
         public static void NotNegative(int argument, string argumentName)
         {
             if (argument < 0)

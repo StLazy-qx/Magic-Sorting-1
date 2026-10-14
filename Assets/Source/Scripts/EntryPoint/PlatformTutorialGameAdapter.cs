@@ -27,6 +27,8 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private IconRewardedAdvertisement _rewardedIconMobile;
         [SerializeField] private ReverseButtonView _reverseButtonViewDesktop;
         [SerializeField] private ReverseButtonView _reverseButtonViewMobile;
+        [SerializeField] private ButtonColorMixer _buttonColorMixerDesktop;
+        [SerializeField] private ButtonColorMixer _buttonColorMixerMobile;
         [Header("Game Objects")]
         [SerializeField] private MagicCell _magicCellDesktop;
         [SerializeField] private MagicCell _magicCellMobile;
@@ -49,7 +51,7 @@ namespace Assets.Source.Scripts.EntryPoint
             _vesselsFulling.SetPanel(_finalMatchPanelMobile);
             _finalGameSession.SetPanel(_finalMatchPanelMobile);
             _finalGameSession.SetTutorialPanel(_finishTutorialPanelMobile);
-            _clickModeSwitcher.SetButton(_reverseButtonViewMobile);
+            _clickModeSwitcher.SetModeButtons(_reverseButtonViewMobile, _buttonColorMixerMobile);
         }
 
         protected override void OnDesktopSelected()
@@ -59,7 +61,7 @@ namespace Assets.Source.Scripts.EntryPoint
             _vesselsFulling.SetPanel(_finalMatchPanelDesktop);
             _finalGameSession.SetPanel(_finalMatchPanelDesktop);
             _finalGameSession.SetTutorialPanel(_finishTutorialPanelDesktop);
-            _clickModeSwitcher.SetButton(_reverseButtonViewDesktop);
+            _clickModeSwitcher.SetModeButtons(_reverseButtonViewDesktop, _buttonColorMixerDesktop);
         }
 
         private void ValidateRequiredDependencies()

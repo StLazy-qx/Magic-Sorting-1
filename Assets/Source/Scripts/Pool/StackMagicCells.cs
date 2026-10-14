@@ -141,8 +141,56 @@ namespace Assets.Source.Scripts.Pool
                     Destroy(cell.gameObject);
             }
         }
-
-        private void OnCellClicked()
+		
+		private void OnCellClicked()
+		{
+  		  if (_gameHandler.IsPaused)
+  		      return;
+		
+  		  if (_clickImpactHandler.CurrentMode == ClickImpactMode.ModeDistribution)
+  		  {
+  		      if (_cellsStack.Count == 0)
+  		          return;
+		
+  		      if (_cellsStack.TryPop(out MagicCell cell) == false)
+  		          return;
+		
+  		      if (_cellRouter.IsCheckCellColor(cell.Color) == false)
+  		      {
+  		          _cellsStack.Push(cell);
+  		          return;
+  		      }
+		
+  		      _cellRouter.DeliverMagicCell(cell);
+  		      cell.Disable();
+  		  }
+  		  else if (_clickImpactHandler.CurrentMode == ClickImpactMode.ModeColorMixing)
+  		  {
+  		      if (_cellsStack.Count == 0)
+  		          return;
+		
+  		      if (_cellRouter.CanAcceptCellToMixer() == false)
+  		          return;
+		
+  		      if (_cellsStack.TryPop(out MagicCell cell) == false)
+  		          return;
+		
+  		      _cellRouter.DeliverMagicCellToMixer(cell);
+  		      cell.Disable();
+  		  }
+  		  else if (
+  		      _clickImpactHandler.CurrentMode ==
+  		      ClickImpactMode.ModeReverse &&
+  		      CanReverseColumn())
+  		  {
+  		      _cellsStack = _columnRevercer.ReverseStack(_cellsStack.ToArray());
+		
+  		      _clickImpactHandler.Reverse();
+  		      _clickImpactHandler.OnToggleMode();
+  		  }
+}
+		
+        /*private void OnCellClicked()
         {
             if (_gameHandler.IsPaused)
                 return;
@@ -175,7 +223,7 @@ namespace Assets.Source.Scripts.Pool
                 _clickImpactHandler.Reverse();
                 _clickImpactHandler.OnToggleMode();
             }
-        }
+        }*/
 
         private bool HasMoreOneCell()
         {
@@ -218,7 +266,7 @@ namespace Assets.Source.Scripts.Pool
         {
             Guard.Positive(countCells, nameof(countCells));
             Guard.IsTrue(prefabHeight > 0, nameof(prefabHeight),
-                "Значение должно быть положительным.");
+                "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.");
         }
     }
 }

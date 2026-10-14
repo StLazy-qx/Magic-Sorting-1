@@ -25,6 +25,13 @@ namespace Assets.Source.Scripts.ActionsHandlers
 
             ModeChanged?.Invoke(CurrentMode);
         }
+        
+        public void ActivateMixerColorMode()
+        {
+        	CurrentMode = ClickImpactMode.ModeColorMixing;
+        
+        	ModeChanged?.Invoke(CurrentMode);
+		}
 
         public void MarkReverseUsed()
         {

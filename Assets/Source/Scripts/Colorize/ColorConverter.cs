@@ -1,4 +1,5 @@
-﻿using Assets.Source.Scripts.Enums;
+﻿using System;
+using Assets.Source.Scripts.Enums;
 using UnityEngine;
 
 namespace Assets.Source.Scripts.Colorize
@@ -51,6 +52,32 @@ namespace Assets.Source.Scripts.Colorize
                 default:
                     return new Color(1f, 0.5f, 1f);
             }
+        }
+        
+		public EnumColor TransformColorToEnum(Color color)
+        {
+            EnumColor closestEnumColor = default;
+            float minimalDistance = float.MaxValue;
+
+            foreach (EnumColor enumColor in Enum.GetValues(typeof(EnumColor)))
+            {
+                Color candidateColor = TransformEnumToColor(enumColor);
+
+                float redDifference = candidateColor.r - color.r;
+                float greenDifference = candidateColor.g - color.g;
+                float blueDifference = candidateColor.b - color.b;
+                float distance = redDifference * redDifference
+                                 + greenDifference * greenDifference
+                                 + blueDifference * blueDifference;
+
+                if (distance < minimalDistance)
+                {
+                    minimalDistance = distance;
+                    closestEnumColor = enumColor;
+                }
+            }
+
+            return closestEnumColor;
         }
     }
 }

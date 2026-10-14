@@ -1,6 +1,7 @@
 ﻿using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.UI.GameModeView;
+using Assets.Source.Scripts.UI.Buttons;
 using Assets.Source.Scripts.YG;
 using System;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Assets.Source.Scripts.ActionsHandlers
 
         private readonly ClickModeTracker _modeTracker = new ClickModeTracker();
         private ReverseButtonView _reverseButtonView;
+        private ButtonColorMixer _buttonColorMixer;
         private ReverseRewardFlow _rewardFlow;
 
         public event Action<ClickImpactMode> ModeChanged
@@ -41,25 +43,37 @@ namespace Assets.Source.Scripts.ActionsHandlers
             Guard.NotNull(_reverseButtonView, nameof(_reverseButtonView));
             _modeTracker.Reset();
             _reverseButtonView.ResetState();
+            _buttonColorMixer?.ResetState();
             UpdateButtonState();
         }
 
-        public void SetButton(ReverseButtonView reverseButtonView)
+        public void SetModeButtons(
+            ReverseButtonView reverseButtonView,
+            ButtonColorMixer buttonColorMixer)
         {
             Guard.NotNull(reverseButtonView, nameof(reverseButtonView));
             Guard.NotNullOrWhiteSpace(RewardID, nameof(RewardID));
+            Guard.NotNull(buttonColorMixer, nameof(buttonColorMixer));
+
+            if (_buttonColorMixer != null)
+                _buttonColorMixer.OnClick.RemoveListener(OnToggleColorMixerMode);
+
+            if (_reverseButtonView != null)
+                _reverseButtonView.ButtonClicked -= OnToggleMode;
 
             _reverseButtonView = reverseButtonView;
+            _buttonColorMixer = buttonColorMixer;
             _rewardFlow = new ReverseRewardFlow(
                 _modeTracker,
                 new RewardedadvertisingGateway(),
                 _reverseButtonView,
                 RewardID);
-
             _rewardFlow.Ended += () => RewardedEnded?.Invoke();
             _reverseButtonView.ButtonClicked += OnToggleMode;
-            _modeTracker.ReverseButtonActivated += 
+            _buttonColorMixer.OnClick.AddListener(OnToggleColorMixerMode);
+            _modeTracker.ReverseButtonActivated +=
                 _reverseButtonView.ActivateRewardedIcon;
+            _modeTracker.ModeChanged += OnModeChanged;
         }
 
         public void Reverse()
@@ -77,10 +91,17 @@ namespace Assets.Source.Scripts.ActionsHandlers
         {
             Guard.NotNull(_reverseButtonView, nameof(_reverseButtonView));
 
+            if (CurrentMode == ClickImpactMode.ModeColorMixing)
+            {
+                _modeTracker.ActivateDistributionMode();
+                
+                return;
+            }
+
             if (CurrentMode == ClickImpactMode.ModeReverse)
             {
                 _modeTracker.ActivateDistributionMode();
-
+                
                 return;
             }
 
@@ -89,7 +110,7 @@ namespace Assets.Source.Scripts.ActionsHandlers
                 if (_reverseButtonView.IsRewardedIconActive == false)
                 {
                     _modeTracker.ActivateReverseMode();
-
+                    
                     return;
                 }
 
@@ -100,6 +121,20 @@ namespace Assets.Source.Scripts.ActionsHandlers
             {
                 _modeTracker.ActivateReverseMode();
             }
+        }
+
+        public void OnToggleColorMixerMode()
+        {
+            Guard.NotNull(_buttonColorMixer, nameof(_buttonColorMixer));
+
+            if (CurrentMode == ClickImpactMode.ModeColorMixing)
+            {
+                _modeTracker.ActivateDistributionMode();
+                
+                return;
+            }
+
+            _modeTracker.ActivateMixerColorMode();
         }
 
         public void SetButtonForTutorial(ReverseButtonView reverseButtonView)
@@ -118,11 +153,22 @@ namespace Assets.Source.Scripts.ActionsHandlers
             if (CurrentMode == ClickImpactMode.ModeReverse)
             {
                 _modeTracker.ActivateDistributionMode();
-
+                
                 return;
             }
 
             _modeTracker.ActivateReverseMode();
+        }
+
+        private void OnModeChanged(ClickImpactMode mode)
+        {
+            if (_buttonColorMixer == null)
+                return;
+
+            if (mode == ClickImpactMode.ModeColorMixing)
+                _buttonColorMixer.Disable();
+            else
+                _buttonColorMixer.Enable();
         }
 
         private void UpdateButtonState()

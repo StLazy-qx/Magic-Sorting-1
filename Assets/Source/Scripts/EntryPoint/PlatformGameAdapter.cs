@@ -26,6 +26,8 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private IconRewardedAdvertisement _rewardedIconMobile;
         [SerializeField] private ReverseButtonView _reverseButtonViewDesktop;
         [SerializeField] private ReverseButtonView _reverseButtonViewMobile;
+        [SerializeField] private ButtonColorMixer _buttonColorMixerDesktop;
+        [SerializeField] private ButtonColorMixer _buttonColorMixerMobile;
         [Header("Game Objects")]
         [SerializeField] private MagicCell _magicCellDesktop;
         [SerializeField] private MagicCell _magicCellMobile;
@@ -48,7 +50,7 @@ namespace Assets.Source.Scripts.EntryPoint
             _mobileObjectsPosition.Initialize();
             _vesselsFulling.SetPanel(_finalMatchPanelMobile);
             _finalGameSession.SetPanel(_finalMatchPanelMobile);
-            _clickModeSwitcher.SetButton(_reverseButtonViewMobile);
+            _clickModeSwitcher.SetModeButtons(_reverseButtonViewMobile, _buttonColorMixerMobile);
             _seeker.SetButtonRewarded(_rewardedIconMobile, _reverseButtonMobile);
         }
 
@@ -58,7 +60,7 @@ namespace Assets.Source.Scripts.EntryPoint
             _desktopObjectsPosition.Initialize();
             _vesselsFulling.SetPanel(_finalMatchPanelDesktop);
             _finalGameSession.SetPanel(_finalMatchPanelDesktop);
-            _clickModeSwitcher.SetButton(_reverseButtonViewDesktop);
+            _clickModeSwitcher.SetModeButtons(_reverseButtonViewDesktop, _buttonColorMixerDesktop);
             _seeker.SetButtonRewarded(_rewardedIconDesktop, _reverseButtonDesktop);
         }
 

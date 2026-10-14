@@ -9,15 +9,15 @@ namespace Assets.Source.Scripts.InteractiveObjects
 {
     public class WaitingPoint : MonoBehaviour
     {
-        private const float RotationX = 90f;
-
         [SerializeField] private Transform _storagePoint;
         [SerializeField] private MagicCellRouter _cellRouter;
         [SerializeField] private ClickModeSwitcher _clickModeSwitcher;
         [SerializeField] private DelayDispatcher _delayDispatcher;
 
+        private readonly CellPlacement _cellPlacement = new CellPlacement();
+
         private MagicCell _waitingCell;
-        
+
         public bool IsFreePlace { get; private set; }
 
         private void Awake()
@@ -34,14 +34,13 @@ namespace Assets.Source.Scripts.InteractiveObjects
                 return;
 
             IsFreePlace = false;
-            Quaternion cellRotation = Quaternion.Euler(RotationX, 0f, 0f);
-            _waitingCell = Instantiate(cell, 
-                _storagePoint.position, cellRotation);
+
+            _waitingCell = _cellPlacement.Instantiate(cell, _storagePoint);
             _waitingCell.Interacted += OnCellClicked;
 
             _waitingCell.gameObject.SetActive(false);
         }
-
+        
         public void ShowWaitingCell()
             => _waitingCell.gameObject.SetActive(true);
 

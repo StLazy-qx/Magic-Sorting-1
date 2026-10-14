@@ -3,6 +3,7 @@
     public enum ClickImpactMode
     {
         ModeDistribution,
-        ModeReverse
+        ModeReverse,
+        ModeColorMixing
     }
 }

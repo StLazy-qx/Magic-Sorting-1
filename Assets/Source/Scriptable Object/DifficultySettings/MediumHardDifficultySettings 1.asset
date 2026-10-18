@@ -17,3 +17,4 @@ MonoBehaviour:
   MaxCellsPerColumn: 7
   VesselsCount: 6
   ColorsCount: 6
+  CountMixeColor: 2

@@ -2,6 +2,7 @@ using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.MagicCells;
+using Assets.Source.Scripts.UI.StoreView;
 using System;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace Assets.Source.Scripts.Vessels
         private const float DeliveryDelay = 1.2f;
 
         [SerializeField] private Liquid _liquid;
+        [SerializeField] private ScoreToast _scoreToast;
         [SerializeField] private int _maxSize;
         [SerializeField] private int _points;
         
@@ -56,12 +58,12 @@ namespace Assets.Source.Scripts.Vessels
             _deliveryHandler?.Dispose();
         }
         
-        private void OnMouseDown() 
-			=> OnClick();
+        private void OnMouseDown()
+            => _scoreToast.Show();
 
         public void OnClick()
         {
-            if (IsFilled || !IsActive)
+            if (IsFilled || IsActive == false)
                 return;
 
             Interacted?.Invoke();

@@ -7,7 +7,7 @@ namespace Assets.Source.Scripts.ActionsHandlers
     public class ReverseRewardFlow
     {
         private readonly ClickModeTracker _modeTracker;
-        private readonly RewardedadvertisingGateway _rewardedGateway;
+        private readonly RewardedAdvertisingGateway _rewardedGateway;
         private readonly ReverseButtonView _reverseButtonView;
         private readonly string _rewardId;
 
@@ -15,7 +15,7 @@ namespace Assets.Source.Scripts.ActionsHandlers
 
         public ReverseRewardFlow(
             ClickModeTracker modeTracker,
-            RewardedadvertisingGateway rewardedGateway,
+            RewardedAdvertisingGateway rewardedGateway,
             ReverseButtonView reverseButtonView,
             string rewardId)
         {

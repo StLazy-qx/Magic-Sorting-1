@@ -6,7 +6,6 @@ using Assets.Source.Scripts.Factory;
 using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.InteractiveObjects;
 using Assets.Source.Scripts.MagicCells;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,11 +43,11 @@ namespace Assets.Source.Scripts.Pool
             float prefabHeight)
         {
             ValidateArguments(
-                factory, 
-                cellRouter, 
+                factory,
+                cellRouter,
                 colorSource,
                 listColorPool,
-                clickHandler, 
+                clickHandler,
                 parent);
             ValidateValues(maxVolumeCells, prefabHeight);
             ClearStack();
@@ -121,7 +120,7 @@ namespace Assets.Source.Scripts.Pool
 
         public MagicCell GetUpperCell()
         {
-            return _cellsStack.TryPeek(out MagicCell cell) ? 
+            return _cellsStack.TryPeek(out MagicCell cell) ?
                 cell : null;
         }
 
@@ -141,89 +140,53 @@ namespace Assets.Source.Scripts.Pool
                     Destroy(cell.gameObject);
             }
         }
-		
-		private void OnCellClicked()
-		{
-  		  if (_gameHandler.IsPaused)
-  		      return;
-		
-  		  if (_clickImpactHandler.CurrentMode == ClickImpactMode.ModeDistribution)
-  		  {
-  		      if (_cellsStack.Count == 0)
-  		          return;
-		
-  		      if (_cellsStack.TryPop(out MagicCell cell) == false)
-  		          return;
-		
-  		      if (_cellRouter.IsCheckCellColor(cell.Color) == false)
-  		      {
-  		          _cellsStack.Push(cell);
-  		          return;
-  		      }
-		
-  		      _cellRouter.DeliverMagicCell(cell);
-  		      cell.Disable();
-  		  }
-  		  else if (_clickImpactHandler.CurrentMode == ClickImpactMode.ModeColorMixing)
-  		  {
-  		      if (_cellsStack.Count == 0)
-  		          return;
-		
-  		      if (_cellRouter.CanAcceptCellToMixer() == false)
-  		          return;
-		
-  		      if (_cellsStack.TryPop(out MagicCell cell) == false)
-  		          return;
-		
-  		      _cellRouter.DeliverMagicCellToMixer(cell);
-  		      cell.Disable();
-  		  }
-  		  else if (
-  		      _clickImpactHandler.CurrentMode ==
-  		      ClickImpactMode.ModeReverse &&
-  		      CanReverseColumn())
-  		  {
-  		      _cellsStack = _columnRevercer.ReverseStack(_cellsStack.ToArray());
-		
-  		      _clickImpactHandler.Reverse();
-  		      _clickImpactHandler.OnToggleMode();
-  		  }
-}
-		
-        /*private void OnCellClicked()
+
+        private void OnCellClicked()
         {
             if (_gameHandler.IsPaused)
                 return;
 
             if (_clickImpactHandler.CurrentMode == ClickImpactMode.ModeDistribution)
             {
-                if (_cellsStack.Count == 0)
+                if (_cellsStack.TryPeek(out MagicCell topCell) == false)
                     return;
 
-                if (_cellsStack.TryPop(out MagicCell cell) == false)
+                if (_cellRouter.IsCheckCellColor(topCell.Color) == false)
                     return;
 
-                if (_cellRouter.IsCheckCellColor(cell.Color) == false)
+                _cellsStack.Pop();
+                _cellRouter.DeliverMagicCell(topCell);
+                topCell.Disable();
+            }
+            else if (_clickImpactHandler.CurrentMode == ClickImpactMode.ModeColorMixing)
+            {
+                if (_cellsStack.TryPeek(out MagicCell topCell) == false)
+                    return;
+
+                if (_cellRouter.CanAcceptCellMixer(topCell) == false)
+                    return;
+
+                _cellsStack.Pop();
+
+                if (_cellRouter.DeliverMagicCellMixer(topCell) == false)
                 {
-                    _cellsStack.Push(cell);
+                    _cellsStack.Push(topCell);
 
                     return;
                 }
 
-                _cellRouter.DeliverMagicCell(cell);
-                cell.Disable();
+                topCell.Disable();
             }
             else if (
-                _clickImpactHandler.CurrentMode == 
-                ClickImpactMode.ModeReverse && 
-                CanReverseColumn())
+                _clickImpactHandler.CurrentMode == ClickImpactMode.ModeReverse
+                && CanReverseColumn())
             {
                 _cellsStack = _columnRevercer.ReverseStack(_cellsStack.ToArray());
 
                 _clickImpactHandler.Reverse();
                 _clickImpactHandler.OnToggleMode();
             }
-        }*/
+        }
 
         private bool HasMoreOneCell()
         {
@@ -247,12 +210,12 @@ namespace Assets.Source.Scripts.Pool
         }
 
         private void ValidateArguments(
-        MagicCellsFactory factory,
-        MagicCellRouter cellRouter,
-        ShuffledColorDistributor colorSource,
-        EntryListColorPool listColorPool,
-        ClickModeSwitcher clickImpactHandler,
-        Transform parent)
+            MagicCellsFactory factory,
+            MagicCellRouter cellRouter,
+            ShuffledColorDistributor colorSource,
+            EntryListColorPool listColorPool,
+            ClickModeSwitcher clickImpactHandler,
+            Transform parent)
         {
             Guard.NotNull(factory, nameof(factory));
             Guard.NotNull(cellRouter, nameof(cellRouter));
@@ -265,8 +228,10 @@ namespace Assets.Source.Scripts.Pool
         private void ValidateValues(int countCells, float prefabHeight)
         {
             Guard.Positive(countCells, nameof(countCells));
-            Guard.IsTrue(prefabHeight > 0, nameof(prefabHeight),
-                "�������� ������ ���� �������������.");
+            Guard.IsTrue(
+                prefabHeight > 0,
+                nameof(prefabHeight),
+                "Значение должно быть положительным.");
         }
     }
 }

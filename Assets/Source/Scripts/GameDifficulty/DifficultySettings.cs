@@ -16,6 +16,8 @@ namespace Assets.Source.Scripts.GameDifficulty
         [Header("Vessels settings")]
         public int VesselsCount;
         public int ColorsCount;
+        [Header("Count Mixe Color")]
+        public int CountMixeColor;
 
         private void OnValidate()
         {
@@ -23,6 +25,7 @@ namespace Assets.Source.Scripts.GameDifficulty
             ValidateValue(MaxCellsPerColumn, nameof(MaxCellsPerColumn));
             ValidateValue(VesselsCount, nameof(VesselsCount));
             ValidateValue(ColorsCount, nameof(ColorsCount));
+            ValidateValue(CountMixeColor, nameof(CountMixeColor));
         }
 
         private void ValidateValue(int value, string paramName)

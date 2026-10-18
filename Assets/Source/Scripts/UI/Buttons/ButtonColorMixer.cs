@@ -11,5 +11,7 @@ namespace Assets.Source.Scripts.UI.Buttons
         {
             ResetState();
         }
+
+        protected override void HandleClick() {}
     }
 }

@@ -1,7 +1,8 @@
 ﻿using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.UI.GameModeView;
-using Assets.Source.Scripts.UI.Buttons;
+using Assets.Source.Scripts.Color_Mixing_Mechanics;
+using Assets.Source.Scripts.MagicCells;
 using Assets.Source.Scripts.YG;
 using System;
 using UnityEngine;
@@ -10,11 +11,12 @@ namespace Assets.Source.Scripts.ActionsHandlers
 {
     public class ClickModeSwitcher : MonoBehaviour
     {
+        [SerializeField] private VesselMixer _vesselMixer;
+
         public string RewardID;
 
         private readonly ClickModeTracker _modeTracker = new ClickModeTracker();
         private ReverseButtonView _reverseButtonView;
-        private ButtonColorMixer _buttonColorMixer;
         private ReverseRewardFlow _rewardFlow;
 
         public event Action<ClickImpactMode> ModeChanged
@@ -30,11 +32,13 @@ namespace Assets.Source.Scripts.ActionsHandlers
         }
 
         public event Action RewardedEnded;
+        public event Action<MagicCell, MagicCell> ColorsCannotBeMixed;
 
         public ClickImpactMode CurrentMode => _modeTracker.CurrentMode;
 
         private void Awake()
         {
+            Guard.NotNull(_vesselMixer, nameof(_vesselMixer));
             _modeTracker.ActivateDistributionMode();
         }
 
@@ -43,37 +47,39 @@ namespace Assets.Source.Scripts.ActionsHandlers
             Guard.NotNull(_reverseButtonView, nameof(_reverseButtonView));
             _modeTracker.Reset();
             _reverseButtonView.ResetState();
-            _buttonColorMixer?.ResetState();
+            _vesselMixer?.Deactivate();
             UpdateButtonState();
         }
 
-        public void SetModeButtons(
-            ReverseButtonView reverseButtonView,
-            ButtonColorMixer buttonColorMixer)
+        public void SetModeButtons(ReverseButtonView reverseButtonView)
         {
             Guard.NotNull(reverseButtonView, nameof(reverseButtonView));
             Guard.NotNullOrWhiteSpace(RewardID, nameof(RewardID));
-            Guard.NotNull(buttonColorMixer, nameof(buttonColorMixer));
 
-            if (_buttonColorMixer != null)
-                _buttonColorMixer.OnClick.RemoveListener(OnToggleColorMixerMode);
+            if (_vesselMixer != null)
+                _vesselMixer.Interacted -= OnToggleColorMixerMode;
 
             if (_reverseButtonView != null)
+            {
                 _reverseButtonView.ButtonClicked -= OnToggleMode;
+                _modeTracker.ReverseButtonActivated -= _reverseButtonView.ActivateRewardedIcon;
+            }
 
+            _modeTracker.ModeChanged -= OnModeChanged;
             _reverseButtonView = reverseButtonView;
-            _buttonColorMixer = buttonColorMixer;
             _rewardFlow = new ReverseRewardFlow(
                 _modeTracker,
-                new RewardedadvertisingGateway(),
+                new RewardedAdvertisingGateway(),
                 _reverseButtonView,
                 RewardID);
             _rewardFlow.Ended += () => RewardedEnded?.Invoke();
             _reverseButtonView.ButtonClicked += OnToggleMode;
-            _buttonColorMixer.OnClick.AddListener(OnToggleColorMixerMode);
+            _vesselMixer.Interacted += OnToggleColorMixerMode;
             _modeTracker.ReverseButtonActivated +=
                 _reverseButtonView.ActivateRewardedIcon;
             _modeTracker.ModeChanged += OnModeChanged;
+
+            OnModeChanged(CurrentMode);
         }
 
         public void Reverse()
@@ -125,8 +131,6 @@ namespace Assets.Source.Scripts.ActionsHandlers
 
         public void OnToggleColorMixerMode()
         {
-            Guard.NotNull(_buttonColorMixer, nameof(_buttonColorMixer));
-
             if (CurrentMode == ClickImpactMode.ModeColorMixing)
             {
                 _modeTracker.ActivateDistributionMode();
@@ -160,15 +164,28 @@ namespace Assets.Source.Scripts.ActionsHandlers
             _modeTracker.ActivateReverseMode();
         }
 
+        public void OnMixFailed(MagicCell firstCell, MagicCell secondCell)
+        {
+            ColorsCannotBeMixed?.Invoke(firstCell, secondCell);
+        }
+
+        public void OnMixerCellSent()
+        {
+            if (CurrentMode != ClickImpactMode.ModeColorMixing)
+                return;
+
+            _modeTracker.ActivateDistributionMode();
+        }
+
         private void OnModeChanged(ClickImpactMode mode)
         {
-            if (_buttonColorMixer == null)
+            if (_vesselMixer == null)
                 return;
 
             if (mode == ClickImpactMode.ModeColorMixing)
-                _buttonColorMixer.Disable();
+                _vesselMixer.Activate();
             else
-                _buttonColorMixer.Enable();
+                _vesselMixer.Deactivate();
         }
 
         private void UpdateButtonState()

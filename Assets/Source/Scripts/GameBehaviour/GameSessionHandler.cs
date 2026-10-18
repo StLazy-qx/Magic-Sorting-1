@@ -74,7 +74,7 @@ namespace Assets.Source.Scripts.GameBehaviour
                 _difficultyState);
         }
 
-        public void ShowInterstitialAd()
+        public void ShowInterstitialAdvertising()
         {
             if (_isAdShowing)
                 return;
@@ -107,7 +107,9 @@ namespace Assets.Source.Scripts.GameBehaviour
             if (currentSettings == null)
                 return;
 
-            _colorRandomizer.CrateArrayColors(currentSettings.ColorsCount);
+            _colorRandomizer.SetDifficultySettings(
+                currentSettings.ColorsCount,
+                currentSettings.CountMixeColor);
             StartRound(currentSettings);
             GameLaunching?.Invoke();
         }

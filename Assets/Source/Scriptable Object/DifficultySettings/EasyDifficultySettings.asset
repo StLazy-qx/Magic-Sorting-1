@@ -15,5 +15,6 @@ MonoBehaviour:
   Level: 1
   ColumnsCount: 6
   MaxCellsPerColumn: 5
-  VesselsCount: 5
-  ColorsCount: 5
+  VesselsCount: 4
+  ColorsCount: 4
+  CountMixeColor: 1

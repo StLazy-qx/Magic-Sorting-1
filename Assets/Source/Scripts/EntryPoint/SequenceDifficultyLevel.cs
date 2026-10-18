@@ -1,14 +1,15 @@
 ﻿using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.GameDifficulty;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 
 namespace Assets.Source.Scripts.EntryPoint
 {
     public class SequenceDifficultyLevel : IObjectInitilizable
-    {   
+    {
         private const int InitialSequenceLength = 50;
         private const int ExtendBatchSize = 50;
+        private const int LengthDifficultyLevel = 6;
 
         private int _currentIndex;
         private RandomDifficultyProvider _randomDifficultyProvider;
@@ -18,30 +19,30 @@ namespace Assets.Source.Scripts.EntryPoint
 
         public bool IsInitialized { get; private set; }
 
+        public IReadOnlyList<DifficultyLevel> Sequence => _sequence;
+
         public void Initialize()
         {
-        	_randomDifficultyProvider = new RandomDifficultyProvider();
-        
-        	_randomDifficultyProvider.Initialize();
-        
-            _currentIndex = 0;
-            _sequence = new List<DifficultyLevel>(InitialSequenceLength);
+            _randomDifficultyProvider = new RandomDifficultyProvider();
+            _randomDifficultyProvider.Initialize();
 
-            ExtendSequence(InitialSequenceLength, _currentIndex);
-            
+            _currentIndex = 0;
+
+            CreateDifficultySequence(InitialSequenceLength);
+
             IsInitialized = true;
         }
-        
+
         public IReadOnlyList<DifficultyLevel> GetTutorialSequence()
-		{
-			return new List<DifficultyLevel>
-			{
-				DifficultyLevel.Easy,
-				DifficultyLevel.MediumEasy
-			}.AsReadOnly();
-		}
-		
-		public DifficultyLevel GetNext()
+        {
+            return new List<DifficultyLevel>
+            {
+                DifficultyLevel.Easy,
+                DifficultyLevel.MediumEasy
+            }.AsReadOnly();
+        }
+
+        public DifficultyLevel GetNext()
         {
             if (_currentIndex >= _sequence.Count)
                 ExtendSequence(ExtendBatchSize, _currentIndex);
@@ -54,11 +55,31 @@ namespace Assets.Source.Scripts.EntryPoint
             return level;
         }
 
+        private void CreateDifficultySequence(int count)
+        {
+            // Все уровни сложности из энама в порядке возрастания
+            var levels = (DifficultyLevel[])Enum.GetValues(typeof(DifficultyLevel));
+            Array.Sort(levels); // на случай, если порядок в энаме не совпадает с числовым значением
+
+            _sequence = new List<DifficultyLevel>(count);
+
+            for (int i = 0; i < count; i++)
+            {
+                int levelIndex = (i / LengthDifficultyLevel) % levels.Length;
+                _sequence.Add(levels[levelIndex]);
+            }
+        }
+
         private void ExtendSequence(int count, int beginNumber)
         {
-            for (int i = beginNumber; i < beginNumber + count; i++)
+            var levels = (DifficultyLevel[])Enum.GetValues(typeof(DifficultyLevel));
+            Array.Sort(levels);
+
+            int end = beginNumber + count;
+            for (int i = beginNumber; i < end; i++)
             {
-                _sequence.Add(_randomDifficultyProvider.GetRandomDifficulty());
+                int levelIndex = (i / LengthDifficultyLevel) % levels.Length;
+                _sequence.Add(levels[levelIndex]);
             }
         }
     }

@@ -39,7 +39,7 @@ namespace Assets.Source.Scripts.UI.Buttons
             SetState(false);
         }
 
-        private void HandleClick()
+        protected virtual void HandleClick()
         {
             SetState(IsActive == false);
         }

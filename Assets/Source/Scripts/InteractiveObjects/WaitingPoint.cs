@@ -2,7 +2,6 @@ using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.MagicCells;
-using System;
 using UnityEngine;
 
 namespace Assets.Source.Scripts.InteractiveObjects
@@ -66,20 +65,69 @@ namespace Assets.Source.Scripts.InteractiveObjects
 
         private void OnCellClicked()
         {
-            if (_clickModeSwitcher.CurrentMode == ClickImpactMode.ModeDistribution)
+            if (_waitingCell == null)
+                return;
+
+            switch (_clickModeSwitcher.CurrentMode)
             {
-                MagicCell waitCell = _waitingCell;
+                case ClickImpactMode.ModeDistribution:
+                    TryDeliverToVessel();
+                    break;
 
-                if (_cellRouter.IsCheckCellColor(waitCell.Color) == false)
-                    return;
-
-                _cellRouter.DeliverMagicCell(waitCell);
-                _waitingCell.Disable();
-
-                _waitingCell.Interacted -= OnCellClicked;
-
-                Reset();
+                case ClickImpactMode.ModeColorMixing:
+                    TryDeliverToMixer();
+                    break;
             }
+
+            //if (_clickModeSwitcher.CurrentMode == ClickImpactMode.ModeDistribution)
+            //{
+            //    MagicCell waitCell = _waitingCell;
+
+            //    if (_cellRouter.IsCheckCellColor(waitCell.Color) == false)
+            //        return;
+
+            //    _cellRouter.DeliverMagicCell(waitCell);
+            //    _waitingCell.Disable();
+
+            //    _waitingCell.Interacted -= OnCellClicked;
+
+            //    Reset();
+            //}
+        }
+
+        private void TryDeliverToVessel()
+        {
+            MagicCell waitCell = _waitingCell;
+
+            if (_cellRouter.IsCheckCellColor(waitCell.Color) == false)
+                return;
+
+            ReleaseWaitingCell();
+
+            _cellRouter.DeliverMagicCell(waitCell);
+            waitCell.Disable();
+        }
+
+        private void TryDeliverToMixer()
+        {
+            MagicCell waitCell = _waitingCell;
+
+            if (_cellRouter.CanAcceptCellMixer(waitCell) == false)
+                return;
+
+            ReleaseWaitingCell();
+
+            if (_cellRouter.DeliverMagicCellMixer(waitCell) == false)
+                return;
+
+            waitCell.Disable();
+        }
+
+        private void ReleaseWaitingCell()
+        {
+            _waitingCell.Interacted -= OnCellClicked;
+            IsFreePlace = true;
+            _waitingCell = null;
         }
 
         private void ValidateObjects()

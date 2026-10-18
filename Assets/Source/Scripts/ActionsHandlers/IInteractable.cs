@@ -4,8 +4,8 @@ namespace Assets.Source.Scripts.ActionsHandlers
 {
     public interface IInteractable
     {
-        event Action Interacted;
+        public event Action Interacted;
 
-        void OnClick();
+        public void OnClick();
     }
 }

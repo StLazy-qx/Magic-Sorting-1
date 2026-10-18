@@ -131,7 +131,9 @@ namespace Assets.Source.Scripts.GameBehaviour
             if (currentSettings == null)
                 return;
             
-            _colorRandomizer.CrateArrayColors(currentSettings.ColorsCount);
+            _colorRandomizer.SetDifficultySettings(
+                currentSettings.ColorsCount,
+                currentSettings.CountMixeColor);
         	StartRound(currentSettings);
             GameLaunching?.Invoke();
         }

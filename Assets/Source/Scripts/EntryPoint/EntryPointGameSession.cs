@@ -1,13 +1,15 @@
 using Assets.Source.Scripts.Factory;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.GameDifficulty;
+using Assets.Source.Scripts.InteractiveObjects;
 using Assets.Source.Scripts.Player;
+using Assets.Source.Scripts.ActionsHandlers;
+using Assets.Source.Scripts.MagicCells;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Zenject;
-
 
 namespace Assets.Source.Scripts.EntryPoint
 {
@@ -21,10 +23,15 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private VesselFactory _vesselFactory;
         [SerializeField] private StoreItemFactory _storeItemFactory;
         [SerializeField] private ColorColumnDistributor _columnDistributor;
+        [SerializeField] private MagicMixer _magicMixer;
+        [SerializeField] private MagicCellRouter _cellRouter;
+        [SerializeField] private ClickModeSwitcher _clickModeSwitcher;
         [SerializeField] private MonoBehaviour[] _objectsToInitializeMono;
 
         private DifficultyState _difficultyState;
         private DifficultySettings _currentSettings;
+        private ColorRecipes _colorRecipes;
+        private ColorConverter _colorConverter;
         
         private List<IObjectInitilizable> _objectsInitilizable = new();
 
@@ -34,16 +41,42 @@ namespace Assets.Source.Scripts.EntryPoint
 
             _currentSettings = _difficultyDatabase.GetSettings
                 (_difficultyState.CurrentDifficulty);
+            _colorRecipes = new ColorRecipes();
+            _colorConverter = new ColorConverter();
 
-            _colorRandomizer.CrateArrayColors(_currentSettings.ColorsCount);
+            _colorRandomizer.SetColorRecipes(_colorRecipes);
+            _colorRandomizer.SetDifficultySettings(
+				_currentSettings.ColorsCount, 
+				_currentSettings.CountMixeColor);
             _platformDependentSetter.Initialize();
             _entryColorListsFactory.Initialize(
                 _colorRandomizer.BeginColors, 
                 _colorRandomizer.RemainingColors);
             _vesselFactory.InitRandomizer(_colorRandomizer);
             CollectInitializableObjects();
+            _magicMixer.Initialize(_colorRecipes, _colorConverter);
+            _magicMixer.MixFailed += _clickModeSwitcher.OnMixFailed;
+            
             StartCoroutine(SessionInitialize());
         }
+        
+        private void OnEnable()
+        {
+        	if(_cellRouter != null &&
+        		_clickModeSwitcher != null)
+        	{
+        		_cellRouter.CellSentToMixer += _clickModeSwitcher.OnMixerCellSent;
+			}
+		}
+		
+		private void OnDisable()
+		{
+			if(_cellRouter != null &&
+        		_clickModeSwitcher != null)
+        	{
+        		_cellRouter.CellSentToMixer -= _clickModeSwitcher.OnMixerCellSent;
+			}
+		}
 
         [Inject]
         private void Construct(DifficultyState difficultyState)
@@ -118,7 +151,13 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             if (_platformDependentSetter == null)
                 throw new ArgumentNullException(nameof(_platformDependentSetter));
-
+			
+			if (_cellRouter == null)
+                throw new ArgumentNullException(nameof(_cellRouter));
+			
+			if (_clickModeSwitcher == null)
+                throw new ArgumentNullException(nameof(_clickModeSwitcher));
+			
             if (_columnsFactory == null)
                 throw new ArgumentNullException(nameof(_columnsFactory));
 

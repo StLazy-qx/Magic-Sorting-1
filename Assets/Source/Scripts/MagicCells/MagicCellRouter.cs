@@ -10,26 +10,22 @@ namespace Assets.Source.Scripts.MagicCells
 {
     public class MagicCellRouter : MonoBehaviour
     {
-        private const float DeliveryDelay = 1.2f;
-
         [SerializeField] private WaitingPoint _waitingPoint;
         [SerializeField] private MagicMixer _magicMixer;
         [SerializeField] private DelayDispatcher _delayDispatcher;
 
-        private WaitForSeconds _deliveryWait;
         private IReadOnlyList<Vessel> _vessels;
 
         public event Action<Vector3, Vector3, Color> CellDelivering;
         public event Action CellDeparturing;
         public event Action WaitingPointUsing;
+        public event Action CellSentToMixer;
 
         private void Awake()
         {
             Guard.NotNull(_waitingPoint, nameof(_waitingPoint));
             Guard.NotNull(_delayDispatcher, nameof(_delayDispatcher));
             Guard.NotNull(_magicMixer, nameof(_magicMixer));
-
-            _deliveryWait = new WaitForSeconds(DeliveryDelay);
         }
 
         public void Initialize(IReadOnlyList<Vessel> vessels)
@@ -62,29 +58,34 @@ namespace Assets.Source.Scripts.MagicCells
             }
         }
 
-        public void DeliverMagicCellToMixer(MagicCell cell)
-        {
-            Guard.NotNull(cell, nameof(cell));
-            Guard.NotNull(_magicMixer, nameof(_magicMixer));
-
-            if (_magicMixer.CanAcceptCell == false)
-                return;
-
-            CellDeparturing?.Invoke();
-
-            Deliver(cell, _magicMixer.transform);
-            _magicMixer.AcceptCell(cell);
-        }
-
         public bool IsCheckCellColor(Color color)
         {
             return FindVesselByColor(color) != null
                 || _waitingPoint.IsFreePlace;
         }
 
-        public bool CanAcceptCellToMixer()
+        public bool CanAcceptCellMixer(MagicCell cell)
         {
-            return _magicMixer != null && _magicMixer.CanAcceptCell;
+            return _magicMixer != null
+                && cell != null
+                && _magicMixer.CanAcceptCellColor(cell.Color);
+        }
+
+        public bool DeliverMagicCellMixer(MagicCell cell)
+        {
+            Guard.NotNull(cell, nameof(cell));
+            Guard.NotNull(_magicMixer, nameof(_magicMixer));
+
+            if (_magicMixer.CanAcceptCellColor(cell.Color) == false)
+                return false;
+
+            CellDeparturing?.Invoke();
+
+            Deliver(cell, _magicMixer.transform);
+            _magicMixer.AcceptCell(cell);
+            CellSentToMixer?.Invoke();
+
+            return true;
         }
 
         private void Deliver(MagicCell cell, Transform target)

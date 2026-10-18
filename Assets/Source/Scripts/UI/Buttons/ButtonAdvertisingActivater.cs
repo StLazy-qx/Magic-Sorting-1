@@ -9,7 +9,7 @@ namespace Assets.Source.Scripts.UI.Buttons
             if (GameHandler is not GameSessionHandler sessionHandler)
                 return;
 
-            sessionHandler.ShowInterstitialAd();
+            sessionHandler.ShowInterstitialAdvertising();
         }
     }
 }

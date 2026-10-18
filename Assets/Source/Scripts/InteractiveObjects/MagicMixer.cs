@@ -1,7 +1,6 @@
 ﻿using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Enums;
-using Assets.Source.Scripts.EntryPoint;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.Factory;
 using Assets.Source.Scripts.MagicCells;
@@ -13,7 +12,7 @@ namespace Assets.Source.Scripts.InteractiveObjects
     public class MagicMixer : MonoBehaviour
     {
         [SerializeField] private Transform _firstStoragePoint;
-        [SerializeField] private Transform _secondStoragePoint;
+        [SerializeField] private Transform _mixedCellPoint;
         [SerializeField] private MagicCellsFactory _magicCellsFactory;
         [SerializeField] private MagicCellRouter _cellRouter;
         [SerializeField] private ClickModeSwitcher _clickModeSwitcher;
@@ -22,19 +21,18 @@ namespace Assets.Source.Scripts.InteractiveObjects
 
         private ColorRecipes _colorRecipes;
         private ColorConverter _colorConverter;
-
         private MagicCell _firstCell;
         private MagicCell _mixedCell;
 
         public event Action<MagicCell> CellMixed;
         public event Action<Color> ColorsMixed;
+        public event Action<MagicCell, MagicCell> MixFailed;
 
         public bool CanAcceptCell => _mixedCell == null;
         public bool HasMixedCell => _mixedCell != null;
 
         public bool IsInitialized { get; private set; }
 
-        //инициализировать
         public void Initialize(
             ColorRecipes colorRecipes,
             ColorConverter colorConverter)
@@ -49,6 +47,21 @@ namespace Assets.Source.Scripts.InteractiveObjects
             Reset();
 
             IsInitialized = true;
+        }
+
+        public bool CanAcceptCellColor(Color color)
+        {
+            if (IsInitialized == false || CanAcceptCell == false)
+                return false;
+
+            EnumColor newColor = _colorConverter.TransformColorToEnum(color);
+
+            if (_firstCell == null)
+                return _colorRecipes.CanBeIngredient(newColor);
+
+            EnumColor firstColor = _colorConverter.TransformColorToEnum(_firstCell.Color);
+
+            return _colorRecipes.CanMix(firstColor, newColor);
         }
 
         public void AcceptCell(MagicCell cell)
@@ -83,23 +96,33 @@ namespace Assets.Source.Scripts.InteractiveObjects
             EnumColor firstColor = _colorConverter.TransformColorToEnum(_firstCell.Color);
             EnumColor secondColor = _colorConverter.TransformColorToEnum(cell.Color);
 
-            if (_colorRecipes.TryGetResult(
-                    firstColor, secondColor, out EnumColor resultColor) == false)
+            if (firstColor == secondColor
+                || _colorRecipes.TryGetResult(
+                    firstColor, 
+                    secondColor, 
+                    out EnumColor resultColor) == false)
             {
-                Reset();
+                NotifyMixFailed(_firstCell, cell);
+
                 return;
             }
 
             Color resultUnityColor = _colorConverter.TransformEnumToColor(resultColor);
+            MagicCell mixedCell = CreateStoredCell(_firstCell, _mixedCellPoint, isActive: true);
 
-            _firstCell.SetColor(resultUnityColor);
+            mixedCell.SetColor(resultUnityColor);
+            DestroyCell(ref _firstCell);
 
-            _mixedCell = _firstCell;
-            _firstCell = null;
+            _mixedCell = mixedCell;
             _mixedCell.Interacted += OnMixedCellClicked;
 
             CellMixed?.Invoke(_mixedCell);
             ColorsMixed?.Invoke(resultUnityColor);
+        }
+
+        private void NotifyMixFailed(MagicCell firstCell, MagicCell secondCell)
+        {
+            MixFailed?.Invoke(firstCell, secondCell);
         }
 
         private MagicCell CreateStoredCell(MagicCell sourceCell,
@@ -139,12 +162,10 @@ namespace Assets.Source.Scripts.InteractiveObjects
         private void ValidateObjects()
         {
             Guard.NotNull(_firstStoragePoint, nameof(_firstStoragePoint));
-            Guard.NotNull(_secondStoragePoint, nameof(_secondStoragePoint));
+            Guard.NotNull(_mixedCellPoint, nameof(_mixedCellPoint));
             Guard.NotNull(_magicCellsFactory, nameof(_magicCellsFactory));
             Guard.NotNull(_cellRouter, nameof(_cellRouter));
             Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
         }
-
-
     }
 }

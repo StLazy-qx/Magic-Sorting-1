@@ -4,7 +4,7 @@ using YG;
 
 namespace Assets.Source.Scripts.YG
 {
-    public class RewardedadvertisingGateway
+    public class RewardedAdvertisingGateway
     {
         public bool IsShowing { get; private set; }
 

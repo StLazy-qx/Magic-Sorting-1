@@ -347,6 +347,7 @@ GameObject:
   - component: {fileID: 1568123885071470448}
   - component: {fileID: -8985536886210334600}
   - component: {fileID: 1395426458300891916}
+  - component: {fileID: 8298910759530541457}
   m_Layer: 0
   m_Name: Vessel
   m_TagString: Untagged
@@ -387,6 +388,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _internalVolume: {fileID: 1148786463839263389}
+  _liquidAnimator: {fileID: 8298910759530541457}
 --- !u!114 &-8985536886210334600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -414,8 +416,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _liquid: {fileID: 5760919888768954542}
+  _scoreToast: {fileID: 2313940802812074563}
   _maxSize: 5
   _points: 50
+--- !u!114 &8298910759530541457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3849995967529546710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2aa3e4d5b1b8fd468828e362fe66f98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4275581809591085073
 GameObject:
   m_ObjectHideFlags: 0
@@ -534,13 +549,16 @@ GameObject:
   - component: {fileID: 8451035185067265566}
   - component: {fileID: 3044583290643985262}
   - component: {fileID: 165775540111359568}
+  - component: {fileID: 2313940802812074563}
+  - component: {fileID: 2815201748365362856}
+  - component: {fileID: 8273936693034436701}
   m_Layer: 0
   m_Name: CanvasFillLevel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6676787592384406469
 RectTransform:
   m_ObjectHideFlags: 0
@@ -638,6 +656,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _vessel: {fileID: 1568123885071470448}
   _countText: {fileID: 3663904868845250610}
+--- !u!114 &2313940802812074563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8599650227400106509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f7e63930bbc2c84292d5127b1199309, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _UIObject: {fileID: 8273936693034436701}
+  _canvasGroup: {fileID: 2815201748365362856}
+--- !u!225 &2815201748365362856
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8599650227400106509}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &8273936693034436701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8599650227400106509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b5b83d3994b7114983e35035795665c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1183391823985498737
 PrefabInstance:
   m_ObjectHideFlags: 0

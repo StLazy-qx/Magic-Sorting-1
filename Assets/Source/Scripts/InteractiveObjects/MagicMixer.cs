@@ -1,6 +1,5 @@
 ﻿using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.Colorize;
-using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.Factory;
 using Assets.Source.Scripts.MagicCells;
@@ -17,19 +16,16 @@ namespace Assets.Source.Scripts.InteractiveObjects
         [SerializeField] private MagicCellRouter _cellRouter;
         [SerializeField] private ClickModeSwitcher _clickModeSwitcher;
 
-        private readonly CellPlacement _cellPlacement = new CellPlacement();
-
-        private ColorRecipes _colorRecipes;
-        private ColorConverter _colorConverter;
-        private MagicCell _firstCell;
-        private MagicCell _mixedCell;
+        private MixerState _state;
+        private MixerCellStorage _storage;
+        private CellClickDeliveryHandler _deliveryHandler;
 
         public event Action<MagicCell> CellMixed;
         public event Action<Color> ColorsMixed;
         public event Action<MagicCell, MagicCell> MixFailed;
 
-        public bool CanAcceptCell => _mixedCell == null;
-        public bool HasMixedCell => _mixedCell != null;
+        public bool CanAcceptCell => _state?.CanAcceptCell ?? false;
+        public bool HasMixedCell => _storage?.HasMixedCell ?? false;
 
         public bool IsInitialized { get; private set; }
 
@@ -40,10 +36,16 @@ namespace Assets.Source.Scripts.InteractiveObjects
             Guard.NotNull(colorRecipes, nameof(colorRecipes));
             Guard.NotNull(colorConverter, nameof(colorConverter));
 
-            _colorRecipes = colorRecipes;
-            _colorConverter = colorConverter;
-
             ValidateObjects();
+
+            _state = new MixerState(colorRecipes, colorConverter);
+            _storage = new MixerCellStorage(_firstStoragePoint, _mixedCellPoint);
+            _deliveryHandler = new CellClickDeliveryHandler(
+                _cellRouter,
+                _clickModeSwitcher,
+                allowMixerDelivery: false);
+            _deliveryHandler.Delivered += OnMixedCellDelivered;
+
             Reset();
 
             IsInitialized = true;
@@ -51,29 +53,23 @@ namespace Assets.Source.Scripts.InteractiveObjects
 
         public bool CanAcceptCellColor(Color color)
         {
-            if (IsInitialized == false || CanAcceptCell == false)
+            if (IsInitialized == false)
                 return false;
 
-            EnumColor newColor = _colorConverter.TransformColorToEnum(color);
-
-            if (_firstCell == null)
-                return _colorRecipes.CanBeIngredient(newColor);
-
-            EnumColor firstColor = _colorConverter.TransformColorToEnum(_firstCell.Color);
-
-            return _colorRecipes.CanMix(firstColor, newColor);
+            return _state.CanAcceptCellColor(color);
         }
 
         public void AcceptCell(MagicCell cell)
         {
             Guard.NotNull(cell, nameof(cell));
 
-            if (CanAcceptCell == false)
+            if (_state.CanAcceptCell == false)
                 return;
 
-            if (_firstCell == null)
+            if (_storage.HasFirstCell == false)
             {
                 AcceptFirstCell(cell);
+                
                 return;
             }
 
@@ -82,81 +78,44 @@ namespace Assets.Source.Scripts.InteractiveObjects
 
         public void Reset()
         {
-            DestroyCell(ref _firstCell);
-            DestroyCell(ref _mixedCell);
+            _state?.Reset();
+            _storage?.ClearAll();
+            _deliveryHandler?.Detach();
         }
 
         private void AcceptFirstCell(MagicCell cell)
         {
-            _firstCell = CreateStoredCell(cell, _firstStoragePoint, isActive: true);
+            _storage.SetFirstCell(cell);
+            _state.AcceptFirst(cell.Color);
         }
 
         private void AcceptSecondCell(MagicCell cell)
         {
-            EnumColor firstColor = _colorConverter.TransformColorToEnum(_firstCell.Color);
-            EnumColor secondColor = _colorConverter.TransformColorToEnum(cell.Color);
+            MagicCell firstCell = _storage.FirstCell;
 
-            if (firstColor == secondColor
-                || _colorRecipes.TryGetResult(
-                    firstColor, 
-                    secondColor, 
-                    out EnumColor resultColor) == false)
+            if (_state.TryMix(cell.Color, out Color resultColor) == false)
             {
-                NotifyMixFailed(_firstCell, cell);
-
+                MixFailed?.Invoke(firstCell, cell);
+                
                 return;
             }
 
-            Color resultUnityColor = _colorConverter.TransformEnumToColor(resultColor);
-            MagicCell mixedCell = CreateStoredCell(_firstCell, _mixedCellPoint, isActive: true);
-
-            mixedCell.SetColor(resultUnityColor);
-            DestroyCell(ref _firstCell);
-
-            _mixedCell = mixedCell;
-            _mixedCell.Interacted += OnMixedCellClicked;
-
-            CellMixed?.Invoke(_mixedCell);
-            ColorsMixed?.Invoke(resultUnityColor);
+            MagicCell mixedCell = _storage.CreateMixedCell(firstCell, resultColor);
+            
+            _storage.DestroyFirstCell();
+            _deliveryHandler.Attach(mixedCell);
+            CellMixed?.Invoke(mixedCell);
+            ColorsMixed?.Invoke(resultColor);
         }
 
-        private void NotifyMixFailed(MagicCell firstCell, MagicCell secondCell)
+        private void OnMixedCellDelivered(MagicCell cell)
         {
-            MixFailed?.Invoke(firstCell, secondCell);
-        }
-
-        private MagicCell CreateStoredCell(MagicCell sourceCell,
-            Transform storagePoint, bool isActive)
-        {
-            return _cellPlacement.Instantiate(sourceCell, storagePoint, isActive);
-        }
-
-        private void OnMixedCellClicked()
-        {
-            if (_clickModeSwitcher.CurrentMode != ClickImpactMode.ModeDistribution)
+            if (_storage.MixedCell != cell)
                 return;
 
-            if (_cellRouter.IsCheckCellColor(_mixedCell.Color) == false)
-                return;
-
-            MagicCell cellToDeliver = _mixedCell;
-            _mixedCell.Interacted -= OnMixedCellClicked;
-            _mixedCell = null;
-
-            _cellRouter.DeliverMagicCell(cellToDeliver);
-            cellToDeliver.Disable();
-        }
-
-        private void DestroyCell(ref MagicCell cell)
-        {
-            if (cell == null)
-                return;
-
-            cell.Interacted -= OnMixedCellClicked;
-
-            Destroy(cell.gameObject);
-
-            cell = null;
+            _deliveryHandler.Detach();
+            _storage.ReleaseMixedCell();
+            _state.Reset();
         }
 
         private void ValidateObjects()

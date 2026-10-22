@@ -5,6 +5,8 @@ namespace Assets.Source.Scripts.Player
 {
     public class Wallet
     {
+        private const int RewardMultiplier = 2;
+
         private readonly string leaderboardName = "GameLB";
 
         private int _currentScore;
@@ -24,6 +26,7 @@ namespace Assets.Source.Scripts.Player
         public int TotalScore => _totalScore;
         public int LastRoundScore { get; private set; }
         public int DisplayScore => _totalScore + _currentScore;
+        private bool _isRoundScoreMultiplied;
 
         public void AddPoints(int value)
         {
@@ -40,6 +43,7 @@ namespace Assets.Source.Scripts.Player
 
         public void ConfirmPoints()
         {
+            _isRoundScoreMultiplied = false;
             LastRoundScore = _currentScore;
             _totalScore += _currentScore;
 
@@ -65,9 +69,26 @@ namespace Assets.Source.Scripts.Player
             TotalScoreChanged?.Invoke(_totalScore);
         }
 
+        public void MultiplyLastRoundScore()
+        {
+            if (_isRoundScoreMultiplied || LastRoundScore <= 0)
+                return;
+
+            _isRoundScoreMultiplied = true;
+            int bonus = LastRoundScore * (RewardMultiplier - 1);
+            LastRoundScore += bonus;
+            _totalScore += bonus;
+
+            YG2.saves.SaveScore(_totalScore);
+            LastRoundScoreChanged?.Invoke(LastRoundScore);
+            TotalScoreChanged?.Invoke(_totalScore);
+            YG2.SetLeaderboard(leaderboardName, YG2.saves.Points);
+        }
+
         public void Reset()
         {
             _currentScore = 0;
+            _isRoundScoreMultiplied = false;
         }
 
         public bool CanAfford(int value)

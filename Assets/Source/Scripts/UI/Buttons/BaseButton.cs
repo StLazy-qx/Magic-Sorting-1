@@ -16,6 +16,8 @@ namespace Assets.Source.Scripts.UI.Buttons
         protected Panel CurrentPanel;
         protected Button Button;
 
+        public event Action Clicked;
+
         private void Awake()
         {
             if (GameHandler == null)
@@ -44,11 +46,19 @@ namespace Assets.Source.Scripts.UI.Buttons
         private void OnEnable()
         {
             Button.onClick.AddListener(OnButtonClick);
+            Button.onClick.AddListener(HandleClick);
         }
 
         private void OnDisable()
         {
             Button.onClick.RemoveListener(OnButtonClick);
+            Button.onClick.RemoveListener(HandleClick);
+        }
+
+        private void HandleClick()
+        {
+            OnButtonClick();
+            Clicked?.Invoke();
         }
 
         protected abstract void OnButtonClick();

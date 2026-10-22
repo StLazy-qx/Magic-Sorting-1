@@ -1,5 +1,7 @@
 using Assets.Source.Scripts.Factory;
+using Assets.Source.Scripts.Game_Progress;
 using Assets.Source.Scripts.Language;
+using Assets.Source.Scripts.Player;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,9 +14,11 @@ namespace Assets.Source.Scripts.EntryPoint
     {
         [SerializeField] private PlatformMenuAdapter _platformSetter;
         [SerializeField] private StoreItemFactory _storeItemFactory;
+        [SerializeField] private MainMenuPanelsPresenter _modePanelsPresenter;
         [SerializeField] private MonoBehaviour[] _servicesMono;
 
         private LanguageSetter _languageSetter;
+        private PlayerProgress _playerProgress;
         private List<IObjectInitilizable> _servicesInitializable = new();
 
         [Inject] 
@@ -25,8 +29,11 @@ namespace Assets.Source.Scripts.EntryPoint
             ValidateDependencies();
 
             _languageSetter = new LanguageSetter();
+            _playerProgress = new PlayerProgress();
 
             _platformSetter.Initialize(_languageSetter);
+            _playerProgress.Initialize();
+            _modePanelsPresenter.SetGameProgress(_playerProgress);
 
             foreach (var mono in _servicesMono)
             {

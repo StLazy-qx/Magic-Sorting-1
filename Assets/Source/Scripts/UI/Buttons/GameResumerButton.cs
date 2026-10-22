@@ -1,5 +1,6 @@
 using Assets.Source.Scripts.EntryPoint;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Source.Scripts.UI.Buttons
 {
@@ -12,6 +13,14 @@ namespace Assets.Source.Scripts.UI.Buttons
             _loadingWindow.Show();
             GameHandler.ResumeGame();
             CurrentPanel?.Close();
+        }
+
+        public void SetInteractable(bool isAvailable)
+        {
+            if (Button == null)
+                Button = GetComponent<Button>();
+
+            Button.interactable = isAvailable;
         }
     }
 }

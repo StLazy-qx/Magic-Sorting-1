@@ -9,7 +9,6 @@ using UnityEngine;
 namespace Assets.Source.Scripts.Vessels
 {
     [RequireComponent(typeof(VolumeAggregator))]
-
     public class Vessel : MonoBehaviour, IColorable, IVesselable, IInteractable
     {
         private const float DeliveryDelay = 1.2f;
@@ -18,7 +17,7 @@ namespace Assets.Source.Scripts.Vessels
         [SerializeField] private ScoreToast _scoreToast;
         [SerializeField] private int _maxSize;
         [SerializeField] private int _points;
-        
+
         private Color _mainColor;
         private VolumeAggregator _aggregator;
         private MagicCellDelayHandler _deliveryHandler;
@@ -28,6 +27,7 @@ namespace Assets.Source.Scripts.Vessels
         public event Action Interacted;
 
         public int Count => _maxSize;
+        public int Capacity => _maxSize;
         public bool IsActive => gameObject.activeSelf;
         public Color Color => _mainColor;
         public Liquid Liquid => _liquid;
@@ -38,9 +38,6 @@ namespace Assets.Source.Scripts.Vessels
             ValidateInitializeArguments();
 
             _aggregator = GetComponent<VolumeAggregator>();
-
-            Guard.NotNull(_aggregator, nameof(_aggregator));
-
             _deliveryHandler = new MagicCellDelayHandler(DeliveryDelay);
 
             _aggregator.InitParameters(_maxSize, _liquid);
@@ -48,16 +45,15 @@ namespace Assets.Source.Scripts.Vessels
             IsFilled = false;
         }
 
+        private void OnValidate()
+            => ValidateInitializeArguments();
+
         private void OnDisable()
-        {
-            _deliveryHandler?.Cancel();
-        }
+            => _deliveryHandler.Cancel();
 
         private void OnDestroy()
-        {
-            _deliveryHandler?.Dispose();
-        }
-        
+            => _deliveryHandler.Dispose();
+
         private void OnMouseDown()
             => _scoreToast.Show();
 
@@ -71,7 +67,7 @@ namespace Assets.Source.Scripts.Vessels
 
         public void TakeMagic(MagicCell cell)
         {
-            if (cell == null)
+            if (cell == null || IsFilled)
                 return;
 
             _deliveryHandler.TakeMagic(cell, HandleMagicDelivered);
@@ -79,23 +75,15 @@ namespace Assets.Source.Scripts.Vessels
 
         public void SetColor(Color color)
             => _mainColor = color;
-            
-        private void HandleMagicDelivered()
-    	{
-     	   _aggregator.GrowUpVolume();
 
-     	   if (_aggregator.IsFull)
-     	       CompleteVessel();
- 	   }
-		
-		public void CompleteVessel()
+        public void CompleteVessel()
         {
             if (IsFilled)
                 return;
 
             IsFilled = true;
 
-            int reward = GetCountReward();
+            int reward = VesselReward.Calculate(_points, _maxSize, _aggregator.CurrentVolume);
 
             RewardIssued?.Invoke(transform.position, reward, _mainColor);
             Filled?.Invoke(transform.position);
@@ -103,16 +91,13 @@ namespace Assets.Source.Scripts.Vessels
             gameObject.SetActive(false);
         }
 
-	    private int GetCountReward()
-	    {
-	        if (_maxSize <= 0)
-	            return 0;
-	
-	        int currentVolume = _aggregator.CurrentVolume;
-	        int reward = _points * currentVolume / _maxSize;
-	
-	        return Mathf.Clamp(reward, 0, _points);
-	    }
+        private void HandleMagicDelivered()
+        {
+            _aggregator.GrowUpVolume();
+
+            if (_aggregator.IsFull)
+                CompleteVessel();
+        }
 
         private void ValidateInitializeArguments()
         {

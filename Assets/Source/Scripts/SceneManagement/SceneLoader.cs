@@ -28,11 +28,8 @@ namespace Assets.Source.Scripts.SceneManagement
 
         public void LoadTutorialScene()
             => LoadScene(TutorialScene);
-            
-         public void LoadRatingScene()
-            => LoadScene(RatingSceneIndex);
 
-        private  void LoadScene(int sceneIndex)
+        public  void LoadScene(int sceneIndex)
         {
             if (sceneIndex < 0 || 
                 sceneIndex >= SceneManager.sceneCountInBuildSettings)

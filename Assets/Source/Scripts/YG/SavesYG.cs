@@ -1,3 +1,5 @@
+using Assets.Source.Scripts.Enums;
+using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.YG;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +12,8 @@ namespace YG
 
         public int MainPoints;
         public int ActualRoundNumber;
+        public int SavedGameMode = -1;
+        public int SavedDifficultyLevel = -1;
         public float MasterVolume = BeginVolume;
         public float AmbientVolume = BeginVolume;
         public float EffectVolume = BeginVolume;
@@ -22,7 +26,9 @@ namespace YG
         private AudioSettingsSection _audio;
         private InventorySection _inventory;
         private LanguageSection _language;
+        private GameModeSection _mode;
 
+        public GameModeSection Mode => _mode ??= new GameModeSection(this);
         public ScoreSection Score => _score ??= new ScoreSection(this);
         public RoundSection Round => _round ??= new RoundSection(this);
         public AudioSettingsSection Audio => _audio ??= new AudioSettingsSection(this);
@@ -77,6 +83,9 @@ namespace YG
 
         public void SaveLanguage(string language)
         => Language.SaveLanguage(language);
+
+        public void SaveMode(GameMode mode, DifficultyLevel level)
+            => Mode.SaveMode(mode, level);
 
         private void OnApplicationQuit()
         {

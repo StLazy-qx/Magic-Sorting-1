@@ -13,7 +13,7 @@ using Zenject;
 
 namespace Assets.Source.Scripts.EntryPoint
 {
-    public class EntryPointGameSession : MonoBehaviour
+    public class CompositionRootGameSession : MonoBehaviour
     {
         [SerializeField] private DifficultyDatabase _difficultyDatabase;
         [SerializeField] private PlatformGameAdapter _platformDependentSetter;
@@ -32,34 +32,59 @@ namespace Assets.Source.Scripts.EntryPoint
         private DifficultySettings _currentSettings;
         private ColorRecipes _colorRecipes;
         private ColorConverter _colorConverter;
-        
+        private PlayerProgress _playerProgress;
+
         private List<IObjectInitilizable> _objectsInitilizable = new();
 
         private void Awake()
         {
+
             ValidateDependencies();
 
+            //_currentSettings = _difficultyDatabase.GetSettings
+            //    (_difficultyState.CurrentDifficulty);
+
+            _playerProgress = new PlayerProgress();
+
+            _playerProgress.Initialize();
+
+            Debug.Log("___________________");
+            Debug.Log(_playerProgress.CurrentMode);
+            Debug.Log("Уровень сложности");
+            Debug.Log(_playerProgress.CurrentDifficultyLevel);
+            Debug.Log("___________________");
+
             _currentSettings = _difficultyDatabase.GetSettings
-                (_difficultyState.CurrentDifficulty);
+                (_playerProgress.CurrentDifficultyLevel);
+
             _colorRecipes = new ColorRecipes();
             _colorConverter = new ColorConverter();
 
             _colorRandomizer.SetColorRecipes(_colorRecipes);
             _colorRandomizer.SetDifficultySettings(
-				_currentSettings.ColorsCount, 
-				_currentSettings.CountMixeColor);
+				_currentSettings.ColorsCount);
+
+            _columnDistributor.Initialize(
+                _colorRecipes, 
+                _colorConverter,
+                _colorRandomizer.RoundColors,
+                _currentSettings.CountMixeColor);
+
             _platformDependentSetter.Initialize();
+
             _entryColorListsFactory.Initialize(
                 _colorRandomizer.BeginColors, 
                 _colorRandomizer.RemainingColors);
+
             _vesselFactory.InitRandomizer(_colorRandomizer);
             CollectInitializableObjects();
             _magicMixer.Initialize(_colorRecipes, _colorConverter);
+
             _magicMixer.MixFailed += _clickModeSwitcher.OnMixFailed;
             
             StartCoroutine(SessionInitialize());
         }
-        
+
         private void OnEnable()
         {
         	if(_cellRouter != null &&

@@ -108,8 +108,7 @@ namespace Assets.Source.Scripts.GameBehaviour
                 return;
 
             _colorRandomizer.SetDifficultySettings(
-                currentSettings.ColorsCount,
-                currentSettings.CountMixeColor);
+                currentSettings.ColorsCount);
             StartRound(currentSettings);
             GameLaunching?.Invoke();
         }

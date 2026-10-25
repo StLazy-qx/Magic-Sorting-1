@@ -1,7 +1,7 @@
 ﻿using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.GameDifficulty;
-using System;
 using System.Collections.Generic;
+using System;
 
 namespace Assets.Source.Scripts.EntryPoint
 {
@@ -18,8 +18,6 @@ namespace Assets.Source.Scripts.EntryPoint
         public event Action RoundChanged;
 
         public bool IsInitialized { get; private set; }
-
-        public IReadOnlyList<DifficultyLevel> Sequence => _sequence;
 
         public void Initialize()
         {

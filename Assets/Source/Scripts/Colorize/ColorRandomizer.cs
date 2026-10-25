@@ -9,38 +9,42 @@ namespace Assets.Source.Scripts.Colorize
     public class ColorRandomizer : MonoBehaviour
     {
         private const int BeginCountColors = 2;
+        private const int MinColorsCount = 4;
 
         private readonly ColorConverter _colorConverter = new ColorConverter();
-
-        private EnumColor[] _allColors =
+        private readonly EnumColor[] _availableColors =
             (EnumColor[])Enum.GetValues(typeof(EnumColor));
+
+        private EnumColor[] _allColors;
         private Color[] _beginRoundColors;
         private Color[] _remainingColors;
         private Color _targetColor;
         private ColorRecipes _colorRecipes;
 
+        public IReadOnlyList<EnumColor> RoundColors => _allColors;
         public IReadOnlyList<Color> BeginColors => _beginRoundColors;
         public IReadOnlyList<Color> RemainingColors => _remainingColors;
         public Color TargetColor => _targetColor;
 
-        public void SetDifficultySettings(int colorsNumber, int countMixeColor)
+        public void SetDifficultySettings(int colorsNumber)
         {
             Guard.Positive(colorsNumber, nameof(colorsNumber));
 
             if (_colorRecipes == null)
                 throw new InvalidOperationException("ColorRecipes is not set.");
 
-            colorsNumber = Mathf.Min(colorsNumber, _allColors.Length);
+            int count = NormalizeColorsCount(colorsNumber);
 
-            IReadOnlyList<EnumColor> roundColors =
-                BuildRoundColors(colorsNumber, countMixeColor, out EnumColor targetColor);
+            _allColors = BuildRoundColors(count);
 
-            int totalColors = roundColors.Count;
-            int beginCount = Mathf.Min(BeginCountColors, totalColors);
+            int beginCount = Mathf.Min(BeginCountColors, _allColors.Length);
 
-            _targetColor = _colorConverter.TransformEnumToColor(targetColor);
-            _beginRoundColors = ConvertColors(roundColors, 0, beginCount);
-            _remainingColors = ConvertColors(roundColors, beginCount, totalColors - beginCount);
+            _targetColor = _colorConverter.TransformEnumToColor(_allColors[0]);
+            _beginRoundColors = ConvertColors(_allColors, 0, beginCount);
+            _remainingColors = ConvertColors(
+                _allColors,
+                beginCount,
+                _allColors.Length - beginCount);
         }
 
         public void SetColorRecipes(ColorRecipes colorRecipes)
@@ -50,105 +54,117 @@ namespace Assets.Source.Scripts.Colorize
             _colorRecipes = colorRecipes;
         }
 
-        private IReadOnlyList<EnumColor> BuildRoundColors(int count, int countMixeColor, out EnumColor target)
+        private int NormalizeColorsCount(int requested)
         {
-            var result = new List<EnumColor>(count);
-            var used = new HashSet<EnumColor>();
+            int maxCount = _availableColors.Length - _availableColors.Length % 2;
+            int count = Mathf.Clamp(requested, MinColorsCount, maxCount);
 
-            target = PickRandomRecipeColor();
-            (EnumColor first, EnumColor second) = _colorRecipes.GetPair(target);
+            return count - count % 2;
+        }
 
-            foreach (EnumColor color in new[] { first, second, target })
-            {
-                if (result.Count < count && used.Add(color))
-                    result.Add(color);
-            }
+        private EnumColor[] BuildRoundColors(int count)
+        {
+            List<EnumColor> result = new List<EnumColor>(count);
+            HashSet<EnumColor> used = new HashSet<EnumColor>();
+
+            EnumColor first = PickRandomRecipeColor();
+            (EnumColor second, EnumColor third) = _colorRecipes.GetPair(first);
+
+            AddColor(first, result, used);
+            AddColor(second, result, used);
+            AddColor(third, result, used);
 
             while (result.Count < count)
-            {
-                IReadOnlyList<EnumColor> candidates = CollectMixableCandidates(used);
+                AddColor(PickNextColor(result, used), result, used);
 
-                EnumColor next = candidates.Count > 0
-                    ? candidates[UnityEngine.Random.Range(0, candidates.Count)]
-                    : PickRandomUnused(used);
-
-                used.Add(next);
-                result.Add(next);
-            }
-
-            return ReplaceWithMixtures(result, countMixeColor);
+            return result.ToArray();
         }
 
-        private IReadOnlyList<EnumColor> ReplaceWithMixtures(
-            IReadOnlyList<EnumColor> colors,
-            int countMixeColor)
+        private static void AddColor(
+            EnumColor color,
+            List<EnumColor> result,
+            HashSet<EnumColor> used)
         {
-            var result = new List<EnumColor>(colors);
-            var expanded = new HashSet<EnumColor>();
-
-            for (int i = 0; i < countMixeColor; i++)
-            {
-                var candidates = new List<int>();
-
-                for (int index = 0; index < result.Count; index++)
-                {
-                    EnumColor color = result[index];
-
-                    if (expanded.Contains(color))
-                        continue;
-
-                    if (_colorRecipes.TryGetPair(color, out var pair) == false)
-                        continue;
-
-                    if (result.Contains(pair.First) || result.Contains(pair.Second))
-                        continue;
-
-                    candidates.Add(index);
-                }
-
-                if (candidates.Count == 0)
-                    break;
-
-                int replaceIndex = candidates[UnityEngine.Random.Range(0, candidates.Count)];
-                EnumColor source = result[replaceIndex];
-                (EnumColor first, EnumColor second) = _colorRecipes.GetPair(source);
-
-                expanded.Add(source);
-                expanded.Add(first);
-                expanded.Add(second);
-                result.RemoveAt(replaceIndex);
-                result.Insert(replaceIndex, second);
-                result.Insert(replaceIndex, first);
-            }
-
-            return result;
+            if (used.Add(color))
+                result.Add(color);
         }
 
-        private IReadOnlyList<EnumColor> CollectMixableCandidates(HashSet<EnumColor> used)
+        private EnumColor PickNextColor(List<EnumColor> selected, HashSet<EnumColor> used)
         {
-            List<EnumColor> selected = new List<EnumColor>(used);
-            HashSet<EnumColor> found = new HashSet<EnumColor>();
+            // 1. Результат смешивания двух уже выбранных цветов
+            List<EnumColor> candidates = GetMixResults(selected, used);
+
+            // 2. Цвет, который достраивает рецепт уже выбранного цвета
+            if (candidates.Count == 0)
+                candidates = GetRecipeCompleters(used);
+
+            // 3. Любой неиспользованный
+            if (candidates.Count == 0)
+                candidates = GetUnusedColors(used);
+
+            return candidates[UnityEngine.Random.Range(0, candidates.Count)];
+        }
+
+        private List<EnumColor> GetMixResults(List<EnumColor> selected, HashSet<EnumColor> used)
+        {
+            List<EnumColor> results = new List<EnumColor>();
 
             for (int i = 0; i < selected.Count; i++)
             {
                 for (int j = i + 1; j < selected.Count; j++)
                 {
-                    if (_colorRecipes.TryGetResult(selected[i], selected[j], out EnumColor mixed)
-                        && used.Contains(mixed) == false)
+                    if (_colorRecipes.TryGetResult(selected[i], selected[j], out EnumColor result)
+                        && used.Contains(result) == false
+                        && results.Contains(result) == false)
                     {
-                        found.Add(mixed);
+                        results.Add(result);
                     }
                 }
             }
 
-            return new List<EnumColor>(found);
+            return results;
+        }
+
+        private List<EnumColor> GetMixPartners(List<EnumColor> selected, HashSet<EnumColor> used)
+        {
+            List<EnumColor> partners = new List<EnumColor>();
+
+            foreach (EnumColor color in _availableColors)
+            {
+                if (used.Contains(color))
+                    continue;
+
+                foreach (EnumColor existing in selected)
+                {
+                    if (_colorRecipes.CanMix(color, existing))
+                    {
+                        partners.Add(color);
+                        break;
+                    }
+                }
+            }
+
+            return partners;
+        }
+
+        private List<EnumColor> GetUnusedColors(HashSet<EnumColor> used)
+        {
+            List<EnumColor> unused = new List<EnumColor>();
+
+            foreach (EnumColor color in _availableColors)
+            {
+                if (used.Contains(color) == false)
+                    unused.Add(color);
+            }
+
+            return unused;
         }
 
         private EnumColor PickRandomRecipeColor()
         {
-            var withRecipe = new List<EnumColor>();
+            List<EnumColor> withRecipe = new List<EnumColor>();
 
-            foreach (EnumColor color in _allColors)
+            foreach (EnumColor color in _availableColors)
             {
                 if (_colorRecipes.HasRecipe(color))
                     withRecipe.Add(color);
@@ -160,17 +176,29 @@ namespace Assets.Source.Scripts.Colorize
             return withRecipe[UnityEngine.Random.Range(0, withRecipe.Count)];
         }
 
-        private EnumColor PickRandomUnused(HashSet<EnumColor> used)
+        private List<EnumColor> GetRecipeCompleters(HashSet<EnumColor> used)
         {
-            var unused = new List<EnumColor>();
+            List<EnumColor> result = new List<EnumColor>();
 
-            foreach (EnumColor color in _allColors)
+            foreach (var recipe in _colorRecipes.ColorMixtures)
             {
-                if (used.Contains(color) == false)
-                    unused.Add(color);
+                if (used.Contains(recipe.Key) == false)
+                    continue;
+
+                bool hasFirst = used.Contains(recipe.Value.First);
+                bool hasSecond = used.Contains(recipe.Value.Second);
+
+                // Оба есть: достраивать нечего. Обоих нет: одним цветом не закрыть.
+                if (hasFirst == hasSecond)
+                    continue;
+
+                EnumColor missing = hasFirst ? recipe.Value.Second : recipe.Value.First;
+
+                if (result.Contains(missing) == false)
+                    result.Add(missing);
             }
 
-            return unused[UnityEngine.Random.Range(0, unused.Count)];
+            return result;
         }
 
         private Color[] ConvertColors(
@@ -178,7 +206,7 @@ namespace Assets.Source.Scripts.Colorize
             int startIndex,
             int length)
         {
-            var colors = new Color[length];
+            Color[] colors = new Color[length];
 
             for (int i = 0; i < length; i++)
                 colors[i] = _colorConverter.TransformEnumToColor(source[startIndex + i]);

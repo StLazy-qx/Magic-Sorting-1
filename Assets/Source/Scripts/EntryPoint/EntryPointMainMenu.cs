@@ -26,14 +26,13 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private void Awake()
         {
-            ValidateDependencies();
-
-            _languageSetter = new LanguageSetter();
             _playerProgress = new PlayerProgress();
+            _languageSetter = new LanguageSetter();
 
-            _platformSetter.Initialize(_languageSetter);
+            ValidateDependencies();
             _playerProgress.Initialize();
-            _modePanelsPresenter.SetGameProgress(_playerProgress);
+            _platformSetter.Initialize(_languageSetter);
+            _modePanelsPresenter.Initialize(_playerProgress);
 
             foreach (var mono in _servicesMono)
             {

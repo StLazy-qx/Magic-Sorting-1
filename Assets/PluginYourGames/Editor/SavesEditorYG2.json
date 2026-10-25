@@ -13,14 +13,14 @@
     false,
     false
   ],
-  "idSave": 1072,
-  "MainPoints": 15650,
-  "ActualRoundNumber": 12,
+  "idSave": 1101,
+  "MainPoints": 17850,
+  "ActualRoundNumber": 28,
   "MasterVolume": 0.85765624,
   "AmbientVolume": 0.147804469,
   "EffectVolume": 1.0,
   "EquippedItem": "66666",
-  "SavedLanguage": null,
+  "SavedLanguage": "ru",
   "ItemIDs": [
     "22222",
     "11111",
@@ -30,19 +30,19 @@
     "66666"
   ],
   "Score": {
-    "Points": 15650
+    "Points": 17850
   },
   "Round": {
-    "ActualRoundNumber": 12
+    "ActualRoundNumber": 28
   },
   "Audio": {},
   "Inventory": {
     "EquippedItemID": "66666"
   },
   "Language": {
-    "SavedLanguage": null,
-    "HasSavedLanguage": false
+    "SavedLanguage": "ru",
+    "HasSavedLanguage": true
   },
-  "Points": 15650,
+  "Points": 17850,
   "EquippedItemID": "66666"
 }

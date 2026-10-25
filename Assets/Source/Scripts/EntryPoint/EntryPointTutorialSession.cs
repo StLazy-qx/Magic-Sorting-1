@@ -37,8 +37,7 @@ namespace Assets.Source.Scripts.EntryPoint
             _currentSettings = _difficultyDatabase.GetSettings(_difficultyState.CurrentDifficulty);
 
             _colorRandomizer.SetDifficultySettings(
-                _currentSettings.ColorsCount, 
-                _currentSettings.CountMixeColor);
+                _currentSettings.ColorsCount);
             _platformSetter.Initialize();
             _entryColorListsFactory.Initialize(
                 _colorRandomizer.BeginColors, 

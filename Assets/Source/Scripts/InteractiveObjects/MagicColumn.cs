@@ -56,6 +56,12 @@ namespace Assets.Source.Scripts.InteractiveObjects
             _stackHandler.CreateCell(color);
         }
 
+        public void AddCell(Color firstColor, Color secondColor)
+        {
+            _stackHandler.CreateCell(firstColor);
+            _stackHandler.CreateCell(secondColor);
+        }
+
         public bool CanAddCell()
         {
             return _stackHandler.CanAddCell();

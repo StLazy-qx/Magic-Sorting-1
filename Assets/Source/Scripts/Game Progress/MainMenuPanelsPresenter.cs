@@ -66,7 +66,7 @@ namespace Assets.Source.Scripts.Game_Progress
         {
             if (_playerProgress == null)
                 throw new InvalidOperationException(
-                    $"{nameof(PlayerProgress)} is not set. Call {nameof(SetGameProgress)} before Start.");
+                    $"{nameof(PlayerProgress)} is not set. Call {nameof(Initialize)} before Start.");
 
             if (_playerProgress.IsInitialized == false)
                 throw new InvalidOperationException(
@@ -79,12 +79,13 @@ namespace Assets.Source.Scripts.Game_Progress
         }
 
         [Inject]
-        public void Construct(SceneLoader sceneLoader)
+        public void Construct(SceneLoader sceneLoader/*, PlayerProgress playerProgress*/)
         {
             _sceneLoader = sceneLoader ?? throw new ArgumentNullException(nameof(sceneLoader));
+            //_playerProgress = playerProgress ?? throw new ArgumentNullException(nameof(playerProgress));
         }
 
-        public void SetGameProgress(PlayerProgress playerProgress)
+        public void Initialize(PlayerProgress playerProgress)
         {
             _playerProgress = playerProgress ?? throw new ArgumentNullException(nameof(playerProgress));
 
@@ -106,8 +107,6 @@ namespace Assets.Source.Scripts.Game_Progress
             }
         }
 
-        // Активная (показанная игроку) кнопка режима = текущий режим.
-        // Если режим недоступен - кнопка Play неактивна, иначе активна.
         private void UpdatePlayButton()
         {
             if (_isStarted == false)
@@ -133,6 +132,7 @@ namespace Assets.Source.Scripts.Game_Progress
             if (_playerProgress.IsModeAvailable(panel.Mode) == false)
             {
                 Debug.Log($"[MainMenu] Режим {panel.Mode} недоступен");
+
                 return;
             }
 

@@ -46,7 +46,10 @@ namespace Assets.Source.Scripts.UI.Buttons.Advertising_Points_Button
 
         private void OnButtonClick()
         {
-            if (_isShowing)
+            if (_isShowing) 
+                return;
+
+            if (_isRewarded) 
                 return;
 
             _isShowing = true;
@@ -56,7 +59,6 @@ namespace Assets.Source.Scripts.UI.Buttons.Advertising_Points_Button
             YG2.RewardedAdvShow(_rewardId, OnRewarded);
         }
 
-        // Вызывается только когда реклама досмотрена до конца
         private void OnRewarded()
         {
             if (_isRewarded)
@@ -64,17 +66,16 @@ namespace Assets.Source.Scripts.UI.Buttons.Advertising_Points_Button
 
             _isRewarded = true;
 
-            // Wallet сам вызовет события, UI обновится через подписчиков
             _wallet.MultiplyLastRoundScore();
         }
 
-        // Реклама закрыта или произошла ошибка
         private void OnAdFinished()
         {
-            _isShowing = false;
+            if (_isShowing == false) 
+                return;
 
-            // Если награды не было (закрыли раньше или ошибка), даём попробовать снова
-            _button.interactable = !_isRewarded;
+            _isShowing = false;
+            _button.interactable = _isRewarded == false;
         }
     }
 }

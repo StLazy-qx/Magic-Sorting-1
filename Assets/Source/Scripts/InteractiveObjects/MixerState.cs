@@ -1,5 +1,4 @@
 using Assets.Source.Scripts.Colorize;
-using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ namespace Assets.Source.Scripts.InteractiveObjects
         private readonly ColorRecipes _colorRecipes;
         private readonly ColorConverter _colorConverter;
 
-        private EnumColor? _firstColor;
+        private IColorStrategy _firstColor;
         private bool _hasMixedResult;
 
         public MixerState(ColorRecipes colorRecipes, ColorConverter colorConverter)
@@ -22,7 +21,7 @@ namespace Assets.Source.Scripts.InteractiveObjects
             _colorConverter = colorConverter;
         }
 
-        public bool HasFirstIngredient => _firstColor.HasValue;
+        public bool HasFirstIngredient => _firstColor != null;
         public bool HasMixedResult => _hasMixedResult;
         public bool CanAcceptCell => _hasMixedResult == false;
 
@@ -31,17 +30,17 @@ namespace Assets.Source.Scripts.InteractiveObjects
             if (CanAcceptCell == false)
                 return false;
 
-            EnumColor newColor = _colorConverter.TransformColorToEnum(color);
+            IColorStrategy newColor = _colorConverter.TransformColorToStrategy(color);
 
             if (_firstColor == null)
                 return _colorRecipes.CanBeIngredient(newColor);
 
-            return _colorRecipes.CanMix(_firstColor.Value, newColor);
+            return _colorRecipes.CanMix(_firstColor, newColor);
         }
 
         public void AcceptFirst(Color color)
         {
-            _firstColor = _colorConverter.TransformColorToEnum(color);
+            _firstColor = _colorConverter.TransformColorToStrategy(color);
         }
 
         public bool TryMix(Color secondColor, out Color resultColor)
@@ -51,19 +50,18 @@ namespace Assets.Source.Scripts.InteractiveObjects
             if (_firstColor == null)
                 return false;
 
-            EnumColor second = _colorConverter.TransformColorToEnum(secondColor);
+            IColorStrategy second = _colorConverter.TransformColorToStrategy(secondColor);
 
-            if (_firstColor.Value == second
+            if (_firstColor == second
                 || _colorRecipes.TryGetResult(
-                    _firstColor.Value,
+                    _firstColor,
                     second,
-                    out EnumColor enumResult) == false) 
-				{
-					return false;
-				}
-                
+                    out IColorStrategy resultStrategy) == false)
+            {
+                return false;
+            }
 
-            resultColor = _colorConverter.TransformEnumToColor(enumResult);
+            resultColor = _colorConverter.TransformStrategyToColor(resultStrategy);
             _firstColor = null;
             _hasMixedResult = true;
 

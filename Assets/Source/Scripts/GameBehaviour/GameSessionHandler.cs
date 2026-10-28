@@ -37,12 +37,30 @@ namespace Assets.Source.Scripts.GameBehaviour
         private void Awake()
         {
             ValidateObjects();
+        }
+
+        public void SetLauncherDependencies(
+            ColumnsFactory columnsFactory,
+            VesselFactory vesselFactory,
+            EntryColorListsFactory entryColorListsFactory,
+            ColorColumnDistributor columnDistributor,
+            ColorRecipes recipes,
+            ColorConverter converter)
+        {
+            Guard.NotNull(columnsFactory, nameof(columnsFactory));
+            Guard.NotNull(vesselFactory, nameof(vesselFactory));
+            Guard.NotNull(entryColorListsFactory, nameof(entryColorListsFactory));
+            Guard.NotNull(columnDistributor, nameof(columnDistributor));
+            Guard.NotNull(recipes, nameof(recipes));
+            Guard.NotNull(converter, nameof(converter));
 
             _roundLauncher = new RoundLauncher(
-                _columnsFactory,
-                _vesselFactory,
-                _entryColorListsFactory,
-                _columnDistributor);
+                columnsFactory,
+                vesselFactory,
+                entryColorListsFactory,
+                columnDistributor,
+                recipes,
+                converter);
         }
 
         private void OnEnable()
@@ -80,7 +98,6 @@ namespace Assets.Source.Scripts.GameBehaviour
                 return;
 
             _isAdShowing = true;
-
             YG2.InterstitialAdvShow();
         }
 
@@ -107,8 +124,7 @@ namespace Assets.Source.Scripts.GameBehaviour
             if (currentSettings == null)
                 return;
 
-            _colorRandomizer.SetDifficultySettings(
-                currentSettings.ColorsCount);
+            _colorRandomizer.SetDifficultySettings(currentSettings.ColorsCount);
             StartRound(currentSettings);
             GameLaunching?.Invoke();
         }
@@ -132,20 +148,9 @@ namespace Assets.Source.Scripts.GameBehaviour
             _clickImpactHandler.Reset();
         }
 
-        private void OnCloseInterAdv()
-        {
-            HandleAdClosed();
-        }
-
-        private void OnCloseInterAdvWasShow(bool wasShown)
-        {
-            HandleAdClosed();
-        }
-
-        private void OnErrorInterAdv()
-        {
-            HandleAdClosed();
-        }
+        private void OnCloseInterAdv() => HandleAdClosed();
+        private void OnCloseInterAdvWasShow(bool wasShown) => HandleAdClosed();
+        private void OnErrorInterAdv() => HandleAdClosed();
 
         private void HandleAdClosed()
         {
@@ -155,7 +160,6 @@ namespace Assets.Source.Scripts.GameBehaviour
         private void ChangeDifficultyBySequence()
         {
             DifficultyLevel nextLevel = _sequenceDifficultyLevel.GetNext();
-
             DifficultyState.SetDifficulty(nextLevel);
         }
 

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9d4ceefb12f1bd34b95425faa576451f
+guid: 7f1fd04bffc70be46bd077ae031eaeb8
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -134,18 +134,150 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Generation_remix_01kgd4kp6afs1fd_0
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 321
+        width: 292
+        height: 292
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 351a99cacf1930e4688046597d724a9a
+      internalID: -1795835806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Generation_remix_01kgd4kp6afs1fd_1
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 323
+        width: 280
+        height: 284
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4428f7a7dd1840446a2f7b1ec3f2a04f
+      internalID: -458092373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Generation_remix_01kgd4kp6afs1fd_2
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 10
+        width: 510
+        height: 309
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82eceb999a7ba1a47b866354b4b98355
+      internalID: -753612007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Generation_remix_01kgd4kp6afs1fd_3
+      rect:
+        serializedVersion: 2
+        x: 1421
+        y: 33
+        width: 275
+        height: 273
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbfb8fa20e3e34f4685125a12396a2d8
+      internalID: 312732149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Generation_remix_01kgd4kp6afs1fd_4
+      rect:
+        serializedVersion: 2
+        x: 1425
+        y: 309
+        width: 270
+        height: 273
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f329d2074b1ef44da664b45db02f728
+      internalID: 1192420105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Generation_remix_01kgd4kp6afs1fd_5
+      rect:
+        serializedVersion: 2
+        x: 1421
+        y: 584
+        width: 278
+        height: 282
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 436293ad67c45db4a8cb810fad4d6fe8
+      internalID: 1566710906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: c881c07bb09d9a54d84933d009e9f8bb
     internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Generation_remix_01kgd4kp6afs1fd_0: -1795835806
+      Generation_remix_01kgd4kp6afs1fd_1: -458092373
+      Generation_remix_01kgd4kp6afs1fd_2: -753612007
+      Generation_remix_01kgd4kp6afs1fd_3: 312732149
+      Generation_remix_01kgd4kp6afs1fd_4: 1192420105
+      Generation_remix_01kgd4kp6afs1fd_5: 1566710906
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

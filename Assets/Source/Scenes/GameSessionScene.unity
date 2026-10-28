@@ -10602,7 +10602,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particlePool: {fileID: 43498388}
-  _vesselStateTracker: {fileID: 569123143}
 --- !u!1 &46655800
 GameObject:
   m_ObjectHideFlags: 0
@@ -324485,6 +324484,7 @@ MonoBehaviour:
   _magicMixer: {fileID: 1853108563}
   _cellRouter: {fileID: 654057276}
   _clickModeSwitcher: {fileID: 923747164}
+  _gameSessionHandler: {fileID: 392530558}
   _objectsToInitializeMono:
   - {fileID: 569123143}
   - {fileID: 1845276654}
@@ -727842,6 +727842,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2313940802812074563, guid: dea2d743fc1215d4394ff3d6ded72f6f,
+        type: 3}
+      propertyPath: _canvasGroup
+      value: 
+      objectReference: {fileID: 1501193051}
     - target: {fileID: 3275819854920195213, guid: dea2d743fc1215d4394ff3d6ded72f6f,
         type: 3}
       propertyPath: m_Pivot.y

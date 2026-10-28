@@ -14,7 +14,7 @@ using Zenject;
 
 namespace Assets.Source.Scripts.GameBehaviour
 {
-    public class TutorialGameHandler : BaseGameHandler, IGameHandler
+    public class TutorialGameHandler : BaseGameHandler
     {
         [SerializeField] private ColumnsFactory _columnsFactory;
         [SerializeField] private VesselFactory _vesselFactory;
@@ -41,11 +41,11 @@ namespace Assets.Source.Scripts.GameBehaviour
         {
             ValidateObjects();
 
-            _roundLauncher = new RoundLauncher(
-                _columnsFactory,
-                _vesselFactory,
-                _entryColorListsFactory,
-                _columnDistributor);
+            //_roundLauncher = new RoundLauncher(
+            //    _columnsFactory,
+            //    _vesselFactory,
+            //    _entryColorListsFactory,
+            //    _columnDistributor);
         }
 
         private void OnEnable()
@@ -77,28 +77,15 @@ namespace Assets.Source.Scripts.GameBehaviour
             _tutorialLevelCounter.Initialize(_tutorialProgress);
         }
 
-        protected override void ExtendInitialize()
-        {
-            _waitingPoint.Reset();
-        }
-
         public void RegisterFirstRound()
         {
             _tutorialProgress.Reset();
             TryAdvanceNextTutorialRound();
         }
 
-        public void BeginRound()
+        protected override void ExtendInitialize()
         {
-            if (TryAdvanceNextTutorialRound() == false)
-                return;
-
-            LaunchCurrentDifficulty();
-        }
-
-        public void ResetCurrentRound()
-        {
-            LaunchCurrentDifficulty();
+            _waitingPoint.Reset();
         }
 
         private bool TryAdvanceNextTutorialRound()
@@ -140,13 +127,13 @@ namespace Assets.Source.Scripts.GameBehaviour
 		private void StartRound(DifficultySettings currentSettings)
         {
             ContinueGame();
-            ResetEntity();
-            _roundLauncher.LaunchAsync(
-                _colorRandomizer,
-                currentSettings,
-                _tutorialLevelCounter,
-                DifficultyState.CurrentDifficulty,
-                this.GetCancellationTokenOnDestroy()).Forget();
+            //ResetEntity();
+            //_roundLauncher.LaunchAsync(
+            //    _colorRandomizer,
+            //    currentSettings,
+            //    _tutorialLevelCounter,
+            //    DifficultyState.CurrentDifficulty,
+            //    this.GetCancellationTokenOnDestroy()).Forget();
         }
 		
         private void ResetEntity()

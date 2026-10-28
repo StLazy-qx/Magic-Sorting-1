@@ -1,8 +1,8 @@
-﻿using Assets.Source.Scripts.Player;
+﻿using Assets.Source.Scripts.Extensions;
+using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.SceneManagement;
 using Assets.Source.Scripts.UI.Buttons;
 using Assets.Source.Scripts.UI.Buttons.Main_Mode_Panel;
-using System;
 using UnityEngine;
 using Zenject;
 
@@ -27,17 +27,10 @@ namespace Assets.Source.Scripts.Game_Progress
 
         private void Awake()
         {
-            if (_gameModeButtons == null || _gameModeButtons.Length == 0)
-                throw new InvalidOperationException("Game mode buttons are not assigned.");
-
-            if (_buttonLeftNavigation == null)
-                throw new InvalidOperationException("Left navigation button is not assigned.");
-
-            if (_buttonRightNavigation == null)
-                throw new InvalidOperationException("Right navigation button is not assigned.");
-
-            if (_playButton == null)
-                throw new InvalidOperationException("Play button is not assigned.");
+            Guard.NotNullOrEmpty(_gameModeButtons, nameof(_gameModeButtons));
+            Guard.NotNull(_buttonLeftNavigation, nameof(_buttonLeftNavigation));
+            Guard.NotNull(_buttonRightNavigation, nameof(_buttonRightNavigation));
+            Guard.NotNull(_playButton, nameof(_playButton));
 
             _gameModePanels = new GameModePanel[_gameModeButtons.Length];
 
@@ -45,9 +38,7 @@ namespace Assets.Source.Scripts.Game_Progress
             {
                 GameModePanel panel = _gameModeButtons[i].GetComponent<GameModePanel>();
 
-                if (panel == null)
-                    throw new MissingComponentException(
-                        $"GameModePanel is missing on mode button '{_gameModeButtons[i].name}'.");
+                Guard.NotNull(panel, $"{nameof(_gameModeButtons)}[{i}].GameModePanel");
 
                 _gameModePanels[i] = panel;
 
@@ -64,31 +55,33 @@ namespace Assets.Source.Scripts.Game_Progress
 
         private void Start()
         {
-            if (_playerProgress == null)
-                throw new InvalidOperationException(
-                    $"{nameof(PlayerProgress)} is not set. Call {nameof(Initialize)} before Start.");
-
-            if (_playerProgress.IsInitialized == false)
-                throw new InvalidOperationException(
-                    $"{nameof(PlayerProgress)} is not initialized. Call Initialize() before Start.");
-
             _isStarted = true;
 
+            SelectSavedModePanel();
             RefreshModeAvailability();
-            UpdatePlayButton();
+            UpdateView();
         }
+
+        //private void Start()
+        //{
+        //    _isStarted = true;
+
+        //    RefreshModeAvailability();
+        //    UpdatePlayButton();
+        //}
 
         [Inject]
-        public void Construct(SceneLoader sceneLoader/*, PlayerProgress playerProgress*/)
+        public void Construct(SceneLoader sceneLoader, PlayerProgress playerProgress)
         {
-            _sceneLoader = sceneLoader ?? throw new ArgumentNullException(nameof(sceneLoader));
-            //_playerProgress = playerProgress ?? throw new ArgumentNullException(nameof(playerProgress));
+            Guard.NotNull(sceneLoader, nameof(sceneLoader));
+            Guard.NotNull(playerProgress, nameof(playerProgress));
+
+            _sceneLoader = sceneLoader;
+            _playerProgress = playerProgress;
         }
 
-        public void Initialize(PlayerProgress playerProgress)
+        public void Initialize()
         {
-            _playerProgress = playerProgress ?? throw new ArgumentNullException(nameof(playerProgress));
-
             if (_isStarted)
             {
                 RefreshModeAvailability();
@@ -101,11 +94,33 @@ namespace Assets.Source.Scripts.Game_Progress
             for (int i = 0; i < _gameModePanels.Length; i++)
             {
                 GameModePanel panel = _gameModePanels[i];
-                bool isAvailable = _playerProgress.IsModeAvailable(panel.Mode);
 
-                panel.SetAvailable(isAvailable);
+                panel.SetAvailable(_playerProgress.IsModeAvailable(panel.Mode));
             }
         }
+
+
+        private void SelectSavedModePanel()
+        {
+            if (_playerProgress == null)
+                return;
+
+
+            GameMode savedMode = _playerProgress.CurrentMode;
+
+            for (int i = 0; i < _gameModePanels.Length; i++)
+            {
+                if (_gameModePanels[i].Mode == savedMode)
+                {
+                    _currentModeIndex = i;
+
+                    return;
+                }
+            }
+
+            _currentModeIndex = DefaultIndexMode;
+        }
+
 
         private void UpdatePlayButton()
         {
@@ -113,29 +128,21 @@ namespace Assets.Source.Scripts.Game_Progress
                 return;
 
             GameModePanel panel = CurrentPanel;
-            bool isAvailable = _playerProgress.IsModeAvailable(panel.Mode);
 
-            _playButton.SetInteractable(isAvailable);
-
-            Debug.Log($"[MainMenu] Кнопка Play для режима {panel.Mode}: {(isAvailable ? "доступна" : "недоступна")}");
+            _playButton.SetInteractable(_playerProgress.IsModeAvailable(panel.Mode));
         }
 
         private void OnModeButtonClicked(int index)
         {
             GameModePanel panel = _gameModePanels[index];
 
-            Debug.Log($"[MainMenu] Клик по кнопке режима. Выбран уровень сложности: {panel.Mode}");
-
             if (_playerProgress == null || _sceneLoader == null)
                 return;
 
             if (_playerProgress.IsModeAvailable(panel.Mode) == false)
-            {
-                Debug.Log($"[MainMenu] Режим {panel.Mode} недоступен");
-
                 return;
-            }
 
+            _playerProgress.SaveSelectedMode(panel.Mode);
             _sceneLoader.LoadScene(panel.SceneIndex);
         }
 
@@ -147,7 +154,6 @@ namespace Assets.Source.Scripts.Game_Progress
                 _currentModeIndex = _gameModeButtons.Length - 1;
 
             UpdateView();
-            Debug.Log($"[MainMenu] Стрелка влево. Текущий режим: {CurrentPanel.Mode}");
         }
 
         private void OnChangeRightView()
@@ -158,7 +164,6 @@ namespace Assets.Source.Scripts.Game_Progress
                 _currentModeIndex = 0;
 
             UpdateView();
-            Debug.Log($"[MainMenu] Стрелка вправо. Текущий режим: {CurrentPanel.Mode}");
         }
 
         private void UpdateView()

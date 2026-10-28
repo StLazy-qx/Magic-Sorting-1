@@ -8,7 +8,6 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         public void ContinueGame();
         public void PauseGame();
-        void BeginRound();
-        void ResetCurrentRound();
+        public void BeginRound();
     }
 }

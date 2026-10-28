@@ -16,14 +16,12 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private LoadingWindow _desktopLoadindgPanel;
 
         private LanguageSetter _languageSetter;
-        //private SceneLoader _sceneLoader;
 
         public void Initialize(
             LanguageSetter languageSetter)
         {
             ValidateDependencies(languageSetter);
 
-            //_sceneLoader = new SceneLoader();
             _languageSetter = languageSetter;
 
             InitializeBase();

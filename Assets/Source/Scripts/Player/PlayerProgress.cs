@@ -1,105 +1,82 @@
 ﻿using Assets.Source.Scripts.Enums;
-using Assets.Source.Scripts.YG;
 using System;
 using YG;
+using Zenject;
 
 namespace Assets.Source.Scripts.Player
 {
-    public class PlayerProgress
+    public class PlayerProgress : IInitializable
     {
         private const int EasyEndNumberLevel = 5;
         private const int MediumEndNumberLevel = 11;
         private const int HardEndNumberLevel = 17;
 
-        private int _currentRoundNumber;
-        private DifficultyLevel _currentDifficultyLevel;
+        private PlayerProgressStatus _status;
+        private bool _isInitialized;
 
-        public bool IsInitialized { get; private set; }
-        public PlayerProgressStatus Current { get; private set; }
-        public GameMode CurrentMode { get; private set; }
-        public DifficultyLevel CurrentDifficultyLevel => _currentDifficultyLevel;
-        public int CurrentRoundNumber => _currentRoundNumber;
-        public bool IsEasyCompleted { get; private set; }
-        public bool IsMediumCompleted { get; private set; }
-        public bool IsHardCompleted { get; private set; }
-
-        public bool IsFreeModeAvailable =>
-            IsEasyCompleted && IsMediumCompleted && IsHardCompleted;
+        public PlayerProgressStatus Status => _status;
+        public bool IsInitialized => _isInitialized;
+        public GameMode CurrentMode => _status?.CurrentMode ?? GameMode.Tutorial;
+        public DifficultyLevel CurrentDifficultyLevel => _status?.CurrentDifficulty ?? DifficultyLevel.Easy;
+        public int CurrentRoundNumber => _status?.RoundNumber ?? 0;
+        public bool IsEasyCompleted => _status?.IsEasyCompleted ?? false;
+        public bool IsMediumCompleted => _status?.IsMediumCompleted ?? false;
+        public bool IsHardCompleted => _status?.IsHardCompleted ?? false;
+        public bool IsFreeModeAvailable => _status?.IsFreeModeAvailable ?? false;
 
         public void Initialize()
         {
-            _currentRoundNumber = YG2.saves.GetRoundNumber();
+            if (_isInitialized) return;
 
-            Evaluate();
-            LoadOrDetermineDifficulty();
+            int roundNumber = YG2.saves.GetRoundNumber();
 
-            Current = new PlayerProgressStatus(CurrentMode, _currentRoundNumber);
-            IsInitialized = true;
+            GameMode mode = YG2.saves.HasSavedMode
+                ? YG2.saves.LoadMode()
+                : DetermineCurrentMode(roundNumber);
+
+            DifficultyLevel difficulty = mode == GameMode.FreeMode
+                ? PickRandomDifficulty()
+                : GetBaseDifficulty(mode);
+
+            _status = new PlayerProgressStatus(
+                roundNumber,
+                mode,
+                difficulty,
+                roundNumber > EasyEndNumberLevel,
+                roundNumber > MediumEndNumberLevel,
+                roundNumber > HardEndNumberLevel);
+
+            _isInitialized = true;
         }
 
-        private void Evaluate()
+        public void SaveSelectedMode(GameMode mode)
         {
-            IsEasyCompleted = _currentRoundNumber > EasyEndNumberLevel;
-            IsMediumCompleted = _currentRoundNumber > MediumEndNumberLevel;
-            IsHardCompleted = _currentRoundNumber > HardEndNumberLevel;
-            CurrentMode = DetermineCurrentMode(_currentRoundNumber);
-        }
-
-        private void LoadOrDetermineDifficulty()
-        {
-            GameModeSection saved = YG2.saves.Mode;
-
-            if (saved.HasSavedMode && saved.GetGameMode() == CurrentMode)
-            {
-                _currentDifficultyLevel = saved.GetDifficultyLevel();
-
+            if (CurrentMode == mode && YG2.saves.LoadMode() == mode)
                 return;
-            }
 
-            DetermineCurrentDifficultyLevel();
-            //YG2.saves.SaveMode(CurrentMode, _currentDifficultyLevel);
+            YG2.saves.SaveMode(mode);
+
+            DifficultyLevel difficulty = mode == GameMode.FreeMode
+                ? PickRandomDifficulty()
+                : GetBaseDifficulty(mode);
+
+            _status = new PlayerProgressStatus(
+                CurrentRoundNumber,
+                mode,
+                difficulty,
+                IsEasyCompleted,
+                IsMediumCompleted,
+                IsHardCompleted);
         }
 
-        private void DetermineCurrentDifficultyLevel()
+        public static DifficultyLevel GetBaseDifficulty(GameMode mode) => mode switch
         {
-            switch (CurrentMode)
-            {
-                case GameMode.Easy:
-                    _currentDifficultyLevel = DifficultyLevel.Easy;
-                    break;
-
-                case GameMode.Medium:
-                    _currentDifficultyLevel = DifficultyLevel.Medium;
-                    break;
-
-                case GameMode.Hard:
-                    _currentDifficultyLevel = DifficultyLevel.MediumHard;
-                    break;
-
-                case GameMode.FreeMode:
-                    var levels = (DifficultyLevel[])Enum.GetValues(typeof(DifficultyLevel));
-                    _currentDifficultyLevel = levels[UnityEngine.Random.Range(0, levels.Length)];
-                    break;
-
-                default:
-                    _currentDifficultyLevel = DifficultyLevel.Easy;
-                    break;
-            }
-        }
-
-        private GameMode DetermineCurrentMode(int roundNumber)
-        {
-            if (roundNumber <= EasyEndNumberLevel)
-                return GameMode.Easy;
-
-            if (roundNumber <= MediumEndNumberLevel)
-                return GameMode.Medium;
-
-            if (roundNumber <= HardEndNumberLevel)
-                return GameMode.Hard;
-
-            return GameMode.FreeMode;
-        }
+            GameMode.Easy => DifficultyLevel.Easy,
+            GameMode.Medium => DifficultyLevel.Medium,
+            GameMode.Hard => DifficultyLevel.MediumHard,
+            GameMode.Tutorial => DifficultyLevel.Easy,
+            _ => DifficultyLevel.Easy
+        };
 
         public bool IsModeAvailable(GameMode mode) => mode switch
         {
@@ -118,5 +95,19 @@ namespace Assets.Source.Scripts.Player
             GameMode.Hard => IsHardCompleted,
             _ => false
         };
+
+        private static DifficultyLevel PickRandomDifficulty()
+        {
+            var levels = (DifficultyLevel[])Enum.GetValues(typeof(DifficultyLevel));
+            return levels[UnityEngine.Random.Range(0, levels.Length)];
+        }
+
+        private static GameMode DetermineCurrentMode(int roundNumber)
+        {
+            if (roundNumber <= EasyEndNumberLevel) return GameMode.Easy;
+            if (roundNumber <= MediumEndNumberLevel) return GameMode.Medium;
+            if (roundNumber <= HardEndNumberLevel) return GameMode.Hard;
+            return GameMode.FreeMode;
+        }
     }
 }

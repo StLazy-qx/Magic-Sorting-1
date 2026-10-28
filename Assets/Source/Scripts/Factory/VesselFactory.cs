@@ -8,6 +8,7 @@ using Assets.Source.Scripts.Extensions;
 using System.Linq;
 using UnityEngine;
 using System;
+using Assets.Source.Scripts.Enums;
 
 namespace Assets.Source.Scripts.Factory
 {
@@ -20,15 +21,31 @@ namespace Assets.Source.Scripts.Factory
         private ColorRandomizer _colorRandomizer;
 
         public bool IsReady { get; private set; }
+        public override void ResetFactory(DifficultyLevel difficulty)
+        {
+            if (Objects != null)
+            {
+                foreach (Vessel vessel in Objects)
+                {
+                    if (vessel == null) continue;
+                    vessel.Filled -= OnPutRemainingVessel;
+                }
+            }
+
+            IsReady = false;
+
+            base.ResetFactory(difficulty);
+        }
 
         protected override void OnDestroy()
         {
-            foreach (var vessel in Objects)
+            if (Objects != null)
             {
-                if (vessel == null)
-                    continue;
-
-                vessel.Filled -= OnPutRemainingVessel;
+                foreach (var vessel in Objects)
+                {
+                    if (vessel == null) continue;
+                    vessel.Filled -= OnPutRemainingVessel;
+                }
             }
 
             base.OnDestroy();
@@ -37,17 +54,32 @@ namespace Assets.Source.Scripts.Factory
         public void InitRandomizer(ColorRandomizer colorRandomizer)
         {
             Guard.NotNull(colorRandomizer, nameof(colorRandomizer));
-
             _colorRandomizer = colorRandomizer;
+        }
+
+        public void ForceSpawn()
+        {
+            BuildObjects();
         }
 
         protected override void BuildObjects()
         {
             ValidateBuildRequirements();
-            ClearList();
 
-            DifficultySettings settings = DifficultyDatabase.
-                GetSettings(DifficultyState.CurrentDifficulty);
+            if (Objects != null)
+            {
+                foreach (Vessel vessel in Objects)
+                {
+                    if (vessel == null) 
+                        continue;
+
+                    vessel.Filled -= OnPutRemainingVessel;
+                }
+            }
+
+            ClearList();
+            DifficultySettings settings = DifficultyDatabase
+                .GetSettings(DifficultyState.CurrentDifficulty);
 
             if (settings.VesselsCount <= 0)
                 throw new InvalidOperationException("Vessels count must be > 0");
@@ -56,7 +88,6 @@ namespace Assets.Source.Scripts.Factory
             {
                 Vessel vessel = Instantiate(Prefab);
                 vessel.Filled += OnPutRemainingVessel;
-
                 vessel.gameObject.SetActive(false);
                 Add(vessel);
             }
@@ -71,27 +102,26 @@ namespace Assets.Source.Scripts.Factory
         private void OnPutRemainingVessel(Vector3 position)
         {
             Vessel remainingVessel = Objects.FirstOrDefault(
-                vessel => vessel.IsFilled == false && 
-                vessel.gameObject.activeSelf == false);
+                vessel => vessel.IsFilled == false
+                       && vessel.gameObject.activeSelf == false);
 
-            if (remainingVessel == null)
+            if (remainingVessel == null) 
                 return;
 
             remainingVessel.transform.position = position;
-
             remainingVessel.gameObject.SetActive(true);
         }
 
         private void ActivateVessels()
         {
             int index = 0;
-
             foreach (var vessel in Objects)
             {
-                if (index >= SpawnPoints.Length)
+                if (index >= SpawnPoints.Length) 
                     break;
 
-                if (vessel.IsFilled == false && vessel.gameObject.activeSelf == false)
+                if (vessel.IsFilled == false && 
+                    vessel.gameObject.activeSelf == false)
                 {
                     vessel.transform.position = SpawnPoints[index].position;
 
@@ -109,6 +139,11 @@ namespace Assets.Source.Scripts.Factory
             List<Color> palette = new List<Color>(_colorRandomizer.BeginColors);
 
             palette.AddRange(_colorRandomizer.RemainingColors);
+
+            if (palette.Count == 0)
+                throw new InvalidOperationException(
+                    "[VesselFactory] Палитра цветов пуста. " +
+                    "ColorRandomizer.SetDifficultySettings не был вызван?");
 
             for (int i = 0; i < Objects.Count; i++)
             {

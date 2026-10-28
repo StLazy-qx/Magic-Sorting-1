@@ -1,89 +1,71 @@
 ﻿using System.Collections.Generic;
-using Assets.Source.Scripts.Enums;
 
 namespace Assets.Source.Scripts.Colorize
 {
     public class ColorRecipes
     {
-        private readonly Dictionary<EnumColor, (EnumColor First, EnumColor Second)> _colorMixtures =
-            new Dictionary<EnumColor, (EnumColor First, EnumColor Second)>
+        private readonly Dictionary<IColorStrategy, (IColorStrategy First, IColorStrategy Second)> _colorMixtures;
+        private readonly Dictionary<(IColorStrategy, IColorStrategy), IColorStrategy> _resultsByPair = new();
+        private readonly HashSet<IColorStrategy> _ingredients = new();
+
+        public ColorRecipes(ColorCatalog catalog)
         {
-            { EnumColor.Red,      (EnumColor.Magenta, EnumColor.Yellow) },
-            { EnumColor.Green,    (EnumColor.Cyan,    EnumColor.Yellow) },
-            { EnumColor.Blue,     (EnumColor.Cyan,    EnumColor.Magenta) },
-            { EnumColor.Yellow,   (EnumColor.Red,     EnumColor.Green) },
-            { EnumColor.Orange,   (EnumColor.Red,     EnumColor.Yellow) },
-            { EnumColor.Purple,   (EnumColor.Red,     EnumColor.Blue) },
-            { EnumColor.Pink,     (EnumColor.Red,     EnumColor.White) },
-            { EnumColor.Grey,     (EnumColor.Black,   EnumColor.White) },
-            { EnumColor.Cyan,     (EnumColor.Green,   EnumColor.Blue) },
-            { EnumColor.Lavender, (EnumColor.Purple,  EnumColor.White) },
-        };
+            _colorMixtures = new Dictionary<IColorStrategy, (IColorStrategy First, IColorStrategy Second)>
+            {
+                { catalog.Red,      (catalog.Magenta, catalog.Yellow) },
+                { catalog.Green,    (catalog.Cyan,    catalog.Yellow) },
+                { catalog.Blue,     (catalog.Cyan,    catalog.Magenta) },
+                { catalog.Yellow,   (catalog.Red,     catalog.Green) },
+                { catalog.Orange,   (catalog.Red,     catalog.Yellow) },
+                { catalog.Purple,   (catalog.Red,     catalog.Blue) },
+                { catalog.Pink,     (catalog.Red,     catalog.White) },
+                { catalog.Grey,     (catalog.Black,   catalog.White) },
+                { catalog.Cyan,     (catalog.Green,   catalog.Blue) },
+                { catalog.Lavender, (catalog.Purple,  catalog.White) },
+            };
 
-        private readonly Dictionary<(EnumColor, EnumColor), EnumColor> _resultsByPair =
-            new Dictionary<(EnumColor, EnumColor), EnumColor>();
-
-        private readonly HashSet<EnumColor> _ingredients = new HashSet<EnumColor>();
-
-        public ColorRecipes()
-        {
             foreach (var recipe in _colorMixtures)
             {
-                _resultsByPair[Normalize(recipe.Value.First, recipe.Value.Second)] =
-                    recipe.Key;
-
+                _resultsByPair[Normalize(recipe.Value.First, recipe.Value.Second)] = recipe.Key;
                 _ingredients.Add(recipe.Value.First);
                 _ingredients.Add(recipe.Value.Second);
             }
         }
 
-        public IReadOnlyDictionary<EnumColor, (EnumColor First,
-            EnumColor Second)> ColorMixtures => _colorMixtures;
+        public IReadOnlyDictionary<IColorStrategy, (IColorStrategy First, IColorStrategy Second)> ColorMixtures => _colorMixtures;
 
-        public bool HasRecipe(EnumColor color)
+        public bool HasRecipe(IColorStrategy color) => _colorMixtures.ContainsKey(color);
+        public bool CanBeIngredient(IColorStrategy color) => _ingredients.Contains(color);
+
+        public bool CanMix(IColorStrategy first, IColorStrategy second)
         {
-            return _colorMixtures.ContainsKey(color);
-        }
-
-        public bool CanBeIngredient(EnumColor color)
-        {
-            return _ingredients.Contains(color);
-        }
-
-        public bool CanMix(EnumColor first, EnumColor second)
-        {
-            if (first == second)
-                return false;
-
+            if (first == second) return false;
             return TryGetResult(first, second, out _);
         }
 
-        public (EnumColor First, EnumColor Second) GetPair(EnumColor result)
+        public (IColorStrategy First, IColorStrategy Second) GetPair(IColorStrategy result)
         {
             if (_colorMixtures.TryGetValue(result, out var pair) == false)
-                throw new KeyNotFoundException($"No recipe for color {result}.");
+                throw new KeyNotFoundException($"No recipe for color {result.Name}.");
 
             return pair;
         }
 
-        public bool TryGetPair(
-            EnumColor result,
-            out (EnumColor First, EnumColor Second) pair)
+        public bool TryGetPair(IColorStrategy result, out (IColorStrategy First, IColorStrategy Second) pair)
         {
             return _colorMixtures.TryGetValue(result, out pair);
         }
 
-        public bool TryGetResult(
-            EnumColor first,
-            EnumColor second,
-            out EnumColor result)
+        public bool TryGetResult(IColorStrategy first, IColorStrategy second, out IColorStrategy result)
         {
             return _resultsByPair.TryGetValue(Normalize(first, second), out result);
         }
 
-        private static (EnumColor, EnumColor) Normalize(EnumColor first, EnumColor second)
+        private static (IColorStrategy, IColorStrategy) Normalize(IColorStrategy first, IColorStrategy second)
         {
-            return first.CompareTo(second) <= 0 ? (first, second) : (second, first);
+            return string.Compare(first.Name, second.Name, System.StringComparison.Ordinal) <= 0 
+                ? (first, second) 
+                : (second, first);
         }
     }
 }

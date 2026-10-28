@@ -18,21 +18,19 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private MonoBehaviour[] _servicesMono;
 
         private LanguageSetter _languageSetter;
-        private PlayerProgress _playerProgress;
         private List<IObjectInitilizable> _servicesInitializable = new();
 
-        [Inject] 
-        private SequenceDifficultyLevel _sequenceDifficultyLevel;
+        [Inject] private SequenceDifficultyLevel _sequenceDifficultyLevel;
+        [Inject] private PlayerProgress _playerProgress;
 
         private void Awake()
         {
-            _playerProgress = new PlayerProgress();
             _languageSetter = new LanguageSetter();
 
             ValidateDependencies();
             _playerProgress.Initialize();
             _platformSetter.Initialize(_languageSetter);
-            _modePanelsPresenter.Initialize(_playerProgress);
+            _modePanelsPresenter.Initialize();
 
             foreach (var mono in _servicesMono)
             {

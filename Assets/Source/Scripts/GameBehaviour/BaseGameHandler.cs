@@ -79,8 +79,6 @@ namespace Assets.Source.Scripts.GameBehaviour
             SceneLoader.LoadMainMenuScene();
         }
 
-        // может стоит написать класс презентер, который подписывает методы переключения сцен на клики по кнопкам
-        // чтобы не использовать методы в открытую 
         public void OpenTutorialScene()
         {
             SceneLoader.LoadTutorialScene();

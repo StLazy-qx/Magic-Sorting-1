@@ -139,12 +139,12 @@ TextureImporter:
       name: 20dc741a-6901-4616-9bdfdsfsefsf4reesfs_0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 281
-        width: 468
-        height: 473
+        x: 22
+        y: 509
+        width: 393
+        height: 395
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -160,12 +160,12 @@ TextureImporter:
       name: 20dc741a-6901-4616-9bdfdsfsefsf4reesfs_1
       rect:
         serializedVersion: 2
-        x: 537
-        y: 281
-        width: 458
-        height: 477
+        x: 84
+        y: 35
+        width: 433
+        height: 427
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: 20dc741a-6901-4616-9bdfdsfsefsf4reesfs_2
       rect:
         serializedVersion: 2
-        x: 1041
-        y: 282
-        width: 463
-        height: 474
+        x: 584
+        y: 36
+        width: 430
+        height: 428
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -194,6 +194,69 @@ TextureImporter:
       bones: []
       spriteID: 3181903268492b14caa567dc171b1568
       internalID: -1483447508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 20dc741a-6901-4616-9bdfdsfsefsf4reesfs_3
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 476
+        width: 797
+        height: 454
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84cf8d8a15ac5584095da1f46b5727d7
+      internalID: -119501049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 20dc741a-6901-4616-9bdfdsfsefsf4reesfs_4
+      rect:
+        serializedVersion: 2
+        x: 1213
+        y: 511
+        width: 388
+        height: 393
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a120abed8c1c46408896bb05603cefb
+      internalID: -2933592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 20dc741a-6901-4616-9bdfdsfsefsf4reesfs_5
+      rect:
+        serializedVersion: 2
+        x: 1099
+        y: 38
+        width: 422
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2750fe2cf98b24d4c9fbec2695a7a894
+      internalID: 808626224
       vertices: []
       indices: 
       edges: []
@@ -212,6 +275,9 @@ TextureImporter:
       20dc741a-6901-4616-9bdfdsfsefsf4reesfs_0: -687128086
       20dc741a-6901-4616-9bdfdsfsefsf4reesfs_1: -409436731
       20dc741a-6901-4616-9bdfdsfsefsf4reesfs_2: -1483447508
+      20dc741a-6901-4616-9bdfdsfsefsf4reesfs_3: -119501049
+      20dc741a-6901-4616-9bdfdsfsefsf4reesfs_4: -2933592
+      20dc741a-6901-4616-9bdfdsfsefsf4reesfs_5: 808626224
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

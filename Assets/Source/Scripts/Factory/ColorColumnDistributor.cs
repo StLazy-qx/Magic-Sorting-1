@@ -6,7 +6,6 @@ using System.Linq;
 using Random = UnityEngine.Random;
 using Assets.Source.Scripts.Colorize;
 using System;
-using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.UI.Color_Mix_View;
 
 namespace Assets.Source.Scripts.Factory
@@ -23,22 +22,32 @@ namespace Assets.Source.Scripts.Factory
         private bool _isTargetAssigned;
         private ColorRecipes _colorRecipes;
         private ColorConverter _colorConverter;
-        private HashSet<EnumColor> _roundColors;
+        private HashSet<IColorStrategy> _roundColors;
 
         public bool HasTarget => _isTargetAssigned;
         public Color TargetColor { get; private set; }
 
         public void Initialize(
-            ColorRecipes colorRecipes, 
+            ColorRecipes colorRecipes,
             ColorConverter colorConverter,
-            IEnumerable<EnumColor> roundColors,
+            IEnumerable<IColorStrategy> roundColors,
             int countMixColors)
         {
-            _countMixColors = countMixColors;
-            _colorConverter = colorConverter;
-            _roundColors = new HashSet<EnumColor>(roundColors);
-            _colorRecipes = colorRecipes;
-            TargetColor = default;
+            if (colorRecipes == null)
+                throw new ArgumentNullException(nameof(colorRecipes));
+            if (colorConverter == null)
+                throw new ArgumentNullException(nameof(colorConverter));
+            if (roundColors == null)
+                throw new ArgumentNullException(nameof(roundColors));
+            if (countMixColors < 0)
+                throw new ArgumentOutOfRangeException(nameof(countMixColors));
+
+            _countMixColors  = countMixColors;
+            _colorConverter  = colorConverter;
+            _roundColors     = new HashSet<IColorStrategy>(roundColors);
+            _colorRecipes    = colorRecipes;
+            TargetColor      = default;
+            _isTargetAssigned = false;
         }
 
         public void Distribute()
@@ -48,9 +57,7 @@ namespace Assets.Source.Scripts.Factory
             while (TryGetRandomColumnWithSpace(out MagicColumn column))
             {
                 ColorEntry colorEntry = _colorPool.Get();
-
-                if (colorEntry == null)
-                    break;
+                if (colorEntry == null) break;
 
                 Color color = colorEntry.ConsumeColor();
 
@@ -67,42 +74,40 @@ namespace Assets.Source.Scripts.Factory
         }
 
         private bool ShouldMixColor()
-        {
-            if (_countMixColors <= 0)
-                return false;
-
-            return Random.value < MixChance;
-        }
+            => _countMixColors > 0 && Random.value < MixChance;
 
         private bool TryMixColor(
             Color color,
             out Color firstColor,
             out Color secondColor)
         {
-            firstColor = default;
+            firstColor  = default;
             secondColor = default;
 
             if (ShouldMixColor() == false)
                 return false;
 
-            EnumColor enumColor = _colorConverter.TransformColorToEnum(color);
+            IColorStrategy strategyColor = _colorConverter.TransformColorToStrategy(color);
 
-            if (_colorRecipes.TryGetPair(enumColor, out var pair) == false)
+            if (strategyColor == null)
+                return false;
+
+            if (_colorRecipes.TryGetPair(strategyColor, out var pair) == false)
                 return false;
 
             if (_roundColors.Contains(pair.First) == false
                 || _roundColors.Contains(pair.Second) == false)
                 return false;
 
-            firstColor = _colorConverter.TransformEnumToColor(pair.First);
-            secondColor = _colorConverter.TransformEnumToColor(pair.Second);
+            firstColor  = _colorConverter.TransformStrategyToColor(pair.First);
+            secondColor = _colorConverter.TransformStrategyToColor(pair.Second);
 
             if (_isTargetAssigned == false)
             {
-                TargetColor = _colorConverter.TransformEnumToColor(enumColor);
+                TargetColor = _colorConverter.TransformStrategyToColor(strategyColor);
 
-                _colorMixView.Apply(TargetColor, _countMixColors);
-                Debug.Log(enumColor);
+                if (_colorMixView != null)
+                    _colorMixView.Apply(TargetColor, _countMixColors);
 
                 _isTargetAssigned = true;
             }
@@ -119,7 +124,7 @@ namespace Assets.Source.Scripts.Factory
                 return false;
 
             List<MagicColumn> available = activeColumns
-                .Where(column => column.CanAddCell())
+                .Where(c => c.CanAddCell())
                 .ToList();
 
             if (available.Count == 0)

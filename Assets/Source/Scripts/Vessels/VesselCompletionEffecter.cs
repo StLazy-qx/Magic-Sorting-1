@@ -11,7 +11,6 @@ namespace Assets.Source.Scripts.Vessels
         private readonly float _offsetY = 0.3f;
 
         [SerializeField] private ParticlePool _particlePool;
-        [SerializeField] private VesselStateTracker _vesselStateTracker;
 
         public event Action<int> PoolEffectSizeReading;
 

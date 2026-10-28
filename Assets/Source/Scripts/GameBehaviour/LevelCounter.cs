@@ -10,8 +10,8 @@ namespace Assets.Source.Scripts.GameBehaviour
     public class LevelCounter : MonoBehaviour
     {
         private SequenceDifficultyLevel _currentLevel;
-		private int _roundNumber;
-		
+        private int _roundNumber;
+
         public event Action RoundChanged;
 
         public int RoundNumber => _roundNumber;
@@ -30,14 +30,14 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         private void OnDisable()
         {
-        	if (_currentLevel != null)
+            if (_currentLevel != null)
                 _currentLevel.RoundChanged -= OnRoundChange;
         }
 
         private void OnRoundChange()
         {
-        	_roundNumber++;
-        
+            _roundNumber++;
+
             YG2.saves.SaveRoundNumber(_roundNumber);
             RoundChanged?.Invoke();
         }

@@ -1,83 +1,61 @@
-﻿using System;
-using Assets.Source.Scripts.Enums;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Source.Scripts.Colorize
 {
     public class ColorConverter
     {
-        public Color TransformEnumToColor(EnumColor enumColor)
+        private const float ExactMatchEpsilon = 0.0001f;
+
+        private readonly ColorCatalog _catalog;
+        private readonly Dictionary<IColorStrategy, Color> _strategyToColor;
+        private readonly List<IColorStrategy> _all;
+
+        public ColorConverter(ColorCatalog catalog)
         {
-            switch (enumColor)
-            {
-                case EnumColor.Red:
-                    return new Color(1f, 0f, 0f);
+            _catalog = catalog;
 
-                case EnumColor.Green:
-                    return new Color(0f, 1f, 0f);
+            _strategyToColor = new Dictionary<IColorStrategy, Color>(catalog.All.Count);
+            _all = new List<IColorStrategy>(catalog.All);
 
-                case EnumColor.Blue:
-                    return new Color(0f, 0f, 1f);
-
-                case EnumColor.Yellow:
-                    return new Color(1f, 1f, 0f);
-
-                case EnumColor.Orange:
-                    return new Color(1f, 0.5f, 0f);
-
-                case EnumColor.Purple:
-                    return new Color(0.5f, 0f, 0.5f);
-
-                case EnumColor.Pink:
-                    return new Color(1f, 0.15f, 0.55f);
-
-                case EnumColor.Grey:
-                    return new Color(0.6f, 0.6f, 0.6f);
-
-                case EnumColor.Cyan:
-                    return new Color(0.2f, 1f, 1f);
-
-                case EnumColor.Lavender:
-                    return new Color(0.7f, 0.5f, 0.9f);
-
-                case EnumColor.Black:
-                    return new Color(0f, 0f, 0f);
-
-                case EnumColor.Magenta:
-                    return new Color(1f, 0f, 1f);
-
-                case EnumColor.White:
-                    return new Color(1f, 1f, 1f);
-
-                default:
-                    return new Color(1f, 0.5f, 1f);
-            }
+            foreach (var s in catalog.All)
+                _strategyToColor[s] = s.Value;
         }
-        
-		public EnumColor TransformColorToEnum(Color color)
+
+        public Color TransformStrategyToColor(IColorStrategy strategy)
         {
-            EnumColor closestEnumColor = default;
-            float minimalDistance = float.MaxValue;
+            if (strategy == null)
+                throw new System.ArgumentNullException(nameof(strategy));
 
-            foreach (EnumColor enumColor in Enum.GetValues(typeof(EnumColor)))
+            return _strategyToColor.TryGetValue(strategy, out var c) ? c : strategy.Value;
+        }
+
+        public IColorStrategy TransformColorToStrategy(Color color)
+        {
+            foreach (var s in _all)
             {
-                Color candidateColor = TransformEnumToColor(enumColor);
-
-                float redDifference = candidateColor.r - color.r;
-                float greenDifference = candidateColor.g - color.g;
-                float blueDifference = candidateColor.b - color.b;
-                float distance = redDifference * redDifference
-                                 + greenDifference * greenDifference
-                                 + blueDifference * blueDifference;
-
-                if (distance < minimalDistance)
-                {
-                    minimalDistance = distance;
-                    closestEnumColor = enumColor;
-                }
+                Color c = s.Value;
+                if (Mathf.Abs(c.r - color.r) < ExactMatchEpsilon
+                 && Mathf.Abs(c.g - color.g) < ExactMatchEpsilon
+                 && Mathf.Abs(c.b - color.b) < ExactMatchEpsilon)
+                    return s;
             }
 
-            return closestEnumColor;
+            IColorStrategy closest = null;
+            float minDist = float.MaxValue;
+
+            foreach (var s in _all)
+            {
+                Color c = s.Value;
+                float dr = c.r - color.r;
+                float dg = c.g - color.g;
+                float db = c.b - color.b;
+                float d = dr * dr + dg * dg + db * db;
+
+                if (d < minDist) { minDist = d; closest = s; }
+            }
+
+            return closest;
         }
     }
 }

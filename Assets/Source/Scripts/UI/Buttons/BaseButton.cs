@@ -45,13 +45,11 @@ namespace Assets.Source.Scripts.UI.Buttons
 
         private void OnEnable()
         {
-            Button.onClick.AddListener(OnButtonClick);
             Button.onClick.AddListener(HandleClick);
         }
 
         private void OnDisable()
         {
-            Button.onClick.RemoveListener(OnButtonClick);
             Button.onClick.RemoveListener(HandleClick);
         }
 

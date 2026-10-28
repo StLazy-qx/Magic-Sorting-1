@@ -26,8 +26,6 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private IconRewardedAdvertisement _rewardedIconMobile;
         [SerializeField] private ReverseButtonView _reverseButtonViewDesktop;
         [SerializeField] private ReverseButtonView _reverseButtonViewMobile;
-        //[SerializeField] private ButtonColorMixer _buttonColorMixerDesktop;
-        //[SerializeField] private ButtonColorMixer _buttonColorMixerMobile;
         [Header("Game Objects")]
         [SerializeField] private MagicCell _magicCellDesktop;
         [SerializeField] private MagicCell _magicCellMobile;

@@ -11,6 +11,7 @@ namespace Assets.Source.Scripts.Installers
     {
         public override void InstallBindings()
         {
+            Container.BindInterfacesAndSelfTo<PlayerProgress>().AsSingle().NonLazy();
             Container.Bind<SequenceDifficultyLevel>().AsSingle();
             Container.Bind<DifficultyState>().AsSingle().NonLazy();
             Container.Bind<Wallet>().AsSingle();

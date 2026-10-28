@@ -12,8 +12,7 @@ namespace YG
 
         public int MainPoints;
         public int ActualRoundNumber;
-        public int SavedGameMode = -1;
-        public int SavedDifficultyLevel = -1;
+        public int SavedGameMode = 0;
         public float MasterVolume = BeginVolume;
         public float AmbientVolume = BeginVolume;
         public float EffectVolume = BeginVolume;
@@ -21,12 +20,12 @@ namespace YG
         public string SavedLanguage;
         public List<string> ItemIDs = new();
 
+        private GameModeSection _mode;
         private ScoreSection _score;
         private RoundSection _round;
         private AudioSettingsSection _audio;
         private InventorySection _inventory;
         private LanguageSection _language;
-        private GameModeSection _mode;
 
         public GameModeSection Mode => _mode ??= new GameModeSection(this);
         public ScoreSection Score => _score ??= new ScoreSection(this);
@@ -48,44 +47,49 @@ namespace YG
             Application.quitting -= OnApplicationQuit;
         }
 
-        public void SaveScore(int points) 
+        public void SaveScore(int points)
             => Score.SaveScore(points);
 
-        public void DecreaseScore(int points) 
+        public void DecreaseScore(int points)
             => Score.DecreaseScore(points);
 
-        public void AddItem(string itemID) 
+        public void AddItem(string itemID)
             => Inventory.AddItem(itemID);
 
-        public void SaveEquippedItem(string itemID) 
+        public void SaveEquippedItem(string itemID)
             => Inventory.SaveEquippedItem(itemID);
 
-        public IReadOnlyList<string> GetPurchasedItems() 
+        public IReadOnlyList<string> GetPurchasedItems()
             => Inventory.GetPurchasedItems();
 
-        public void SaveRoundNumber(int number) 
+        public void SaveRoundNumber(int number)
             => Round.SaveRoundNumber(number);
 
-        public int GetRoundNumber() 
+        public int GetRoundNumber()
             => Round.GetRoundNumber();
 
-        public void SaveMasterVolume(float value) 
+        public void SaveMasterVolume(float value)
             => Audio.SaveMasterVolume(value);
 
-        public void SaveAmbientVolume(float value) 
+        public void SaveAmbientVolume(float value)
             => Audio.SaveAmbientVolume(value);
 
         public void SaveEffectVolume(float value)
             => Audio.SaveEffectVolume(value);
 
         public void ForceSaveAudio()
-           => Audio.ForceSaver();
+            => Audio.ForceSaver();
 
         public void SaveLanguage(string language)
-        => Language.SaveLanguage(language);
+            => Language.SaveLanguage(language);
+        public void SaveMode(GameMode mode)
+            => Mode.SaveMode(mode);
 
-        public void SaveMode(GameMode mode, DifficultyLevel level)
-            => Mode.SaveMode(mode, level);
+        public GameMode LoadMode()
+            => Mode.LoadMode();
+
+        public bool HasSavedMode
+            => Mode.HasSavedMode;
 
         private void OnApplicationQuit()
         {

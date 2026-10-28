@@ -28,6 +28,11 @@ namespace Assets.Source.Scripts.InteractiveObjects
         public bool HasMixedCell => _storage?.HasMixedCell ?? false;
 
         public bool IsInitialized { get; private set; }
+        
+        private void OnDestroy()
+        {
+			_deliveryHandler.Delivered -= OnMixedCellDelivered;
+		}
 
         public void Initialize(
             ColorRecipes colorRecipes,

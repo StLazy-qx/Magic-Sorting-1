@@ -8,60 +8,113 @@ namespace Assets.Source.Scripts.ActionsHandlers
     {
         private readonly ClickModeTracker _modeTracker;
         private readonly RewardedAdvertisingGateway _rewardedGateway;
-        private readonly ReverseButtonView _reverseButtonView;
+        private readonly ReverseButtonView _view;
         private readonly string _rewardId;
 
         public event Action Ended;
 
-        public ReverseRewardFlow(
-            ClickModeTracker modeTracker,
+        public ReverseRewardFlow(ClickModeTracker modeTracker,
             RewardedAdvertisingGateway rewardedGateway,
-            ReverseButtonView reverseButtonView,
+            ReverseButtonView view,
             string rewardId)
         {
             _modeTracker = modeTracker;
             _rewardedGateway = rewardedGateway;
-            _reverseButtonView = reverseButtonView;
+            _view = view;
             _rewardId = rewardId;
         }
 
         public void Show()
         {
-            if (_rewardedGateway.IsShowing)
-                return;
-
-            _reverseButtonView.SetButtonInteractable(false);
-
-            _rewardedGateway.ShowReward(
-                _rewardId,
-                onSuccess: OnSuccess,
-                onError: OnError,
-                onClose: OnClose);
+            if (_rewardedGateway.IsShowing) return;
+            _view.SetButtonInteractable(false);
+            _rewardedGateway.ShowReward(_rewardId, OnSuccess, OnError, OnClose);
         }
 
         private void OnSuccess()
         {
-            _reverseButtonView.EnableButton();
             _modeTracker.ActivateReverseMode();
-            _reverseButtonView.SetButtonInteractable(true);
-
-            Ended?.Invoke();
+            _view.EnableButton();
+            Complete();
         }
 
         private void OnError()
         {
-            _reverseButtonView.SetButtonInteractable(true);
-            _reverseButtonView.SetButtonLockedVisual(false);
-
-            Ended?.Invoke();
+            _view.SetButtonLockedVisual(false);
+            Complete();
         }
 
         private void OnClose()
         {
-            _reverseButtonView.SetButtonInteractable(true);
-            _reverseButtonView.SetButtonLockedVisual(true);
+            _view.SetButtonLockedVisual(true);
+            Complete();
+        }
 
+        private void Complete()
+        {
+            _view.SetButtonInteractable(true);
             Ended?.Invoke();
         }
     }
+
+    //public class ReverseRewardFlow
+    //{
+    //    private readonly ClickModeTracker _modeTracker;
+    //    private readonly RewardedAdvertisingGateway _rewardedGateway;
+    //    private readonly ReverseButtonView _reverseButtonView;
+    //    private readonly string _rewardId;
+
+    //    public event Action Ended;
+
+    //    public ReverseRewardFlow(
+    //        ClickModeTracker modeTracker,
+    //        RewardedAdvertisingGateway rewardedGateway,
+    //        ReverseButtonView reverseButtonView,
+    //        string rewardId)
+    //    {
+    //        _modeTracker = modeTracker;
+    //        _rewardedGateway = rewardedGateway;
+    //        _reverseButtonView = reverseButtonView;
+    //        _rewardId = rewardId;
+    //    }
+
+    //    public void Show()
+    //    {
+    //        if (_rewardedGateway.IsShowing)
+    //            return;
+
+    //        _reverseButtonView.SetButtonInteractable(false);
+
+    //        _rewardedGateway.ShowReward(
+    //            _rewardId,
+    //            onSuccess: OnSuccess,
+    //            onError: OnError,
+    //            onClose: OnClose);
+    //    }
+
+    //    private void OnSuccess()
+    //    {
+    //        _reverseButtonView.EnableButton();
+    //        _modeTracker.ActivateReverseMode();
+    //        _reverseButtonView.SetButtonInteractable(true);
+
+    //        Ended?.Invoke();
+    //    }
+
+    //    private void OnError()
+    //    {
+    //        _reverseButtonView.SetButtonInteractable(true);
+    //        _reverseButtonView.SetButtonLockedVisual(false);
+
+    //        Ended?.Invoke();
+    //    }
+
+    //    private void OnClose()
+    //    {
+    //        _reverseButtonView.SetButtonInteractable(true);
+    //        _reverseButtonView.SetButtonLockedVisual(true);
+
+    //        Ended?.Invoke();
+    //    }
+    //}
 }

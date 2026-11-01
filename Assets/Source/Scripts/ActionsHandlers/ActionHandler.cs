@@ -28,22 +28,22 @@ namespace Assets.Source.Scripts.ActionsHandlers
         }
 
         private void OnPlayerAction(
-            Vector3 beginPosition, 
-            Vector3 targetPosition, 
+            Vector3 beginPosition,
+            Vector3 targetPosition,
             Color color)
         {
             ValidateParameters(beginPosition, targetPosition);
             SkillUsed.Invoke();
             _soundPlayer.PlayInteractSound();
             StartCoroutine(MoveParticle(
-                beginPosition, 
-                targetPosition, 
+                beginPosition,
+                targetPosition,
                 color));
         }
 
         private IEnumerator MoveParticle(
-            Vector3 beginPosition, 
-            Vector3 targetPosition, 
+            Vector3 beginPosition,
+            Vector3 targetPosition,
             Color color)
         {
             ParticleSystem particle = _particlePool.HandOver();
@@ -88,8 +88,8 @@ namespace Assets.Source.Scripts.ActionsHandlers
         }
 
         private IEnumerator AnimateParticleMovement(
-            ParticleSystem particle, 
-            Vector3 beginPosition, 
+            ParticleSystem particle,
+            Vector3 beginPosition,
             Vector3 targetPosition)
         {
             float elapsed = 0f;
@@ -112,11 +112,11 @@ namespace Assets.Source.Scripts.ActionsHandlers
             Guard.NotNull(_soundPlayer, nameof(_soundPlayer));
             Guard.NotNull(_cellRouter, nameof(_cellRouter));
             Guard.NotNull(_particlePool, nameof(_particlePool));
-            Guard.IsTrue(_moveDuration > nullDuration, 
+            Guard.IsTrue(_moveDuration > nullDuration,
                 "Move duration must be positive.");
-            Guard.IsTrue(beginPosition.IsValid(), nameof(beginPosition), 
+            Guard.IsTrue(beginPosition.IsValid(), nameof(beginPosition),
                 "Position contains NaN or Infinity");
-            Guard.IsTrue(targetPosition.IsValid(), nameof(targetPosition), 
+            Guard.IsTrue(targetPosition.IsValid(), nameof(targetPosition),
                 "Position contains NaN or Infinity");
         }
     }

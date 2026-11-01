@@ -6,10 +6,6 @@ using System;
 
 namespace Assets.Source.Scripts.InteractiveObjects
 {
-    /// <summary>
-    /// Инкапсулирует общую логику обработки клика по ячейке:
-    /// проверка режима клика, проверка возможности доставки, доставка и отписка.
-    /// </summary>
     public class CellClickDeliveryHandler
     {
         private readonly MagicCellRouter _cellRouter;

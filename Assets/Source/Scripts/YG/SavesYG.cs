@@ -19,13 +19,14 @@ namespace YG
         public string EquippedItem;
         public string SavedLanguage;
         public List<string> ItemIDs = new();
-
+        public List<RoundRatingEntry> RoundRatingEntries = new();
         private GameModeSection _mode;
         private ScoreSection _score;
         private RoundSection _round;
         private AudioSettingsSection _audio;
         private InventorySection _inventory;
         private LanguageSection _language;
+        private RoundRatingSection _roundRatings;
 
         public GameModeSection Mode => _mode ??= new GameModeSection(this);
         public ScoreSection Score => _score ??= new ScoreSection(this);
@@ -33,6 +34,7 @@ namespace YG
         public AudioSettingsSection Audio => _audio ??= new AudioSettingsSection(this);
         public InventorySection Inventory => _inventory ??= new InventorySection(this);
         public LanguageSection Language => _language ??= new LanguageSection(this);
+        public RoundRatingSection RoundRatings => _roundRatings ??= new RoundRatingSection(this);
 
         public int Points => Score.Points;
         public string EquippedItemID => Inventory.EquippedItemID;
@@ -82,6 +84,7 @@ namespace YG
 
         public void SaveLanguage(string language)
             => Language.SaveLanguage(language);
+
         public void SaveMode(GameMode mode)
             => Mode.SaveMode(mode);
 
@@ -91,6 +94,17 @@ namespace YG
         public bool HasSavedMode
             => Mode.HasSavedMode;
 
+        public RoundRating GetRoundRating(GameMode mode, int roundIndex)
+            => RoundRatings.Get(mode, roundIndex);
+
+        public bool TryGetRoundRating(GameMode mode, int roundIndex, out RoundRating rating)
+            => RoundRatings.TryGet(mode, roundIndex, out rating);
+
+        public void SaveRoundRating(GameMode mode, int roundIndex, RoundRating rating, bool keepBest = true)
+            => RoundRatings.Save(mode, roundIndex, rating, keepBest);
+
+        public Dictionary<int, RoundRating> GetRoundRatingsForMode(GameMode mode)
+            => RoundRatings.GetRatingsForMode(mode);
         private void OnApplicationQuit()
         {
             Audio.ForceSaver();

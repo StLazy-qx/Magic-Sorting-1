@@ -25,18 +25,18 @@ namespace Assets.Source.Scripts.ActionsHandlers
 
             ModeChanged?.Invoke(CurrentMode);
         }
-        
+
         public void ActivateMixerColorMode()
         {
-        	CurrentMode = ClickImpactMode.ModeColorMixing;
-        
-        	ModeChanged?.Invoke(CurrentMode);
-		}
+            CurrentMode = ClickImpactMode.ModeColorMixing;
+
+            ModeChanged?.Invoke(CurrentMode);
+        }
 
         public void MarkReverseUsed()
         {
             Guard.IsTrue(CurrentMode == ClickImpactMode.ModeReverse,
-                nameof(CurrentMode), 
+                nameof(CurrentMode),
                 "Cannot mark reverse used when not in Reverse mode");
 
             IsReverseUsed = true;

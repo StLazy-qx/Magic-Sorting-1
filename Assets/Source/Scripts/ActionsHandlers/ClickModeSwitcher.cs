@@ -100,14 +100,14 @@ namespace Assets.Source.Scripts.ActionsHandlers
             if (CurrentMode == ClickImpactMode.ModeColorMixing)
             {
                 _modeTracker.ActivateDistributionMode();
-                
+
                 return;
             }
 
             if (CurrentMode == ClickImpactMode.ModeReverse)
             {
                 _modeTracker.ActivateDistributionMode();
-                
+
                 return;
             }
 
@@ -116,7 +116,7 @@ namespace Assets.Source.Scripts.ActionsHandlers
                 if (_reverseButtonView.IsRewardedIconActive == false)
                 {
                     _modeTracker.ActivateReverseMode();
-                    
+
                     return;
                 }
 
@@ -134,7 +134,7 @@ namespace Assets.Source.Scripts.ActionsHandlers
             if (CurrentMode == ClickImpactMode.ModeColorMixing)
             {
                 _modeTracker.ActivateDistributionMode();
-                
+
                 return;
             }
 
@@ -157,7 +157,7 @@ namespace Assets.Source.Scripts.ActionsHandlers
             if (CurrentMode == ClickImpactMode.ModeReverse)
             {
                 _modeTracker.ActivateDistributionMode();
-                
+
                 return;
             }
 

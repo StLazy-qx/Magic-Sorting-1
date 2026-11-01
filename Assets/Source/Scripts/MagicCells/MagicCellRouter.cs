@@ -31,8 +31,7 @@ namespace Assets.Source.Scripts.MagicCells
         public void Initialize(IReadOnlyList<Vessel> vessels)
         {
             Guard.NotNull(vessels, nameof(vessels));
-            Guard.IsTrue(vessels.Count > 0, nameof(vessels),
-                "[MagicCellRouter] ������ ����� �� ����� ���� ������.");
+            Guard.IsTrue(vessels.Count > 0, nameof(vessels));
 
             _vessels = vessels;
         }

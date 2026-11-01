@@ -1,8 +1,9 @@
 using Assets.Source.Scripts.Factory;
 using Assets.Source.Scripts.Game_Progress;
+using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Language;
 using Assets.Source.Scripts.Player;
-using System;
+using Assets.Source.Scripts.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private PlatformMenuAdapter _platformSetter;
         [SerializeField] private StoreItemFactory _storeItemFactory;
         [SerializeField] private MainMenuPanelsPresenter _modePanelsPresenter;
+        [SerializeField] private RoundProgressDisplay _roundProgressDisplay;
         [SerializeField] private MonoBehaviour[] _servicesMono;
 
         private LanguageSetter _languageSetter;
@@ -22,6 +24,7 @@ namespace Assets.Source.Scripts.EntryPoint
 
         [Inject] private SequenceDifficultyLevel _sequenceDifficultyLevel;
         [Inject] private PlayerProgress _playerProgress;
+        [Inject] private RoundSequenceProvider _roundSequenceProvider;
 
         private void Awake()
         {
@@ -31,6 +34,7 @@ namespace Assets.Source.Scripts.EntryPoint
             _playerProgress.Initialize();
             _platformSetter.Initialize(_languageSetter);
             _modePanelsPresenter.Initialize();
+            _roundProgressDisplay.Initialize(_roundSequenceProvider);
 
             foreach (var mono in _servicesMono)
             {
@@ -58,14 +62,14 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private void ValidateDependencies()
         {
-            if (_platformSetter == null)
-                throw new ArgumentNullException(nameof(_platformSetter));
-
-            if (_storeItemFactory == null)
-                throw new ArgumentNullException(nameof(_storeItemFactory));
-
-            if (_servicesMono == null)
-                throw new ArgumentNullException(nameof(_servicesMono));
+            Guard.NotNull(_platformSetter, nameof(_platformSetter));
+            Guard.NotNull(_storeItemFactory, nameof(_storeItemFactory));
+            Guard.NotNull(_modePanelsPresenter, nameof(_modePanelsPresenter));
+            Guard.NotNull(_roundProgressDisplay, nameof(_roundProgressDisplay));
+            Guard.NotNull(_servicesMono, nameof(_servicesMono));
+            Guard.NotNull(_playerProgress, nameof(_playerProgress));
+            Guard.NotNull(_sequenceDifficultyLevel, nameof(_sequenceDifficultyLevel));
+            Guard.NotNull(_roundSequenceProvider, nameof(_roundSequenceProvider));
         }
     }
 }

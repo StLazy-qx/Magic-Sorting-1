@@ -19,7 +19,7 @@ namespace Assets.Source.Scripts.EntryPoint
     public class CompositionRootGameSession : MonoBehaviour
     {
         [SerializeField] private DifficultyDatabase _difficultyDatabase;
-        [SerializeField] private PlatformGameAdapter _platformDependentSetter;
+        [SerializeField] private PlatformGameAdapter _platformGameAdapter;
         [SerializeField] private ColorRandomizer _colorRandomizer;
         [SerializeField] private EntryColorListsFactory _entryColorListsFactory;
         [SerializeField] private ColumnsFactory _columnsFactory;
@@ -27,22 +27,37 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private StoreItemFactory _storeItemFactory;
         [SerializeField] private ColorColumnDistributor _columnDistributor;
         [SerializeField] private MagicMixer _magicMixer;
-        [SerializeField] private MagicCellRouter _cellRouter;
+        [SerializeField] private MagicCellRouter _magicCellRouter;
         [SerializeField] private ClickModeSwitcher _clickModeSwitcher;
         [SerializeField] private GameSessionHandler _gameSessionHandler;
-        [SerializeField] private MonoBehaviour[] _objectsToInitializeMono;
+        [SerializeField] private MonoBehaviour[] _objectInitialize;
 
         private DifficultyState _difficultyState;
-        private DifficultySettings _currentSettings;
-        private SequenceDifficultyLevel _sequenceDifficulty;
+        private DifficultySettings _currentDifficultySettings;
+        private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private ColorCatalog _colorCatalog;
         private ColorRecipes _colorRecipes;
         private ColorConverter _colorConverter;
         private PlayerProgress _playerProgress;
-        private List<IObjectInitilizable> _objectsInitilizable = new();
+        private List<IObjectInitilizable> _initializableObjects = new List<IObjectInitilizable>();
 
         public ColorRecipes ColorRecipes => _colorRecipes;
         public ColorConverter ColorConverter => _colorConverter;
+
+        [Inject]
+        private void Construct(
+            DifficultyState difficultyState,
+            PlayerProgress playerProgress,
+            SequenceDifficultyLevel sequenceDifficultyLevel)
+        {
+            Guard.NotNull(difficultyState, nameof(difficultyState));
+            Guard.NotNull(playerProgress, nameof(playerProgress));
+            Guard.NotNull(sequenceDifficultyLevel, nameof(sequenceDifficultyLevel));
+
+            _difficultyState = difficultyState;
+            _playerProgress = playerProgress;
+            _sequenceDifficultyLevel = sequenceDifficultyLevel;
+        }
 
         private void Awake()
         {
@@ -55,164 +70,145 @@ namespace Assets.Source.Scripts.EntryPoint
             Guard.NotNull(_colorCatalog, nameof(_colorCatalog));
             Guard.NotNull(_colorRecipes, nameof(_colorRecipes));
             Guard.NotNull(_colorConverter, nameof(_colorConverter));
-
             _colorRandomizer.Initialize(
                 _colorCatalog,
                 _colorConverter,
                 _colorRecipes);
-            _platformDependentSetter.Initialize();
+            _platformGameAdapter.Initialize();
             _vesselFactory.InitRandomizer(_colorRandomizer);
             CollectInitializableObjects();
             _magicMixer.Initialize(_colorRecipes, _colorConverter);
 
             _magicMixer.MixFailed += _clickModeSwitcher.OnMixFailed;
 
-            if (_gameSessionHandler != null)
-            {
-                _gameSessionHandler.SetLauncherDependencies(
-                    _columnsFactory,
-                    _vesselFactory,
-                    _entryColorListsFactory,
-                    _columnDistributor,
-                    _colorRecipes,
-                    _colorConverter);
-            }
-
+            Guard.NotNull(_gameSessionHandler, nameof(_gameSessionHandler));
+            _gameSessionHandler.SetLauncherDependencies(
+                _columnsFactory,
+                _vesselFactory,
+                _entryColorListsFactory,
+                _columnDistributor,
+                _colorRecipes,
+                _colorConverter);
             StartCoroutine(SessionInitialize());
         }
 
         private void OnEnable()
         {
-            if (_cellRouter != null && _clickModeSwitcher != null)
-                _cellRouter.CellSentToMixer += _clickModeSwitcher.OnMixerCellSent;
+            Guard.NotNull(_magicCellRouter, nameof(_magicCellRouter));
+            Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
+
+            _magicCellRouter.CellSentToMixer += _clickModeSwitcher.OnMixerCellSent;
         }
 
         private void OnDisable()
         {
-            if (_cellRouter != null && _clickModeSwitcher != null)
-                _cellRouter.CellSentToMixer -= _clickModeSwitcher.OnMixerCellSent;
+            Guard.NotNull(_magicCellRouter, nameof(_magicCellRouter));
+            Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
+
+            _magicCellRouter.CellSentToMixer -= _clickModeSwitcher.OnMixerCellSent;
         }
 
         private void OnDestroy()
         {
-            if (_magicMixer != null && _clickModeSwitcher != null)
-                _magicMixer.MixFailed -= _clickModeSwitcher.OnMixFailed;
-        }
+            Guard.NotNull(_magicMixer, nameof(_magicMixer));
+            Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
 
-        [Inject]
-        private void Construct(
-            DifficultyState difficultyState,
-            PlayerProgress playerProgress,
-            SequenceDifficultyLevel sequenceDifficulty)
-        {
-            Guard.NotNull(difficultyState, nameof(difficultyState));
-            Guard.NotNull(playerProgress, nameof(playerProgress));
-            Guard.NotNull(sequenceDifficulty, nameof(sequenceDifficulty));
-
-            _difficultyState = difficultyState;
-            _playerProgress = playerProgress;
-            _sequenceDifficulty = sequenceDifficulty;
+            _magicMixer.MixFailed -= _clickModeSwitcher.OnMixFailed;
         }
 
         public void RefreshRoundDistributor(
             ColorRandomizer colorRandomizer,
-            DifficultySettings settings)
+            DifficultySettings difficultySettings)
         {
             Guard.NotNull(colorRandomizer, nameof(colorRandomizer));
-            Guard.NotNull(settings, nameof(settings));
-
-            if (_colorRecipes == null || _colorConverter == null)
-            {
-                throw new InvalidOperationException(
-                    "[CompositionRoot] ColorRecipes или ColorConverter " +
-                    "ещё не инициализированы.");
-            }
-
-            if (colorRandomizer.RoundColors == null ||
-                colorRandomizer.RoundColors.Count == 0)
-            {
-                throw new InvalidOperationException(
-                    "[CompositionRoot] RoundColors пусты. " +
-                    "Распределитель не может быть настроен.");
-            }
-
+            Guard.NotNull(difficultySettings, nameof(difficultySettings));
+            Guard.IsTrue(_colorRecipes != null && _colorConverter != null,
+                "[CompositionRoot] ColorRecipes или ColorConverter " +
+                "ещё не инициализированы.");
+            Guard.NotNull(colorRandomizer.RoundColors, nameof(colorRandomizer.RoundColors));
+            Guard.IsTrue(colorRandomizer.RoundColors.Count > 0,
+                "[CompositionRoot] RoundColors пусты. " +
+                "Распределитель не может быть настроен.");
             _columnDistributor.Initialize(
                 _colorRecipes,
                 _colorConverter,
                 colorRandomizer.RoundColors,
-                settings.CountMixeColor);
+                difficultySettings.CountMixeColor);
         }
 
         public void DistributeRoundColors()
         {
+            Guard.NotNull(_columnDistributor, nameof(_columnDistributor));
+
             _columnDistributor.Distribute();
         }
 
         private void CollectInitializableObjects()
         {
-            Guard.NotNull(_objectsToInitializeMono, nameof(_objectsToInitializeMono));
+            Guard.NotNull(_objectInitialize, nameof(_objectInitialize));
 
-            if (_objectsToInitializeMono.Length == 0)
+            if (_objectInitialize.Length == 0)
                 return;
 
-            foreach (var mono in _objectsToInitializeMono)
+            foreach (MonoBehaviour monoBehaviour in _objectInitialize)
             {
-                Guard.NotNull(mono, nameof(_objectsToInitializeMono));
+                Guard.NotNull(monoBehaviour, nameof(_objectInitialize));
 
-                if (mono is IObjectInitilizable initObj
-                    && _objectsInitilizable.Contains(initObj) == false)
+                if (monoBehaviour is IObjectInitilizable initializableObject
+                    && _initializableObjects.Contains(initializableObject) == false)
                 {
-                    _objectsInitilizable.Add(initObj);
+                    _initializableObjects.Add(initializableObject);
                 }
             }
         }
 
         private IEnumerator SessionInitialize()
         {
-            if (_playerProgress == null)
-                yield break;
+            Guard.NotNull(_playerProgress, nameof(_playerProgress));
+            Guard.NotNull(_sequenceDifficultyLevel, nameof(_sequenceDifficultyLevel));
+            Guard.NotNull(_difficultyDatabase, nameof(_difficultyDatabase));
 
             if (_playerProgress.IsInitialized == false)
                 _playerProgress.Initialize();
 
             yield return new WaitUntil(() => _playerProgress.IsInitialized);
 
-            DifficultyLevel roundDifficulty = ResolveRoundDifficulty();
+            DifficultyLevel currentDifficultyLevel = ResolveRoundDifficulty();
 
-            _currentSettings = _difficultyDatabase.GetSettings(roundDifficulty);
+            _currentDifficultySettings = _difficultyDatabase.GetSettings(currentDifficultyLevel);
 
-            Guard.NotNull(_currentSettings, nameof(_currentSettings));
-            _colorRandomizer.SetDifficultySettings(_currentSettings.ColorsCount);
+            Guard.NotNull(_currentDifficultySettings, nameof(_currentDifficultySettings));
+            _colorRandomizer.SetDifficultySettings(_currentDifficultySettings.ColorsCount);
 
-            int foreign = 0;
+            int foreignStrategyCount = 0;
 
-            foreach (var c in _colorRandomizer.RoundColors)
+            foreach (IColorStrategy colorStrategy in _colorRandomizer.RoundColors)
             {
-                bool owned = false;
+                bool isOwnedByCatalog = false;
 
-                foreach (var own in _colorCatalog.All)
+                foreach (IColorStrategy catalogStrategy in _colorCatalog.All)
                 {
-                    if (ReferenceEquals(own, c))
+                    if (ReferenceEquals(catalogStrategy, colorStrategy))
                     {
-                        owned = true;
+                        isOwnedByCatalog = true;
+
                         break;
                     }
                 }
 
-                if (owned == false)
-                    foreign++;
+                if (isOwnedByCatalog == false)
+                    foreignStrategyCount++;
             }
 
-            Guard.IsTrue(foreign == 0,
+            Guard.IsTrue(foreignStrategyCount == 0,
                 nameof(_colorRandomizer),
-                $"RoundColors содержат {foreign} стратегий из чужого ColorCatalog — " +
+                $"RoundColors содержат {foreignStrategyCount} стратегий из чужого ColorCatalog — " +
                 "рецепты не будут совпадать по ссылке, колонки останутся пустыми.");
-
             _columnDistributor.Initialize(
                 _colorRecipes,
                 _colorConverter,
                 _colorRandomizer.RoundColors,
-                _currentSettings.CountMixeColor);
+                _currentDifficultySettings.CountMixeColor);
             _entryColorListsFactory.Initialize(
                 _colorRandomizer.BeginColors,
                 _colorRandomizer.RemainingColors);
@@ -223,16 +219,25 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private DifficultyLevel ResolveRoundDifficulty()
         {
+            Guard.NotNull(_playerProgress, nameof(_playerProgress));
+            Guard.NotNull(_sequenceDifficultyLevel, nameof(_sequenceDifficultyLevel));
+
             if (_playerProgress.CurrentMode == GameMode.Tutorial)
                 return _playerProgress.CurrentDifficultyLevel;
 
-            _sequenceDifficulty.SyncWithProgress();
+            _sequenceDifficultyLevel.SyncWithProgress();
 
-            return _sequenceDifficulty.GetNext();
+            return _sequenceDifficultyLevel.GetNext();
         }
 
         private IEnumerator FactoryInitialize()
         {
+            Guard.NotNull(_currentDifficultySettings, nameof(_currentDifficultySettings));
+            Guard.NotNull(_vesselFactory, nameof(_vesselFactory));
+            Guard.NotNull(_storeItemFactory, nameof(_storeItemFactory));
+            Guard.NotNull(_columnsFactory, nameof(_columnsFactory));
+            Guard.NotNull(_columnDistributor, nameof(_columnDistributor));
+
             _vesselFactory.Spawn();
             _storeItemFactory.Spawn();
 
@@ -244,8 +249,8 @@ namespace Assets.Source.Scripts.EntryPoint
             {
                 _columnsFactory.Initialize(
                     _vesselFactory.Objects,
-                    _currentSettings.ColumnsCount,
-                    _currentSettings.MaxCellsPerColumn);
+                    _currentDifficultySettings.ColumnsCount,
+                    _currentDifficultySettings.MaxCellsPerColumn);
                 _columnsFactory.Spawn();
             }
 
@@ -254,25 +259,30 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private IEnumerator EntityInitialize()
         {
-            if (_objectsInitilizable.Count == 0)
+            if (_initializableObjects.Count == 0)
                 yield break;
 
-            foreach (IObjectInitilizable currentObject in _objectsInitilizable)
+            foreach (IObjectInitilizable initializableObject in _initializableObjects)
             {
-                currentObject.Initialize();
+                Guard.NotNull(initializableObject, nameof(_initializableObjects));
 
-                if (currentObject is Inventory inventory)
+                initializableObject.Initialize();
+
+                if (initializableObject is Inventory inventory)
+                {
+                    Guard.NotNull(inventory, nameof(inventory));
                     inventory.SetScin();
+                }
             }
 
             yield return new WaitUntil(()
-                => _objectsInitilizable.TrueForAll(o => o.IsInitialized));
+                => _initializableObjects.TrueForAll(o => o.IsInitialized));
         }
 
         private void ValidateDependencies()
         {
             Guard.NotNull(_difficultyDatabase, nameof(_difficultyDatabase));
-            Guard.NotNull(_platformDependentSetter, nameof(_platformDependentSetter));
+            Guard.NotNull(_platformGameAdapter, nameof(_platformGameAdapter));
             Guard.NotNull(_colorRandomizer, nameof(_colorRandomizer));
             Guard.NotNull(_entryColorListsFactory, nameof(_entryColorListsFactory));
             Guard.NotNull(_columnsFactory, nameof(_columnsFactory));
@@ -280,9 +290,9 @@ namespace Assets.Source.Scripts.EntryPoint
             Guard.NotNull(_storeItemFactory, nameof(_storeItemFactory));
             Guard.NotNull(_columnDistributor, nameof(_columnDistributor));
             Guard.NotNull(_magicMixer, nameof(_magicMixer));
-            Guard.NotNull(_cellRouter, nameof(_cellRouter));
+            Guard.NotNull(_magicCellRouter, nameof(_magicCellRouter));
             Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
-            Guard.NotNull(_objectsToInitializeMono, nameof(_objectsToInitializeMono));
+            Guard.NotNull(_objectInitialize, nameof(_objectInitialize));
             Guard.NotNull(_gameSessionHandler, nameof(_gameSessionHandler));
         }
     }

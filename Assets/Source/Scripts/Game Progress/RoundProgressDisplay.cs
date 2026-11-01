@@ -1,5 +1,4 @@
-﻿using Assets.Source.Scripts.Enums;
-using Assets.Source.Scripts.Extensions;
+﻿using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Player;
 using TMPro;
@@ -10,6 +9,8 @@ namespace Assets.Source.Scripts.Game_Progress
 {
     public class RoundProgressDisplay : MonoBehaviour
     {
+        private const string ProgressFormat = "{0} / {1}";
+
         [SerializeField] private TextMeshProUGUI _easyProgressText;
         [SerializeField] private TextMeshProUGUI _mediumProgressText;
         [SerializeField] private TextMeshProUGUI _hardProgressText;
@@ -21,6 +22,7 @@ namespace Assets.Source.Scripts.Game_Progress
             Guard.NotNull(sequenceProvider, nameof(sequenceProvider));
 
             _sequenceProvider = sequenceProvider;
+
             RefreshFromSaves();
         }
 
@@ -34,12 +36,22 @@ namespace Assets.Source.Scripts.Game_Progress
 
         public void Refresh(int savedRoundNumber)
         {
+            Guard.Positive(savedRoundNumber, nameof(savedRoundNumber));
+
             if (_sequenceProvider == null)
                 return;
 
-            SetText(_easyProgressText,   _sequenceProvider.GetProgressText(savedRoundNumber, GameMode.Easy));
-            SetText(_mediumProgressText, _sequenceProvider.GetProgressText(savedRoundNumber, GameMode.Medium));
-            SetText(_hardProgressText,   _sequenceProvider.GetProgressText(savedRoundNumber, GameMode.Hard));
+            SetText(_easyProgressText, FormatProgress(savedRoundNumber, GameMode.Easy));
+            SetText(_mediumProgressText, FormatProgress(savedRoundNumber, GameMode.Medium));
+            SetText(_hardProgressText, FormatProgress(savedRoundNumber, GameMode.Hard));
+        }
+
+        private string FormatProgress(int savedRoundNumber, GameMode mode)
+        {
+            int current = _sequenceProvider.GetCurrentRoundInMode(savedRoundNumber, mode);
+            int total = _sequenceProvider.GetTotalRoundsInMode(mode);
+
+            return string.Format(ProgressFormat, current, total);
         }
 
         private static void SetText(TextMeshProUGUI target, string text)

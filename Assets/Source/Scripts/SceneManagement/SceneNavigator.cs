@@ -1,5 +1,4 @@
 using System;
-using Assets.Source.Scripts.SceneManagement;
 using Zenject;
 
 namespace Assets.Source.Scripts.SceneManagement

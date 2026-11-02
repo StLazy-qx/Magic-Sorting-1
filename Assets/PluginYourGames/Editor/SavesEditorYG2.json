@@ -13,10 +13,10 @@
     false,
     false
   ],
-  "idSave": 1168,
+  "idSave": 1179,
   "MainPoints": 20450,
-  "ActualRoundNumber": 61,
-  "SavedGameMode": 1,
+  "ActualRoundNumber": 69,
+  "SavedGameMode": 2,
   "MasterVolume": 0.85765624,
   "AmbientVolume": 0.147804469,
   "EffectVolume": 1.0,
@@ -38,7 +38,7 @@
     "Points": 20450
   },
   "Round": {
-    "ActualRoundNumber": 61
+    "ActualRoundNumber": 69
   },
   "Audio": {},
   "Inventory": {

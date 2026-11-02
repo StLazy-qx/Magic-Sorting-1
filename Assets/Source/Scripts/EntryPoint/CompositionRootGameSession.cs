@@ -12,7 +12,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
-using System;
 
 namespace Assets.Source.Scripts.EntryPoint
 {
@@ -94,27 +93,39 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private void OnEnable()
         {
-            Guard.NotNull(_magicCellRouter, nameof(_magicCellRouter));
-            Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
+            //Guard.NotNull(_magicCellRouter, nameof(_magicCellRouter));
+            //Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
 
-            _magicCellRouter.CellSentToMixer += _clickModeSwitcher.OnMixerCellSent;
+            //_magicCellRouter.CellSentToMixer += _clickModeSwitcher.OnMixerCellSent;
+
+            if (_magicCellRouter != null && _clickModeSwitcher != null)
+                _magicCellRouter.CellSentToMixer += _clickModeSwitcher.OnMixerCellSent;
+
+            if (_magicMixer != null && _clickModeSwitcher != null)
+                _magicMixer.MixFailed += _clickModeSwitcher.OnMixFailed;
         }
 
         private void OnDisable()
         {
-            Guard.NotNull(_magicCellRouter, nameof(_magicCellRouter));
-            Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
+            //Guard.NotNull(_magicCellRouter, nameof(_magicCellRouter));
+            //Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
 
-            _magicCellRouter.CellSentToMixer -= _clickModeSwitcher.OnMixerCellSent;
+            //_magicCellRouter.CellSentToMixer -= _clickModeSwitcher.OnMixerCellSent;
+
+            if (_magicCellRouter != null && _clickModeSwitcher != null)
+                _magicCellRouter.CellSentToMixer -= _clickModeSwitcher.OnMixerCellSent;
+
+            if (_magicMixer != null && _clickModeSwitcher != null)
+                _magicMixer.MixFailed -= _clickModeSwitcher.OnMixFailed;
         }
 
-        private void OnDestroy()
-        {
-            Guard.NotNull(_magicMixer, nameof(_magicMixer));
-            Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
+        //private void OnDestroy()
+        //{
+        //    Guard.NotNull(_magicMixer, nameof(_magicMixer));
+        //    Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
 
-            _magicMixer.MixFailed -= _clickModeSwitcher.OnMixFailed;
-        }
+        //    _magicMixer.MixFailed -= _clickModeSwitcher.OnMixFailed;
+        //}
 
         public void RefreshRoundDistributor(
             ColorRandomizer colorRandomizer,
@@ -227,7 +238,7 @@ namespace Assets.Source.Scripts.EntryPoint
 
             _sequenceDifficultyLevel.SyncWithProgress();
 
-            return _sequenceDifficultyLevel.GetNext();
+            return _sequenceDifficultyLevel.GetCurrent();
         }
 
         private IEnumerator FactoryInitialize()

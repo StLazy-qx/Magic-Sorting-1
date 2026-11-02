@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
-using Assets.Source.Scripts.Game_Progress;
 using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.YG;
 
@@ -80,6 +79,9 @@ namespace Assets.Source.Scripts.GameBehaviour
         public void OnRoundCompleted(RoundRating rating)
         {
             if (IsModeCompleted)
+                return;
+
+            if (rating == RoundRating.NotCompleted)
                 return;
 
             int roundNumber = CurrentRoundNumber;

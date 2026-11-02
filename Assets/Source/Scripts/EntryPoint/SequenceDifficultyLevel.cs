@@ -3,7 +3,6 @@ using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.Player;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
 
 namespace Assets.Source.Scripts.EntryPoint
@@ -57,6 +56,14 @@ namespace Assets.Source.Scripts.EntryPoint
             }
 
             IsInitialized = true;
+        }
+
+        public DifficultyLevel GetCurrent()
+        {
+            if (IsInitialized == false)
+                Initialize();
+
+            return _sequence[_currentIndex];
         }
 
         public void SyncWithProgress()

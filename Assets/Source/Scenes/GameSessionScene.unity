@@ -324485,7 +324485,12 @@ MonoBehaviour:
   _magicCellRouter: {fileID: 654057276}
   _clickModeSwitcher: {fileID: 923747164}
   _gameSessionHandler: {fileID: 392530558}
-  _objectInitialize: []
+  _objectInitialize:
+  - {fileID: 569123143}
+  - {fileID: 1845276654}
+  - {fileID: 908648324}
+  - {fileID: 2066365334}
+  - {fileID: 460316045}
 --- !u!114 &1009920591
 MonoBehaviour:
   m_ObjectHideFlags: 0

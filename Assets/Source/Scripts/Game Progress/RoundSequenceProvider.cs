@@ -56,10 +56,6 @@ namespace Assets.Source.Scripts.GameBehaviour
             return BuildRange(safeStart, safeStart + batchSize - 1);
         }
 
-        // ------------------------------------------------------------------
-        // Определение режима и стадии по сохранённому номеру раунда
-        // ------------------------------------------------------------------
-
         public GameMode DetermineModeByRoundNumber(int savedRoundNumber)
         {
             if (savedRoundNumber <= EasyEndRoundNumber) return GameMode.Easy;

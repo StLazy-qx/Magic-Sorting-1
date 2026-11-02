@@ -9,6 +9,7 @@ namespace Assets.Source.Scripts.GameBehaviour
     public class FinalGameSession : MonoBehaviour, IObjectInitilizable
     {
         [SerializeField] private BaseGameHandler _handler;
+        [SerializeField] private Panel _endModelPanel;
 
         private Panel _currentPanel;
         private Panel _currentTutorialPanel;
@@ -39,7 +40,24 @@ namespace Assets.Source.Scripts.GameBehaviour
             _currentTutorialPanel = panel;
         }
 
-        public void ShowEndRoundPanel()
+        //public void ShowEndRoundPanel()
+        //{
+        //    if (_handler is TutorialGameHandler tutorialHandler)
+        //    {
+        //        if (tutorialHandler.IsTutorialCompleted)
+        //        {
+        //            _handler.PauseGame();
+        //            _currentTutorialPanel.Open();
+
+        //            return;
+        //        }
+        //    }
+
+        //    _handler.PauseGame();
+        //    _currentPanel.Open();
+        //}
+
+        public void ShowEndRoundPanel(bool isModeCompleted = false)
         {
             if (_handler is TutorialGameHandler tutorialHandler)
             {
@@ -52,8 +70,21 @@ namespace Assets.Source.Scripts.GameBehaviour
                 }
             }
 
+            if (isModeCompleted)
+            {
+                ShowEndModePanel();
+
+                return;
+            }
+
             _handler.PauseGame();
             _currentPanel.Open();
+        }
+
+        public void ShowEndModePanel()
+        {
+            _handler.PauseGame();
+            _endModelPanel.Open();
         }
     }
 }

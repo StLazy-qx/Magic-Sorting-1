@@ -160,6 +160,12 @@ namespace Assets.Source.Scripts.GameBehaviour
         private void ChangeDifficultyBySequence()
         {
             DifficultyLevel nextLevel = _sequenceDifficultyLevel.GetNext();
+
+            Debug.Log("Увеличение раунда [GameSessionHandler]");
+            Debug.Log($"{_sequenceDifficultyLevel.RoundsCount}");
+            Debug.Log($"текущий раунд из последовательности {_sequenceDifficultyLevel.CurrentIndex}");
+
+
             DifficultyState.SetDifficulty(nextLevel);
         }
 

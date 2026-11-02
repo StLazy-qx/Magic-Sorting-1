@@ -25,7 +25,9 @@ namespace Assets.Source.Scripts.EntryPoint
 
         public event Action RoundChanged;
         public bool IsInitialized { get; private set; }
-        public int RoundsInSeries => ModeRoundsLength;
+        public int RoundsSeries => ModeRoundsLength;
+        public int RoundsCount => _sequence.Count;
+        public int CurrentIndex => _currentIndex;
 
         [Inject]
         private void Construct(PlayerProgress playerProgress)

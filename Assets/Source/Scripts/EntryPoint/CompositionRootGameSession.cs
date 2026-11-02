@@ -93,11 +93,6 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private void OnEnable()
         {
-            //Guard.NotNull(_magicCellRouter, nameof(_magicCellRouter));
-            //Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
-
-            //_magicCellRouter.CellSentToMixer += _clickModeSwitcher.OnMixerCellSent;
-
             if (_magicCellRouter != null && _clickModeSwitcher != null)
                 _magicCellRouter.CellSentToMixer += _clickModeSwitcher.OnMixerCellSent;
 
@@ -107,25 +102,12 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private void OnDisable()
         {
-            //Guard.NotNull(_magicCellRouter, nameof(_magicCellRouter));
-            //Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
-
-            //_magicCellRouter.CellSentToMixer -= _clickModeSwitcher.OnMixerCellSent;
-
             if (_magicCellRouter != null && _clickModeSwitcher != null)
                 _magicCellRouter.CellSentToMixer -= _clickModeSwitcher.OnMixerCellSent;
 
             if (_magicMixer != null && _clickModeSwitcher != null)
                 _magicMixer.MixFailed -= _clickModeSwitcher.OnMixFailed;
         }
-
-        //private void OnDestroy()
-        //{
-        //    Guard.NotNull(_magicMixer, nameof(_magicMixer));
-        //    Guard.NotNull(_clickModeSwitcher, nameof(_clickModeSwitcher));
-
-        //    _magicMixer.MixFailed -= _clickModeSwitcher.OnMixFailed;
-        //}
 
         public void RefreshRoundDistributor(
             ColorRandomizer colorRandomizer,

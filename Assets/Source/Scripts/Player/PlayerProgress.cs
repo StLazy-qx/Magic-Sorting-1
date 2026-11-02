@@ -135,6 +135,7 @@ namespace Assets.Source.Scripts.Player
             Guard.Positive(roundNumber, nameof(roundNumber));
 
             int endRoundNumber = _sequenceProvider.GetEndRoundNumber(mode);
+
             return endRoundNumber > 0 && roundNumber > endRoundNumber;
         }
 

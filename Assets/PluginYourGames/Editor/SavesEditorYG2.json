@@ -13,10 +13,10 @@
     false,
     false
   ],
-  "idSave": 1179,
-  "MainPoints": 20450,
-  "ActualRoundNumber": 69,
-  "SavedGameMode": 2,
+  "idSave": 1185,
+  "MainPoints": 20900,
+  "ActualRoundNumber": 71,
+  "SavedGameMode": 1,
   "MasterVolume": 0.85765624,
   "AmbientVolume": 0.147804469,
   "EffectVolume": 1.0,
@@ -35,10 +35,10 @@
     "HasSavedMode": true
   },
   "Score": {
-    "Points": 20450
+    "Points": 20900
   },
   "Round": {
-    "ActualRoundNumber": 69
+    "ActualRoundNumber": 71
   },
   "Audio": {},
   "Inventory": {
@@ -51,7 +51,7 @@
   "RoundRatings": {
     "Ratings": {}
   },
-  "Points": 20450,
+  "Points": 20900,
   "EquippedItemID": "66666",
   "HasSavedMode": true
 }

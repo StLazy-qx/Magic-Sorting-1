@@ -17,9 +17,10 @@ namespace Assets.Source.Scripts.Vessels
         [SerializeField] private FinalGameSession _finalGame;
         [SerializeField] private VesselCompletionEffecter _effecter;
 
+        private bool _isModeCompleted;
+        private int _veselsCount;
         private Wallet _wallet;
         private Panel _currentPanel;
-        private int _veselsCount;
         private IReadOnlyList<Vessel> _vessels;
 
         public event Action RoundOvering;
@@ -78,6 +79,16 @@ namespace Assets.Source.Scripts.Vessels
             _currentPanel = panel;
         }
 
+        public void SetModeCompleted(bool isCompleted)
+        {
+            _isModeCompleted = isCompleted;
+        }
+
+        public void ResetModeCompleted()
+        {
+            _isModeCompleted = false;
+        }
+
         public void CompleteAllVessels()
         {
             if (_vessels == null)
@@ -117,10 +128,20 @@ namespace Assets.Source.Scripts.Vessels
                 _wallet.ConfirmPoints();
                 _wallet.Reset();
                 _currentPanel.Close();
-                _finalGame.ShowEndRoundPanel();
+                _finalGame.ShowEndRoundPanel(_isModeCompleted);
 
                 _veselsCount = 0;
             }
+
+            //if (IsAllVesselsComplete())
+            //{
+            //    _wallet.ConfirmPoints();
+            //    _wallet.Reset();
+            //    _currentPanel.Close();
+            //    _finalGame.ShowEndRoundPanel();
+
+            //    _veselsCount = 0;
+            //}
         }
 
         private void ValidateInitializeArguments()

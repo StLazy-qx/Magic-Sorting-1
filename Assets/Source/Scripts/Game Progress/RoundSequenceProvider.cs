@@ -88,7 +88,6 @@ namespace Assets.Source.Scripts.GameBehaviour
             return end >= start ? end - start + 1 : 0;
         }
 
-        // 0 — игрок ещё не дошёл; total — режим пройден.
         public int GetCurrentRoundInMode(int savedRoundNumber, GameMode mode)
         {
             int start = GetStartRoundNumber(mode);

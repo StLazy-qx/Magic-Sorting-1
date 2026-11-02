@@ -62,14 +62,6 @@ namespace Assets.Source.Scripts.Game_Progress
             UpdateView();
         }
 
-        //private void Start()
-        //{
-        //    _isStarted = true;
-
-        //    RefreshModeAvailability();
-        //    UpdatePlayButton();
-        //}
-
         [Inject]
         public void Construct(SceneLoader sceneLoader, PlayerProgress playerProgress)
         {

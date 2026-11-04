@@ -40,24 +40,7 @@ namespace Assets.Source.Scripts.GameBehaviour
             _currentTutorialPanel = panel;
         }
 
-        //public void ShowEndRoundPanel()
-        //{
-        //    if (_handler is TutorialGameHandler tutorialHandler)
-        //    {
-        //        if (tutorialHandler.IsTutorialCompleted)
-        //        {
-        //            _handler.PauseGame();
-        //            _currentTutorialPanel.Open();
-
-        //            return;
-        //        }
-        //    }
-
-        //    _handler.PauseGame();
-        //    _currentPanel.Open();
-        //}
-
-        public void ShowEndRoundPanel(bool isModeCompleted = false)
+        public void ShowEndRoundPanel()
         {
             if (_handler is TutorialGameHandler tutorialHandler)
             {
@@ -68,13 +51,6 @@ namespace Assets.Source.Scripts.GameBehaviour
 
                     return;
                 }
-            }
-
-            if (isModeCompleted)
-            {
-                ShowEndModePanel();
-
-                return;
             }
 
             _handler.PauseGame();

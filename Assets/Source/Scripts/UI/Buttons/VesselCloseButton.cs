@@ -19,7 +19,8 @@ namespace Assets.Source.Scripts.UI
         {
             Guard.NotNull(_button, nameof(_button));
             Guard.Positive(_autoHideDelay, nameof(_autoHideDelay));
-            Hide();
+
+            SetVisible(false);
         }
 
         public void Show(Vessel vessel)
@@ -31,7 +32,7 @@ namespace Assets.Source.Scripts.UI
             _vessel.Filled += OnVesselFilled;
 
             _button.onClick.AddListener(OnButtonClick);
-            gameObject.SetActive(true);
+            SetVisible(true);
             _autoHideTimer.StartTimer(_autoHideDelay, Hide);
         }
 
@@ -42,18 +43,47 @@ namespace Assets.Source.Scripts.UI
             if (_vessel != null)
                 _vessel.Filled -= OnVesselFilled;
 
-            if (_button != null)
-                _button.onClick.RemoveListener(OnButtonClick);
-
+            _button.onClick.RemoveListener(OnButtonClick);
             _vessel = null;
-            
-            gameObject.SetActive(false);
+
+            SetVisible(false);
         }
+
+        //public void Show(Vessel vessel)
+        //{
+        //    Guard.NotNull(vessel, nameof(vessel));
+        //    Hide();
+
+        //    _vessel = vessel;
+        //    _vessel.Filled += OnVesselFilled;
+
+        //    _button.onClick.AddListener(OnButtonClick);
+        //    gameObject.SetActive(true);
+        //    _autoHideTimer.StartTimer(_autoHideDelay, Hide);
+        //}
+
+        //public void Hide()
+        //{
+        //    _autoHideTimer.StopTimer();
+
+        //    if (_vessel != null)
+        //        _vessel.Filled -= OnVesselFilled;
+
+        //    if (_button != null)
+        //        _button.onClick.RemoveListener(OnButtonClick);
+
+        //    _vessel = null;
+
+        //    gameObject.SetActive(false);
+        //}
+
+        private void SetVisible(bool value)
+            => _button.gameObject.SetActive(value);
 
         private void OnDestroy() 
 			=> _autoHideTimer.StopTimer();
 
-        private void OnVesselFilled(Vector3 _) 
+        private void OnVesselFilled(Vector3 vector3) 
 			=> Hide();
 
         private void OnButtonClick()

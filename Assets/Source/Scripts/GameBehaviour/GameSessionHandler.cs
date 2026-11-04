@@ -11,6 +11,7 @@ using System;
 using Zenject;
 using YG;
 using Cysharp.Threading.Tasks;
+using Assets.Source.Scripts.Player;
 
 namespace Assets.Source.Scripts.GameBehaviour
 {
@@ -30,9 +31,13 @@ namespace Assets.Source.Scripts.GameBehaviour
         private DifficultyState _difficultyState;
         private DifficultySetProvider _settingsProvider;
         private RoundLauncher _roundLauncher;
+        private PlayerProgress _playerProgress;
         private bool _isAdShowing;
 
         public event Action GameLaunching;
+
+        public bool IsCurrentRoundLastMode =>
+            _playerProgress.IsLastRoundOfMode(_playerProgress.CurrentMode, _levelCounter.RoundNumber);
 
         private void Awake()
         {
@@ -80,7 +85,8 @@ namespace Assets.Source.Scripts.GameBehaviour
         [Inject]
         private void Construct(
             DifficultyState difficultyState,
-            SequenceDifficultyLevel level)
+            SequenceDifficultyLevel level,
+            PlayerProgress playerProgress)
         {
             Guard.NotNull(difficultyState, nameof(difficultyState));
             Guard.NotNull(level, nameof(level));
@@ -90,6 +96,7 @@ namespace Assets.Source.Scripts.GameBehaviour
             _settingsProvider = new DifficultySetProvider(
                 _difficultyDatabase,
                 _difficultyState);
+            _playerProgress = playerProgress;
         }
 
         public void ShowInterstitialAdvertising()
@@ -98,12 +105,13 @@ namespace Assets.Source.Scripts.GameBehaviour
                 return;
 
             _isAdShowing = true;
+
             YG2.InterstitialAdvShow();
         }
 
         public void BeginRound()
         {
-            ChangeDifficultyBySequence();
+            ChangeDifficultySequence();
             LaunchCurrentDifficulty();
         }
 
@@ -148,23 +156,23 @@ namespace Assets.Source.Scripts.GameBehaviour
             _clickImpactHandler.Reset();
         }
 
-        private void OnCloseInterAdv() => HandleAdClosed();
-        private void OnCloseInterAdvWasShow(bool wasShown) => HandleAdClosed();
-        private void OnErrorInterAdv() => HandleAdClosed();
+        private void OnCloseInterAdv() 
+            => HandleAdClosed();
+
+        private void OnCloseInterAdvWasShow(bool wasShown) 
+            => HandleAdClosed();
+
+        private void OnErrorInterAdv() 
+            => HandleAdClosed();
 
         private void HandleAdClosed()
         {
             _isAdShowing = false;
         }
 
-        private void ChangeDifficultyBySequence()
+        private void ChangeDifficultySequence()
         {
             DifficultyLevel nextLevel = _sequenceDifficultyLevel.GetNext();
-
-            Debug.Log("Увеличение раунда [GameSessionHandler]");
-            Debug.Log($"{_sequenceDifficultyLevel.RoundsCount}");
-            Debug.Log($"текущий раунд из последовательности {_sequenceDifficultyLevel.CurrentIndex}");
-
 
             DifficultyState.SetDifficulty(nextLevel);
         }

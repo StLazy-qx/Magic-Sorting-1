@@ -99,17 +99,13 @@ namespace Assets.Source.Scripts.Player
             };
         }
 
-        public bool IsModeCompleted(GameMode mode)
+        public bool IsLastRoundOfMode(GameMode mode, int roundNumber)
         {
             ValidateMode(mode, nameof(mode));
 
-            return mode switch
-            {
-                GameMode.Easy => IsEasyCompleted,
-                GameMode.Medium => IsMediumCompleted,
-                GameMode.Hard => IsHardCompleted,
-                _ => false
-            };
+            int end = _sequenceProvider.GetEndRoundNumber(mode);
+
+            return end > 0 && roundNumber == end;
         }
 
         private PlayerProgressStatus BuildStatus(

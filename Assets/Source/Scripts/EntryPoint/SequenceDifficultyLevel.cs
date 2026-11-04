@@ -9,9 +9,8 @@ namespace Assets.Source.Scripts.EntryPoint
 {
     public class SequenceDifficultyLevel : IObjectInitilizable
     {
-        private const int ModeRoundsLength = 6;
+        private const int ModeRoundsLength = 5;
         private const int FreeModeInitialLength = 50;
-        private const int FreeModeExtendBatchSize = 50;
         private const int LengthDifficultyLevel = 6;
 
         private readonly List<DifficultyLevel> _sequence = new();
@@ -21,13 +20,13 @@ namespace Assets.Source.Scripts.EntryPoint
         private RandomDifficultyProvider _randomDifficultyProvider;
         private PlayerProgress _playerProgress;
         private GameMode _gameMode = GameMode.FreeMode;
-        private GameMode? _builtForMode;
+        private GameMode? _builtMode;
 
         public event Action RoundChanged;
+        public event Action SequenceEnded;
+
         public bool IsInitialized { get; private set; }
-        public int RoundsSeries => ModeRoundsLength;
-        public int RoundsCount => _sequence.Count;
-        public int CurrentIndex => _currentIndex;
+        public bool IsSequenceEnd => _currentIndex >= _sequence.Count;
 
         [Inject]
         private void Construct(PlayerProgress playerProgress)
@@ -38,7 +37,7 @@ namespace Assets.Source.Scripts.EntryPoint
         public void Initialize()
         {
             _gameMode = GetCurrentMode();
-            _builtForMode = _gameMode;
+            _builtMode = _gameMode;
             _currentIndex = 0;
 
             _sequence.Clear();
@@ -54,6 +53,7 @@ namespace Assets.Source.Scripts.EntryPoint
             else
             {
                 _isFixedMode = true;
+
                 _sequence.AddRange(BuildFixedPlan(_gameMode));
             }
 
@@ -72,7 +72,7 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             GameMode current = GetCurrentMode();
 
-            if (IsInitialized == false || _builtForMode != current)
+            if (IsInitialized == false || _builtMode != current)
                 Initialize();
         }
 
@@ -81,7 +81,8 @@ namespace Assets.Source.Scripts.EntryPoint
             return new List<DifficultyLevel>
             {
                 DifficultyLevel.Easy,
-                DifficultyLevel.MediumEasy
+                DifficultyLevel.MediumEasy,
+                DifficultyLevel.Easy
             }.AsReadOnly();
         }
 
@@ -90,12 +91,20 @@ namespace Assets.Source.Scripts.EntryPoint
             if (IsInitialized == false)
                 Initialize();
 
+            if (_gameMode != GameMode.FreeMode)
+            {
+                if (_currentIndex >= _sequence.Count)
+                {
+                    SequenceEnded?.Invoke();
+                }
+            }
+
             if (_currentIndex >= _sequence.Count)
             {
                 if (_isFixedMode)
                     ExtendFixedSequence();
                 else
-                    CreateFreeModeSequence(FreeModeExtendBatchSize, _currentIndex);
+                    CreateFreeModeSequence(FreeModeInitialLength, _currentIndex);
             }
 
             DifficultyLevel level = _sequence[_currentIndex];
@@ -113,7 +122,7 @@ namespace Assets.Source.Scripts.EntryPoint
                 : GameMode.FreeMode;
         }
 
-        private static DifficultyLevel[] BuildFixedPlan(GameMode mode)
+        private DifficultyLevel[] BuildFixedPlan(GameMode mode)
         {
             DifficultyLevel level = PlayerProgress.GetBaseDifficulty(mode);
             DifficultyLevel[] plan = new DifficultyLevel[ModeRoundsLength];

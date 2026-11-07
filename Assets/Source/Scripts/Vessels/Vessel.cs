@@ -1,33 +1,32 @@
-using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.MagicCells;
-using Assets.Source.Scripts.UI.StoreView;
+using Assets.Source.Scripts.UI.Buttons;
 using System;
 using UnityEngine;
 
 namespace Assets.Source.Scripts.Vessels
 {
     [RequireComponent(typeof(VolumeAggregator))]
+    [RequireComponent(typeof(Collider))]
     public class Vessel : MonoBehaviour, IColorable, IVesselable
     {
         private const float DeliveryDelay = 1.2f;
 
         [SerializeField] private Liquid _liquid;
-        [SerializeField] private ScoreToast _scoreToast;
+        [SerializeField] private VesselCloseButton _closeButton;
         [SerializeField] private int _maxSize;
         [SerializeField] private int _points;
 
         private Color _mainColor;
         private VolumeAggregator _aggregator;
         private MagicCellDelayHandler _deliveryHandler;
+        private VesselReward _reward;
 
         public event Action<Vector3> Filled;
         public event Action<Vector3, int, Color> RewardIssued;
-        public event Action Interacted;
 
         public int Count => _maxSize;
-        public int Capacity => _maxSize;
         public bool IsActive => gameObject.activeSelf;
         public Color Color => _mainColor;
         public Liquid Liquid => _liquid;
@@ -39,67 +38,93 @@ namespace Assets.Source.Scripts.Vessels
 
             _aggregator = GetComponent<VolumeAggregator>();
             _deliveryHandler = new MagicCellDelayHandler(DeliveryDelay);
+            _reward = new VesselReward();
 
             _aggregator.InitParameters(_maxSize, _liquid);
 
             IsFilled = false;
         }
 
-        private void OnValidate()
+        private void OnEnable()
+        {
+            _closeButton.Clicked += OnClose;
+        }
+
+        private void OnValidate() 
             => ValidateInitializeArguments();
 
-        // >>> FIX 2: добавлен ?. (если объект выключили до Awake, было NRE)
         private void OnDisable()
-            => _deliveryHandler?.Cancel();
+        {
+            _closeButton.Clicked -= OnClose;
 
-        // >>> FIX 2: добавлен ?.
-        private void OnDestroy()
+            _deliveryHandler?.Cancel();
+        }
+
+        private void OnDestroy() 
             => _deliveryHandler?.Dispose();
 
         private void OnMouseDown()
-            => _scoreToast.Show();
-
-        public void OnClick()
         {
             if (IsFilled || IsActive == false)
                 return;
 
-            Interacted?.Invoke();
+            _closeButton?.Show(this);
         }
 
         public void TakeMagic(MagicCell cell)
         {
-            if (cell == null || IsFilled)
+            if (cell == null || IsFilled) 
                 return;
 
             _deliveryHandler.TakeMagic(cell, HandleMagicDelivered);
         }
 
-        public void SetColor(Color color)
+        public void SetColor(Color color) 
             => _mainColor = color;
 
         public void CompleteVessel()
         {
-            if (IsFilled)
-                return;
+            //if (IsFilled) 
+            //    return;
 
             IsFilled = true;
 
-            int reward = VesselReward.Calculate(_points, _maxSize, _aggregator.CurrentVolume);
+            _closeButton?.Hide();
+
+            int reward = _reward.Calculate
+                (_points, _maxSize, _aggregator.CurrentVolume);
 
             RewardIssued?.Invoke(transform.position, reward, _mainColor);
-            Filled?.Invoke(transform.position);
 
+            Debug.Log($"полные очки{reward}");
+
+            Filled?.Invoke(transform.position);
+            gameObject.SetActive(false);
+        }
+
+        private void OnClose()
+        {
+            _closeButton?.Hide();
+
+            int reward = _reward.Calculate
+                (_points, _maxSize, _aggregator.CurrentVolume);
+
+            RewardIssued?.Invoke(transform.position, reward, _mainColor);
+
+            Debug.Log($"очки по  нќѕ е {reward}");
+
+            Filled?.Invoke(transform.position);
             gameObject.SetActive(false);
         }
 
         public void ResetState()
         {
-            // јктивируем первым: если Awake ещЄ не выполн€лс€, он выполнитс€ здесь
             gameObject.SetActive(true);
-
             _deliveryHandler?.Cancel();
+            _closeButton?.Hide();
+
             IsFilled = false;
+
             _aggregator?.ResetVolume();
         }
 
@@ -119,105 +144,3 @@ namespace Assets.Source.Scripts.Vessels
         }
     }
 }
-
-//namespace Assets.Source.Scripts.Vessels
-//{
-//    [RequireComponent(typeof(VolumeAggregator))]
-//    public class Vessel : MonoBehaviour, IColorable, IVesselable, IInteractable
-//    {
-//        private const float DeliveryDelay = 1.2f;
-
-//        [SerializeField] private Liquid _liquid;
-//        [SerializeField] private ScoreToast _scoreToast;
-//        [SerializeField] private int _maxSize;
-//        [SerializeField] private int _points;
-
-//        private Color _mainColor;
-//        private VolumeAggregator _aggregator;
-//        private MagicCellDelayHandler _deliveryHandler;
-
-//        public event Action<Vector3> Filled;
-//        public event Action<Vector3, int, Color> RewardIssued;
-//        public event Action Interacted;
-
-//        public int Count => _maxSize;
-//        public int Capacity => _maxSize;
-//        public bool IsActive => gameObject.activeSelf;
-//        public Color Color => _mainColor;
-//        public Liquid Liquid => _liquid;
-//        public bool IsFilled { get; private set; }
-
-//        private void Awake()
-//        {
-//            ValidateInitializeArguments();
-
-//            _aggregator = GetComponent<VolumeAggregator>();
-//            _deliveryHandler = new MagicCellDelayHandler(DeliveryDelay);
-
-//            _aggregator.InitParameters(_maxSize, _liquid);
-
-//            IsFilled = false;
-//        }
-
-//        private void OnValidate()
-//            => ValidateInitializeArguments();
-
-//        private void OnDisable()
-//            => _deliveryHandler.Cancel();
-
-//        private void OnDestroy()
-//            => _deliveryHandler.Dispose();
-
-//        private void OnMouseDown()
-//            => _scoreToast.Show();
-
-//        public void OnClick()
-//        {
-//            if (IsFilled || IsActive == false)
-//                return;
-
-//            Interacted?.Invoke();
-//        }
-
-//        public void TakeMagic(MagicCell cell)
-//        {
-//            if (cell == null || IsFilled)
-//                return;
-
-//            _deliveryHandler.TakeMagic(cell, HandleMagicDelivered);
-//        }
-
-//        public void SetColor(Color color)
-//            => _mainColor = color;
-
-//        public void CompleteVessel()
-//        {
-//            if (IsFilled)
-//                return;
-
-//            IsFilled = true;
-
-//            int reward = VesselReward.Calculate(_points, _maxSize, _aggregator.CurrentVolume);
-
-//            RewardIssued?.Invoke(transform.position, reward, _mainColor);
-//            Filled?.Invoke(transform.position);
-
-//            gameObject.SetActive(false);
-//        }
-
-//        private void HandleMagicDelivered()
-//        {
-//            _aggregator.GrowUpVolume();
-
-//            if (_aggregator.IsFull)
-//                CompleteVessel();
-//        }
-
-//        private void ValidateInitializeArguments()
-//        {
-//            Guard.NotNull(_liquid, nameof(_liquid));
-//            Guard.Positive(_maxSize, nameof(_maxSize));
-//            Guard.NotNegative(_points, nameof(_points));
-//        }
-//    }
-//}

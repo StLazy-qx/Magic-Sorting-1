@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Assets.Source.Scripts.Vessels
 {
-    public static class VesselReward
+    public class VesselReward
     {
-        public static int Calculate(int points, int maxSize, int currentVolume)
+        public int Calculate(int points, int maxSize, int currentVolume)
         {
             if (maxSize <= 0 || points <= 0)
                 return 0;

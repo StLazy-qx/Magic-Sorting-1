@@ -1,98 +1,57 @@
-using Assets.Source.Scripts.Extensions;
-using Assets.Source.Scripts.Tutorial;
-using Assets.Source.Scripts.Vessels;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Source.Scripts.Vessels;
+using System;
 
-namespace Assets.Source.Scripts.UI
+namespace Assets.Source.Scripts.UI.Buttons
 {
     public class VesselCloseButton : MonoBehaviour
     {
         [SerializeField] private Button _button;
-        [SerializeField] private float _autoHideDelay = 4f;
+        [SerializeField] private Image _image;
 
-        private readonly AsyncTimer _autoHideTimer = new();
+        private VesselButtonAnimator _animator;
+        private Vessel _currentVessel;
 
-        private Vessel _vessel;
+        public event Action Clicked;
 
         private void Awake()
         {
-            Guard.NotNull(_button, nameof(_button));
-            Guard.Positive(_autoHideDelay, nameof(_autoHideDelay));
+            if (_image == null)
+                _image = GetComponent<Image>();
 
-            SetVisible(false);
+            _animator = new VesselButtonAnimator();
+
+            _animator.Initialize(_image, _button, transform);
+        }
+
+        private void OnEnable()
+        {
+            _button.onClick.AddListener(OnButtonClick);
         }
 
         public void Show(Vessel vessel)
         {
-            Guard.NotNull(vessel, nameof(vessel));
-            Hide();
-
-            _vessel = vessel;
-            _vessel.Filled += OnVesselFilled;
-
-            _button.onClick.AddListener(OnButtonClick);
-            SetVisible(true);
-            _autoHideTimer.StartTimer(_autoHideDelay, Hide);
+            _currentVessel = vessel;
+            _animator.Show();
         }
 
         public void Hide()
         {
-            _autoHideTimer.StopTimer();
-
-            if (_vessel != null)
-                _vessel.Filled -= OnVesselFilled;
-
-            _button.onClick.RemoveListener(OnButtonClick);
-            _vessel = null;
-
-            SetVisible(false);
+            _currentVessel = null;
+            _animator.Hide();
         }
-
-        //public void Show(Vessel vessel)
-        //{
-        //    Guard.NotNull(vessel, nameof(vessel));
-        //    Hide();
-
-        //    _vessel = vessel;
-        //    _vessel.Filled += OnVesselFilled;
-
-        //    _button.onClick.AddListener(OnButtonClick);
-        //    gameObject.SetActive(true);
-        //    _autoHideTimer.StartTimer(_autoHideDelay, Hide);
-        //}
-
-        //public void Hide()
-        //{
-        //    _autoHideTimer.StopTimer();
-
-        //    if (_vessel != null)
-        //        _vessel.Filled -= OnVesselFilled;
-
-        //    if (_button != null)
-        //        _button.onClick.RemoveListener(OnButtonClick);
-
-        //    _vessel = null;
-
-        //    gameObject.SetActive(false);
-        //}
-
-        private void SetVisible(bool value)
-            => _button.gameObject.SetActive(value);
-
-        private void OnDestroy() 
-			=> _autoHideTimer.StopTimer();
-
-        private void OnVesselFilled(Vector3 vector3) 
-			=> Hide();
 
         private void OnButtonClick()
         {
-            Vessel vessel = _vessel;
-
+            Clicked?.Invoke();
             Hide();
-
-            vessel?.CompleteVessel();
         }
+
+        //private void OnDestroy()
+        //{
+        //    _button.onClick.RemoveListener(OnButtonClick);
+        //    _animator?.Dispose();
+        //}
     }
 }

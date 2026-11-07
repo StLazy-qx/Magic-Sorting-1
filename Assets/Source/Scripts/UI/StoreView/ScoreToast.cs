@@ -6,8 +6,8 @@ namespace Assets.Source.Scripts.UI.StoreView
     public class ScoreToast : MonoBehaviour
     {
         [SerializeField] private UITemporaryView _UIObject;
-        [SerializeField] private CanvasGroup _canvasGroup;
 
+        private CanvasGroup _canvasGroup;
         private float _appearDuration = 0.4f;
         private float _showDelay = 1.4f;
         private float _hideDuration = 0.8f;
@@ -19,15 +19,15 @@ namespace Assets.Source.Scripts.UI.StoreView
             if (_UIObject == null)
                 _UIObject = GetComponentInChildren<UITemporaryView>(true);
 
-            if (_canvasGroup == null)
-                _canvasGroup = _UIObject.GetComponent<CanvasGroup>();
+            if (!_UIObject.TryGetComponent(out _canvasGroup))
+                _canvasGroup = _UIObject.gameObject.AddComponent<CanvasGroup>();
 
-            if (_canvasGroup == null)
-                _canvasGroup = GetComponent<CanvasGroup>();
+            _canvasGroup.blocksRaycasts = false;
+            _canvasGroup.interactable = false;
 
             _initialScale = _UIObject.transform.localScale;
 
-            _UIObject.gameObject.SetActive(false);
+            Hide();
         }
 
         public void Show()
@@ -45,19 +45,28 @@ namespace Assets.Source.Scripts.UI.StoreView
             _sequence.Append(_UIObject.transform.DOScale(Vector3.zero, _hideDuration)
                 .SetEase(Ease.InBack));
             _sequence.Join(_canvasGroup.DOFade(0f, _hideDuration));
-
-            _sequence.OnComplete(() =>
-            {
-                _UIObject.transform.localScale = _initialScale;
-                _canvasGroup.alpha = 1f;
-
-                _UIObject.gameObject.SetActive(false);
-            });
+            _sequence.OnComplete(Hide);
         }
 
-        private void OnDestroy()
+        public void Hide()
         {
             _sequence?.Kill();
+
+            _sequence = null;
+
+            if (_UIObject == null)
+                return;
+
+            _UIObject.transform.localScale = _initialScale;
+            _canvasGroup.alpha = 1f;
+
+            _UIObject.gameObject.SetActive(false);
         }
+
+        private void OnDisable()
+            => Hide();
+
+        private void OnDestroy()
+            => _sequence?.Kill();
     }
 }

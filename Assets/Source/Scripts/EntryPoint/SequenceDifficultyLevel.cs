@@ -27,6 +27,8 @@ namespace Assets.Source.Scripts.EntryPoint
 
         public bool IsInitialized { get; private set; }
         public bool IsSequenceEnd => _currentIndex >= _sequence.Count;
+        public GameMode CurrentMode => _gameMode;
+        public int CompletedRoundIndex => _currentIndex;
 
         [Inject]
         private void Construct(PlayerProgress playerProgress)

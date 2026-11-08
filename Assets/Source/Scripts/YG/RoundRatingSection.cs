@@ -41,6 +41,7 @@ namespace Assets.Source.Scripts.YG
                 return;
 
             _ratings[key] = rating;
+
             PersistEntry(mode, roundIndex, rating);
             SaveProgress();
         }
@@ -102,6 +103,7 @@ namespace Assets.Source.Scripts.YG
                 {
                     savedEntry.Rating = (int)rating;
                     savedEntries[index] = savedEntry;
+
                     return;
                 }
             }

@@ -30,7 +30,7 @@ namespace Assets.Source.Scripts.Vessels
         public bool IsActive => gameObject.activeSelf;
         public Color Color => _mainColor;
         public Liquid Liquid => _liquid;
-        public bool IsFilled { get; private set; }
+        public bool IsSubmitted { get; private set; }
 
         private void Awake()
         {
@@ -42,7 +42,7 @@ namespace Assets.Source.Scripts.Vessels
 
             _aggregator.InitParameters(_maxSize, _liquid);
 
-            IsFilled = false;
+            IsSubmitted = false;
         }
 
         private void OnEnable()
@@ -65,7 +65,7 @@ namespace Assets.Source.Scripts.Vessels
 
         private void OnMouseDown()
         {
-            if (IsFilled || IsActive == false)
+            if (IsSubmitted || IsActive == false)
                 return;
 
             _closeButton?.Show(this);
@@ -73,7 +73,7 @@ namespace Assets.Source.Scripts.Vessels
 
         public void TakeMagic(MagicCell cell)
         {
-            if (cell == null || IsFilled) 
+            if (cell == null || IsSubmitted) 
                 return;
 
             _deliveryHandler.TakeMagic(cell, HandleMagicDelivered);
@@ -84,13 +84,12 @@ namespace Assets.Source.Scripts.Vessels
 
         public void CompleteVessel()
         {
-            if (IsFilled)
+            if (IsSubmitted)
                 return;
-
-            IsFilled = true;
 
             _closeButton?.Hide();
 
+            IsSubmitted = true;
             int reward = _reward.Calculate
                 (_points, _maxSize, _aggregator.CurrentVolume);
 
@@ -103,6 +102,7 @@ namespace Assets.Source.Scripts.Vessels
         {
             _closeButton?.Hide();
 
+            IsSubmitted = true;
             int reward = _reward.Calculate
                 (_points, _maxSize, _aggregator.CurrentVolume);
 
@@ -117,7 +117,7 @@ namespace Assets.Source.Scripts.Vessels
             _deliveryHandler?.Cancel();
             _closeButton?.Hide();
 
-            IsFilled = false;
+            IsSubmitted = false;
 
             _aggregator?.ResetVolume();
         }

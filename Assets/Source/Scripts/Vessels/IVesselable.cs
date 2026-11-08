@@ -11,7 +11,7 @@ namespace Assets.Source.Scripts.Vessels
 
         public int Count { get; }
         public bool IsActive { get; }
-        public bool IsFilled { get; }
+        public bool IsSubmitted { get; }
         public Color Color { get; }
         public Liquid Liquid { get; }
 

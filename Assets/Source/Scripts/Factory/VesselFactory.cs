@@ -54,6 +54,7 @@ namespace Assets.Source.Scripts.Factory
         public void InitRandomizer(ColorRandomizer colorRandomizer)
         {
             Guard.NotNull(colorRandomizer, nameof(colorRandomizer));
+
             _colorRandomizer = colorRandomizer;
         }
 
@@ -78,6 +79,7 @@ namespace Assets.Source.Scripts.Factory
             }
 
             ClearList();
+
             DifficultySettings settings = DifficultyDatabase
                 .GetSettings(DifficultyState.CurrentDifficulty);
 
@@ -88,6 +90,7 @@ namespace Assets.Source.Scripts.Factory
             {
                 Vessel vessel = Instantiate(Prefab);
                 vessel.Filled += OnPutRemainingVessel;
+
                 vessel.gameObject.SetActive(false);
                 Add(vessel);
             }
@@ -102,7 +105,7 @@ namespace Assets.Source.Scripts.Factory
         private void OnPutRemainingVessel(Vector3 position)
         {
             Vessel remainingVessel = Objects.FirstOrDefault(
-                vessel => vessel.IsFilled == false
+                vessel => vessel.IsSubmitted == false
                        && vessel.gameObject.activeSelf == false);
 
             if (remainingVessel == null) 
@@ -120,7 +123,7 @@ namespace Assets.Source.Scripts.Factory
                 if (index >= SpawnPoints.Length) 
                     break;
 
-                if (vessel.IsFilled == false && 
+                if (vessel.IsSubmitted == false && 
                     vessel.gameObject.activeSelf == false)
                 {
                     vessel.transform.position = SpawnPoints[index].position;

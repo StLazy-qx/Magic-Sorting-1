@@ -9,6 +9,7 @@ namespace Assets.Source.Scripts.Player
 
         private readonly string leaderboardName = "GameLB";
 
+        private bool _isRoundScoreMultiplied;
         private int _currentScore;
         private int _totalScore;
 
@@ -23,10 +24,10 @@ namespace Assets.Source.Scripts.Player
         public event Action<int> TotalScoreChanged;
         public event Action<int> LastRoundScoreChanged;
 
-        public int TotalScore => _totalScore;
         public int LastRoundScore { get; private set; }
+        public int TotalScore => _totalScore;
         public int DisplayScore => _totalScore + _currentScore;
-        private bool _isRoundScoreMultiplied;
+        public int CurrentScore => _currentScore;
 
         public void AddPoints(int value)
         {

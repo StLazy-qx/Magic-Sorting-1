@@ -13,45 +13,48 @@
     false,
     false
   ],
-  "idSave": 1234,
-  "MainPoints": 25090,
-  "ActualRoundNumber": 94,
-  "SavedGameMode": 1,
-  "MasterVolume": 0.85765624,
-  "AmbientVolume": 0.147804469,
-  "EffectVolume": 1.0,
-  "EquippedItem": "66666",
-  "SavedLanguage": "ru",
+  "idSave": 2,
+  "MainPoints": 110,
+  "ActualRoundNumber": 0,
+  "SavedGameMode": 0,
+  "MasterVolume": 0.5,
+  "AmbientVolume": 0.5,
+  "EffectVolume": 0.5,
+  "EquippedItem": "11111",
+  "SavedLanguage": null,
   "ItemIDs": [
-    "22222",
-    "11111",
-    "33333",
-    "44444",
-    "55555",
-    "66666"
+    "11111"
   ],
-  "RoundRatingEntries": [],
+  "RoundRatingEntries": [
+    {
+      "GameMode": 1,
+      "RoundIndex": 0,
+      "Rating": 2
+    }
+  ],
   "Mode": {
-    "HasSavedMode": true
+    "HasSavedMode": false
   },
   "Score": {
-    "Points": 25090
+    "Points": 110
   },
   "Round": {
-    "ActualRoundNumber": 94
+    "ActualRoundNumber": 0
   },
   "Audio": {},
   "Inventory": {
-    "EquippedItemID": "66666"
+    "EquippedItemID": "11111"
   },
   "Language": {
-    "SavedLanguage": "ru",
-    "HasSavedLanguage": true
+    "SavedLanguage": null,
+    "HasSavedLanguage": false
   },
   "RoundRatings": {
-    "Ratings": {}
+    "Ratings": {
+      "(Easy, 0)": 2
+    }
   },
-  "Points": 25090,
-  "EquippedItemID": "66666",
-  "HasSavedMode": true
+  "Points": 110,
+  "EquippedItemID": "11111",
+  "HasSavedMode": false
 }

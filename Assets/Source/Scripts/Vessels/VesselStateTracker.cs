@@ -144,13 +144,13 @@ namespace Assets.Source.Scripts.Vessels
             _veselsCount = 0;
 
             _wallet.ConfirmPoints();
-
-            int roundScore = _wallet.LastRoundScore;
-
             _wallet.Reset();
             _currentPanel.Close();
 
-            RoundRating roundRating = CalculateAndSaveRoundRating(roundScore);
+            RoundRating roundRating = CalculateAndSaveRoundRating(
+                _wallet.LastRoundScore);
+
+            _finalGame.SetRoundRating(roundRating);
 
             if (_sequenceDifficultyLevel.IsSequenceEnd)
             {

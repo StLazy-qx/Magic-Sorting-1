@@ -69,7 +69,7 @@ namespace Assets.Source.Scripts.Vessels
         public void SetVesselsList(IReadOnlyList<Vessel> vessels)
         {
             ValidateVesselsList(vessels);
-            ResetForNewRound();
+            ResetRound();
 
             _vessels = vessels;
 
@@ -79,7 +79,7 @@ namespace Assets.Source.Scripts.Vessels
             _effecter.Initialize(vessels.Count);
         }
 
-        public void ResetForNewRound()
+        public void ResetRound()
         {
             StopAllCoroutines();
             UnsubscribeVessels();

@@ -84,8 +84,8 @@ namespace Assets.Source.Scripts.Vessels
 
         public void CompleteVessel()
         {
-            //if (IsFilled) 
-            //    return;
+            if (IsFilled)
+                return;
 
             IsFilled = true;
 
@@ -95,9 +95,6 @@ namespace Assets.Source.Scripts.Vessels
                 (_points, _maxSize, _aggregator.CurrentVolume);
 
             RewardIssued?.Invoke(transform.position, reward, _mainColor);
-
-            Debug.Log($"полные очки{reward}");
-
             Filled?.Invoke(transform.position);
             gameObject.SetActive(false);
         }
@@ -110,9 +107,6 @@ namespace Assets.Source.Scripts.Vessels
                 (_points, _maxSize, _aggregator.CurrentVolume);
 
             RewardIssued?.Invoke(transform.position, reward, _mainColor);
-
-            Debug.Log($"очки по  нќѕ е {reward}");
-
             Filled?.Invoke(transform.position);
             gameObject.SetActive(false);
         }

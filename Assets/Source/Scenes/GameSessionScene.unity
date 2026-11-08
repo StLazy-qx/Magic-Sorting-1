@@ -792378,7 +792378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -853763,7 +853763,6 @@ GameObject:
   - component: {fileID: 1954101800269557140}
   - component: {fileID: 4660741367997458399}
   - component: {fileID: 6760258563305108350}
-  - component: {fileID: 6760258563305108351}
   m_Layer: 5
   m_Name: CanvasFillLevel
   m_TagString: Untagged
@@ -863771,18 +863770,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 0
---- !u!114 &6760258563305108351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5271056464418870517}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1e5ad2eb6457b74c9e0ae9c2396f712, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &6814483345259636130
 Transform:
   m_ObjectHideFlags: 0

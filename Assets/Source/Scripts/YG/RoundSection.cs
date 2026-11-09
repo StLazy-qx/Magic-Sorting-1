@@ -29,5 +29,15 @@ namespace Assets.Source.Scripts.YG
                 ? _saves.ActualRoundNumber
                 : FirstRoundNumber;
         }
+
+        // Удалить после отладки UI рейтингов
+        public void DebugSeedRoundNumber(int number)
+        {
+            Guard.Positive(number, nameof(number));
+
+            _saves.ActualRoundNumber = number;
+
+            SaveProgress();
+        }
     }
 }

@@ -1,3 +1,4 @@
+using Assets.Source.Scripts.DebugTools;
 using Assets.Source.Scripts.Factory;
 using Assets.Source.Scripts.Game_Progress;
 using Assets.Source.Scripts.GameBehaviour;
@@ -31,7 +32,15 @@ namespace Assets.Source.Scripts.EntryPoint
             _languageSetter = new LanguageSetter();
 
             ValidateDependencies();
+
+            DebugSavesSeeder.SeedRatingsForAllRounds();
+
             _playerProgress.Initialize();
+
+            Debug.Log("---- Проверка загрузки в PlayerProgress");
+            Debug.Log(_playerProgress.CurrentMode);
+            Debug.Log(_playerProgress.CurrentRoundNumber);
+
             _platformSetter.Initialize(_languageSetter);
             _modePanelsPresenter.Initialize();
             _roundProgressDisplay.Initialize(_roundSequenceProvider);

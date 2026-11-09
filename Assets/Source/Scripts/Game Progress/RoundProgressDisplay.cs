@@ -59,6 +59,14 @@ namespace Assets.Source.Scripts.Game_Progress
             return string.Format(ProgressFormat, current, total);
         }
 
+        //private string FormatProgress(int savedRoundNumber, GameMode mode)
+        //{
+        //    int current = _sequenceProvider.GetCurrentRoundInMode(savedRoundNumber, mode);
+        //    int total = _sequenceProvider.GetTotalRoundsInMode(mode);
+
+        //    return string.Format(ProgressFormat, current, total);
+        //}
+
         private string FormatFreeRoundNumber(int fallbackRoundNumber)
         {
             int freeRoundNumber = _playerProgress != null

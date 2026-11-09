@@ -36,8 +36,8 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         public event Action GameLaunching;
 
-        public bool IsCurrentRoundLastMode =>
-            _playerProgress.IsLastRoundOfMode(_playerProgress.CurrentMode, _levelCounter.RoundNumber);
+        //public bool IsCurrentRoundLastMode =>
+        //    _playerProgress.IsLastRoundOfMode(_playerProgress.CurrentMode, _levelCounter.RoundNumber);
 
         private void Awake()
         {

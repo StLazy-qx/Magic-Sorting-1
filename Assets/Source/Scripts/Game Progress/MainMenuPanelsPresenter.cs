@@ -1,8 +1,11 @@
-﻿using Assets.Source.Scripts.Extensions;
+﻿using Assets.Source.Scripts.Enums;
+using Assets.Source.Scripts.Extensions;
+using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.SceneManagement;
 using Assets.Source.Scripts.UI.Buttons;
 using Assets.Source.Scripts.UI.Buttons.Main_Mode_Panel;
+using Assets.Source.Scripts.UI.GameModeView;
 using UnityEngine;
 using Zenject;
 
@@ -16,7 +19,9 @@ namespace Assets.Source.Scripts.Game_Progress
         [SerializeField] private ClickButton _buttonLeftNavigation;
         [SerializeField] private ClickButton _buttonRightNavigation;
         [SerializeField] private GameResumerButton _playButton;
+        [SerializeField] private ModeRatingView _ratingView;
 
+        private ModeRatingProvider _ratingProvider;
         private SceneLoader _sceneLoader;
         private PlayerProgress _playerProgress;
         private GameModePanel[] _gameModePanels;
@@ -37,11 +42,7 @@ namespace Assets.Source.Scripts.Game_Progress
             for (int i = 0; i < _gameModeButtons.Length; i++)
             {
                 GameModePanel panel = _gameModeButtons[i].GetComponent<GameModePanel>();
-
-                Guard.NotNull(panel, $"{nameof(_gameModeButtons)}[{i}].GameModePanel");
-
                 _gameModePanels[i] = panel;
-
                 int index = i;
                 _gameModeButtons[i].Clicked += () => OnModeButtonClicked(index);
             }
@@ -57,27 +58,43 @@ namespace Assets.Source.Scripts.Game_Progress
         {
             _isStarted = true;
 
+            _ratingProvider.Refresh();
             SelectSavedModePanel();
             RefreshModeAvailability();
             UpdateView();
         }
 
+        private void OnDestroy()
+        {
+            if (_buttonLeftNavigation != null)
+                _buttonLeftNavigation.Clicked -= OnChangeLeftView;
+
+            if (_buttonRightNavigation != null)
+                _buttonRightNavigation.Clicked -= OnChangeRightView;
+        }
+
         [Inject]
-        public void Construct(SceneLoader sceneLoader, PlayerProgress playerProgress)
+        public void Construct(SceneLoader sceneLoader, 
+            PlayerProgress playerProgress,
+            RoundSequenceProvider sequenceProvider)
         {
             Guard.NotNull(sceneLoader, nameof(sceneLoader));
             Guard.NotNull(playerProgress, nameof(playerProgress));
+            Guard.NotNull(sequenceProvider, nameof(sequenceProvider));
 
             _sceneLoader = sceneLoader;
             _playerProgress = playerProgress;
+            _ratingProvider = new ModeRatingProvider(sequenceProvider);
         }
 
         public void Initialize()
         {
             if (_isStarted)
             {
+                _ratingProvider.Refresh();
                 RefreshModeAvailability();
                 UpdatePlayButton();
+                UpdateRatingView();
             }
         }
 
@@ -91,6 +108,16 @@ namespace Assets.Source.Scripts.Game_Progress
             }
         }
 
+        private void UpdateRatingView()
+        {
+            if (_ratingView == null || _ratingProvider == null)
+                return;
+
+            if (_ratingProvider.TryGetRating(CurrentPanel.Mode, out RoundRating rating))
+                _ratingView.Show(rating);
+            else
+                _ratingView.Hide();
+        }
 
         private void SelectSavedModePanel()
         {
@@ -164,15 +191,7 @@ namespace Assets.Source.Scripts.Game_Progress
                 _gameModeButtons[i].gameObject.SetActive(i == _currentModeIndex);
 
             UpdatePlayButton();
-        }
-
-        private void OnDestroy()
-        {
-            if (_buttonLeftNavigation != null)
-                _buttonLeftNavigation.Clicked -= OnChangeLeftView;
-
-            if (_buttonRightNavigation != null)
-                _buttonRightNavigation.Clicked -= OnChangeRightView;
+            UpdateRatingView();
         }
     }
 }

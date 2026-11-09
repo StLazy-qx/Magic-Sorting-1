@@ -3,15 +3,22 @@ using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.Audio;
 using Assets.Source.Scripts.EntryPoint;
 using Assets.Source.Scripts.SceneManagement;
-using Zenject;
 using Assets.Source.Scripts.GameBehaviour;
+using Assets.Source.Scripts.Game_Progress;
+using Zenject;
+using UnityEngine;
 
 namespace Assets.Source.Scripts.Installers
 {
     public class ProjectInstaller : MonoInstaller
     {
+        [SerializeField] private GameModeData[] _gameModeDatas;
+
         public override void InstallBindings()
         {
+            Container.Bind<GameModeRuntimeProvider>()
+            .FromInstance(new GameModeRuntimeProvider(_gameModeDatas))
+            .AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerProgress>().AsSingle().NonLazy();
             Container.Bind<RoundSequenceProvider>().AsSingle();
             Container.Bind<SequenceDifficultyLevel>().AsSingle();

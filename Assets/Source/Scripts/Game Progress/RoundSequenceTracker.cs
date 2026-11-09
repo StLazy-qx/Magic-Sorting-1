@@ -117,11 +117,11 @@ namespace Assets.Source.Scripts.GameBehaviour
 
             int lastRoundNumber = _roundsSequence[_roundsSequence.Count - 1];
 
-            IReadOnlyList<int> extension = _sequenceProvider.GetFreeMode(
-                lastRoundNumber + 1,
-                FreeModeExtensionBatchSize);
+            //IReadOnlyList<int> extension = _sequenceProvider.GetFreeMode(
+            //    lastRoundNumber + 1,
+            //    FreeModeExtensionBatchSize);
 
-            _roundsSequence.AddRange(extension);
+            //_roundsSequence.AddRange(extension);
             _maxRoundsInCurrentMode = _roundsSequence.Count;
         }
 

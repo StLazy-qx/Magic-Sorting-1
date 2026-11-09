@@ -90,8 +90,27 @@ namespace Assets.Source.Scripts.Player
             runtime.MarkRoundFinished(roundIndex, rating, keepBest);
             YG2.saves.SaveRoundRating(mode, roundIndex, rating, keepBest);
 
-            // Пересобираем статус, чтобы UI сразу обновился
             _status = BuildStatus(CurrentRoundNumber, CurrentMode, CurrentDifficultyLevel);
+        }
+
+        public int GetCompletedRoundsCount(GameMode mode)
+        {
+            ValidateMode(mode, nameof(mode));
+
+            if (mode != GameMode.Easy && mode != GameMode.Medium && mode != GameMode.Hard)
+                return 0;
+
+            int start = _sequenceProvider.GetStartRoundNumber(mode);
+            int end = _sequenceProvider.GetEndRoundNumber(mode);
+            int count = 0;
+
+            for (int roundIndex = start; roundIndex <= end; roundIndex++)
+            {
+                if (YG2.saves.GetRoundRating(mode, roundIndex) != RoundRating.NotCompleted)
+                    count++;
+            }
+
+            return count;
         }
 
         public static DifficultyLevel GetBaseDifficulty(GameMode mode)

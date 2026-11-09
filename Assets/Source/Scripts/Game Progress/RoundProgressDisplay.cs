@@ -3,7 +3,6 @@ using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Player;
 using TMPro;
 using UnityEngine;
-using YG;
 using Zenject;
 
 namespace Assets.Source.Scripts.Game_Progress
@@ -32,48 +31,24 @@ namespace Assets.Source.Scripts.Game_Progress
 
         public void RefreshFromSaves()
         {
-            if (_sequenceProvider == null)
+            if (_sequenceProvider == null || _playerProgress == null)
                 return;
 
-            Refresh(YG2.saves.GetRoundNumber());
+            SetText(_easyProgressText, FormatProgress(GameMode.Easy));
+            SetText(_mediumProgressText, FormatProgress(GameMode.Medium));
+            SetText(_hardProgressText, FormatProgress(GameMode.Hard));
+            SetText(_freeRoundNumberText, _playerProgress.CurrentRoundNumber.ToString());
         }
 
-        public void Refresh(int savedRoundNumber)
+        private string FormatProgress(GameMode mode)
         {
-            Guard.Positive(savedRoundNumber, nameof(savedRoundNumber));
+            if (_playerProgress.IsModeAvailable(mode) == false)
+                return string.Empty;
 
-            if (_sequenceProvider == null)
-                return;
-
-            SetText(_easyProgressText, FormatProgress(savedRoundNumber, GameMode.Easy));
-            SetText(_mediumProgressText, FormatProgress(savedRoundNumber, GameMode.Medium));
-            SetText(_hardProgressText, FormatProgress(savedRoundNumber, GameMode.Hard));
-            SetText(_freeRoundNumberText, FormatFreeRoundNumber(savedRoundNumber));
-        }
-
-        private string FormatProgress(int savedRoundNumber, GameMode mode)
-        {
-            int current = _sequenceProvider.GetCurrentRoundInMode(savedRoundNumber, mode);
+            int completed = _playerProgress.GetCompletedRoundsCount(mode);
             int total = _sequenceProvider.GetTotalRoundsInMode(mode);
 
-            return string.Format(ProgressFormat, current, total);
-        }
-
-        //private string FormatProgress(int savedRoundNumber, GameMode mode)
-        //{
-        //    int current = _sequenceProvider.GetCurrentRoundInMode(savedRoundNumber, mode);
-        //    int total = _sequenceProvider.GetTotalRoundsInMode(mode);
-
-        //    return string.Format(ProgressFormat, current, total);
-        //}
-
-        private string FormatFreeRoundNumber(int fallbackRoundNumber)
-        {
-            int freeRoundNumber = _playerProgress != null
-                ? _playerProgress.CurrentRoundNumber
-                : fallbackRoundNumber;
-
-            return freeRoundNumber.ToString();
+            return string.Format(ProgressFormat, completed, total);
         }
 
         private static void SetText(TextMeshProUGUI target, string text)

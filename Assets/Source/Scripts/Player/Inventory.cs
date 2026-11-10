@@ -51,7 +51,7 @@ namespace Assets.Source.Scripts.Player
                 return;
 
             _items.Add(item);
-            YG2.saves.AddItem(item.ID);
+            YG2.saves.Inventory.AddItem(item.ID);
 
             NewItemView newItemView = item.GetComponent<NewItemView>();
 
@@ -79,7 +79,7 @@ namespace Assets.Source.Scripts.Player
 
             _equippedItem = item;
             
-            YG2.saves.SaveEquippedItem(item.ID);
+            YG2.saves.Inventory.SaveEquippedItem(item.ID);
         }
 
         public void SetEquippedItemLoad(Item item)

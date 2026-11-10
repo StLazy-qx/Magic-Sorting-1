@@ -19,6 +19,13 @@ namespace Assets.Source.Scripts.GameBehaviour
         public event Action RoundChanged;
         public int RoundNumber => _roundNumber;
 
+
+        private void OnDisable()
+        {
+            if (_currentLevel != null)
+                _currentLevel.RoundChanged -= OnRoundChange;
+        }
+
         [Inject]
         public void Initialize(SequenceDifficultyLevel level, PlayerProgress playerProgress)
         {
@@ -37,7 +44,7 @@ namespace Assets.Source.Scripts.GameBehaviour
         {
             // FreeMode единственный продолжает из сейва
             if (_playerProgress.CurrentMode == GameMode.FreeMode)
-                return YG2.saves.GetRoundNumber();
+                return YG2.saves.Round.GetNumber();
 
             return FirstRound;
         }
@@ -48,7 +55,7 @@ namespace Assets.Source.Scripts.GameBehaviour
 
             // Глобальный сейв нужен только для endless
             if (_playerProgress.CurrentMode == GameMode.FreeMode)
-                YG2.saves.SaveRoundNumber(_roundNumber);
+                YG2.saves.Round.SaveNumber(_roundNumber);
 
             RoundChanged?.Invoke();
         }

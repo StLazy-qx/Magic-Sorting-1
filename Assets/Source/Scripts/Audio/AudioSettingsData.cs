@@ -38,21 +38,21 @@ namespace Assets.Source.Scripts.Audio
         {
             Master = ValidateVolumeValue(value, nameof(Master));
 
-            YG2.saves.SaveMasterVolume(value);
+            YG2.saves.AudioSettings.SaveMasterVolume(value);
         }
 
         public void SetAmbientVolume(float value)
         {
             Ambient = ValidateVolumeValue(value, nameof(Ambient));
 
-            YG2.saves.SaveAmbientVolume(value);
+            YG2.saves.AudioSettings.SaveAmbientVolume(value);
         }
 
         public void SetEffectVolume(float value)
         {
             Effect = ValidateVolumeValue(value, nameof(Effect));
 
-            YG2.saves.SaveEffectVolume(value);
+            YG2.saves.AudioSettings.SaveEffectVolume(value);
         }
 
         private float ValidateVolumeValue(float value, string parameterName)

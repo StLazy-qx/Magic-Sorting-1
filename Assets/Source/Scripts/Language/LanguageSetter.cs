@@ -10,12 +10,9 @@ namespace Assets.Source.Scripts.Language
 
         public LanguageSetter()
         {
-            //CurrentLanguage = YG2.lang;
-            //YG2.onCorrectLang += OnHandleLang;
-
             if (YG2.saves.Language.HasSavedLanguage)
             {
-                CurrentLanguage = YG2.saves.Language.SavedLanguage;
+                CurrentLanguage = YG2.saves.Language.Saved;
 
                 YG2.SwitchLanguage(CurrentLanguage);
             }
@@ -51,7 +48,7 @@ namespace Assets.Source.Scripts.Language
 
             CurrentLanguage = language;
 
-            YG2.saves.SaveLanguage(language);
+            YG2.saves.Language.Save(language);
             YG2.SwitchLanguage(language);
             OnLanguageChanged?.Invoke(language);
         }

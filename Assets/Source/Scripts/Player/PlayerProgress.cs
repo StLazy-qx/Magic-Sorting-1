@@ -40,11 +40,11 @@ namespace Assets.Source.Scripts.Player
         {
             if (_isInitialized) return;
 
-            int roundNumber = YG2.saves.GetRoundNumber();
+            int roundNumber = YG2.saves.Round.GetNumber();
             if (roundNumber < 1) roundNumber = 1;
 
-            GameMode mode = YG2.saves.HasSavedMode
-                ? YG2.saves.LoadMode()
+            GameMode mode = YG2.saves.GameMode.HasSavedMode
+                ? YG2.saves.GameMode.Load()
                 : GameMode.Tutorial;
 
             // Восстанавливаем сессионное состояние из сейва (включая данные дебаг-сида)
@@ -65,10 +65,10 @@ namespace Assets.Source.Scripts.Player
         {
             ValidateMode(mode, nameof(mode));
 
-            if (CurrentMode == mode && YG2.saves.LoadMode() == mode)
+            if (CurrentMode == mode && YG2.saves.GameMode.Load() == mode)
                 return;
 
-            YG2.saves.SaveMode(mode);
+            YG2.saves.GameMode.Save(mode);
 
             if (_runtimeProvider.TryGet(mode, out var runtime))
                 runtime.ResetAll();
@@ -88,7 +88,7 @@ namespace Assets.Source.Scripts.Player
                 return;
 
             runtime.MarkRoundFinished(roundIndex, rating, keepBest);
-            YG2.saves.SaveRoundRating(mode, roundIndex, rating, keepBest);
+            YG2.saves.RoundRatings.Save(mode, roundIndex, rating, keepBest);
 
             _status = BuildStatus(CurrentRoundNumber, CurrentMode, CurrentDifficultyLevel);
         }
@@ -106,7 +106,7 @@ namespace Assets.Source.Scripts.Player
 
             for (int roundIndex = start; roundIndex <= end; roundIndex++)
             {
-                if (YG2.saves.GetRoundRating(mode, roundIndex) != RoundRating.NotCompleted)
+                if (YG2.saves.RoundRatings.Get(mode, roundIndex) != RoundRating.NotCompleted)
                     count++;
             }
 
@@ -152,7 +152,7 @@ namespace Assets.Source.Scripts.Player
 
             for (int roundIndex = start; roundIndex <= end; roundIndex++)
             {
-                if (YG2.saves.GetRoundRating(mode, roundIndex) == RoundRating.NotCompleted)
+                if (YG2.saves.RoundRatings.Get(mode, roundIndex) == RoundRating.NotCompleted)
                     return false;
             }
 
@@ -171,7 +171,7 @@ namespace Assets.Source.Scripts.Player
             if (_runtimeProvider.TryGet(mode, out var runtime) == false)
                 return;
 
-            var ratings = YG2.saves.GetRoundRatingsForMode(mode);
+            var ratings = YG2.saves.RoundRatings.GetModeRatings(mode);
 
             foreach (var pair in ratings)
             {

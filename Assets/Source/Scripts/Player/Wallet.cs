@@ -7,8 +7,6 @@ namespace Assets.Source.Scripts.Player
     {
         private const int RewardMultiplier = 2;
 
-        private readonly string leaderboardName = "GameLB";
-
         private bool _isRoundScoreMultiplied;
         private int _currentScore;
         private int _totalScore;
@@ -32,13 +30,9 @@ namespace Assets.Source.Scripts.Player
         public void AddPoints(int value)
         {
             if (value < 0)
-            {
-                throw new ArgumentException(
-                    "The value cannot be equal to or less than zero.");
-            }
+                throw new ArgumentException("The value cannot be less than zero.");
 
             _currentScore += value;
-
             TotalScoreChanged?.Invoke(DisplayScore);
         }
 
@@ -48,9 +42,8 @@ namespace Assets.Source.Scripts.Player
             LastRoundScore = _currentScore;
             _totalScore += _currentScore;
 
-            YG2.saves.SaveScore(_totalScore);
+            YG2.saves.Score.Save(_totalScore);
             LastRoundScoreChanged?.Invoke(LastRoundScore);
-            YG2.SetLeaderboard(leaderboardName, YG2.saves.Points);
         }
 
         public void SpendPoints(int price)
@@ -58,15 +51,11 @@ namespace Assets.Source.Scripts.Player
             if (price < 0)
                 throw new ArgumentException("The price cannot be less than zero.");
 
-            if (price == 0)
-                return;
-
-            if (CanAfford(price) == false)
+            if (price == 0 || !CanAfford(price))
                 return;
 
             _totalScore -= price;
-
-            YG2.saves.DecreaseScore(_totalScore);
+            YG2.saves.Score.Decrease(_totalScore);
             TotalScoreChanged?.Invoke(_totalScore);
         }
 
@@ -80,10 +69,9 @@ namespace Assets.Source.Scripts.Player
             LastRoundScore += bonus;
             _totalScore += bonus;
 
-            YG2.saves.SaveScore(_totalScore);
+            YG2.saves.Score.Save(_totalScore);
             LastRoundScoreChanged?.Invoke(LastRoundScore);
             TotalScoreChanged?.Invoke(_totalScore);
-            YG2.SetLeaderboard(leaderboardName, YG2.saves.Points);
         }
 
         public void Reset()
@@ -92,12 +80,105 @@ namespace Assets.Source.Scripts.Player
             _isRoundScoreMultiplied = false;
         }
 
-        public bool CanAfford(int value)
-        {
-            if (value < 0)
-                return false;
-
-            return _totalScore >= value;
-        }
+        public bool CanAfford(int value) 
+            => value >= 0 && _totalScore >= value;
     }
+
+    //public class Wallet
+    //{
+    //    private const int RewardMultiplier = 2;
+
+    //    private readonly string leaderboardName = "GameLB";
+
+    //    private bool _isRoundScoreMultiplied;
+    //    private int _currentScore;
+    //    private int _totalScore;
+
+    //    private Wallet()
+    //    {
+    //        _totalScore = YG2.saves.Points;
+    //        _currentScore = 0;
+
+    //        TotalScoreChanged?.Invoke(_totalScore);
+    //    }
+
+    //    public event Action<int> TotalScoreChanged;
+    //    public event Action<int> LastRoundScoreChanged;
+
+    //    public int LastRoundScore { get; private set; }
+    //    public int TotalScore => _totalScore;
+    //    public int DisplayScore => _totalScore + _currentScore;
+    //    public int CurrentScore => _currentScore;
+
+    //    public void AddPoints(int value)
+    //    {
+    //        if (value < 0)
+    //        {
+    //            throw new ArgumentException(
+    //                "The value cannot be equal to or less than zero.");
+    //        }
+
+    //        _currentScore += value;
+
+    //        TotalScoreChanged?.Invoke(DisplayScore);
+    //    }
+
+    //    public void ConfirmPoints()
+    //    {
+    //        _isRoundScoreMultiplied = false;
+    //        LastRoundScore = _currentScore;
+    //        _totalScore += _currentScore;
+
+    //        YG2.saves.Score.Save(_totalScore);
+    //        LastRoundScoreChanged?.Invoke(LastRoundScore);
+    //        YG2.SetLeaderboard(leaderboardName, YG2.saves.Points);
+    //    }
+
+    //    public void SpendPoints(int price)
+    //    {
+    //        if (price < 0)
+    //            throw new ArgumentException("The price cannot be less than zero.");
+
+    //        if (price == 0)
+    //            return;
+
+    //        if (CanAfford(price) == false)
+    //            return;
+
+    //        _totalScore -= price;
+
+    //        YG2.saves.Score.Decrease(_totalScore);
+    //        TotalScoreChanged?.Invoke(_totalScore);
+    //    }
+
+    //    public void MultiplyLastRoundScore()
+    //    {
+    //        if (_isRoundScoreMultiplied || LastRoundScore <= 0)
+    //            return;
+
+    //        _isRoundScoreMultiplied = true;
+    //        int bonus = LastRoundScore * (RewardMultiplier - 1);
+    //        LastRoundScore += bonus;
+    //        _totalScore += bonus;
+
+    //        YG2.saves.Score.Save(_totalScore);
+    //        LastRoundScoreChanged?.Invoke(LastRoundScore);
+    //        TotalScoreChanged?.Invoke(_totalScore);
+    //        YG2.SetLeaderboard(leaderboardName, YG2.saves.Points);
+    //    }
+
+    //    public void Reset()
+    //    {
+    //        _currentScore = 0;
+    //        _isRoundScoreMultiplied = false;
+    //    }
+
+    //    public bool CanAfford(int value)
+    //    {
+    //        if (value < 0)
+    //            return false;
+
+    //        return _totalScore >= value;
+    //    }
+    //}
 }

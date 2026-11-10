@@ -168,20 +168,20 @@ namespace Assets.Source.Scripts.Vessels
             GameMode mode = _sequenceDifficultyLevel.CurrentMode;
             int roundIndex = _sequenceDifficultyLevel.CompletedRoundIndex;
 
-            bool isSaveable = mode == GameMode.Easy
-                           || mode == GameMode.Medium
-                           || mode == GameMode.Hard;
+            //bool isSaveable = mode == GameMode.Easy
+            //               || mode == GameMode.Medium
+            //               || mode == GameMode.Hard;
 
             if (roundIndex < 0)
-            {
                 return roundRating;
-            }
 
-            YG2.saves.SaveRoundRating(mode, roundIndex, roundRating);
+            YG2.saves.RoundRatings.Save(mode, roundIndex, roundRating);
 
-            RoundRating stored = YG2.saves.GetRoundRating(mode, roundIndex);
+            //RoundRating stored = YG2.saves.RoundRatings.Get(mode, roundIndex);
 
-            return roundRating;
+            //return roundRating;
+
+            return YG2.saves.RoundRatings.Get(mode, roundIndex);
         }
 
         private void UnsubscribeVessels()

@@ -4,7 +4,6 @@ using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.YG;
-using UnityEngine;
 using YG;
 
 namespace Assets.Source.Scripts.Game_Progress
@@ -34,12 +33,6 @@ namespace Assets.Source.Scripts.Game_Progress
             _modeRatings.Clear();
 
             RoundRatingSection section = YG2.saves.RoundRatings;
-
-            Debug.Log($"[ModeRating] Refresh: entries in saves = {YG2.saves.RoundRatingEntries.Count}, " +
-                      $"entries in section cache = {section.Ratings.Count}");
-
-            foreach (var pair in section.Ratings)
-                Debug.Log($"[ModeRating]   cache: {pair.Key.mode} round {pair.Key.roundIndex} = {pair.Value}");
 
             for (int i = 0; i < _ratedModes.Length; i++)
                 _modeRatings[_ratedModes[i]] = Calculate(_ratedModes[i]);

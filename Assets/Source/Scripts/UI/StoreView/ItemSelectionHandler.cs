@@ -146,7 +146,7 @@ namespace Assets.Source.Scripts.UI.StoreView
        
         private void RefreshAllItemViews()
         {
-            string equippedItemID = YG2.saves.EquippedItemID;
+            string equippedItemID = YG2.saves.EquippedItemIdentifier;
 
             foreach (NewItemView view in _itemViewPool.Objects)
             {

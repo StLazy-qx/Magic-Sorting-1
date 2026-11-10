@@ -7,6 +7,7 @@ using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Game_Progress;
 using Zenject;
 using UnityEngine;
+using YG;
 
 namespace Assets.Source.Scripts.Installers
 {
@@ -16,6 +17,8 @@ namespace Assets.Source.Scripts.Installers
 
         public override void InstallBindings()
         {
+            YG2.saves.Initialize();
+            YG2.saves.EnableAutoSaveOnExit();
             Container.Bind<GameModeRuntimeProvider>()
             .FromInstance(new GameModeRuntimeProvider(_gameModeDatas))
             .AsSingle();

@@ -56,6 +56,26 @@ namespace Assets.Source.Scripts.Game_Progress
             return true;
         }
 
+        private RoundRating Calculate(GameMode mode)
+        {
+            RoundRatingSection section = YG2.saves.RoundRatings;
+            int start = _sequenceProvider.GetStartRoundNumber(mode);
+            int end = _sequenceProvider.GetEndRoundNumber(mode);
+            var ratings = new List<RoundRating>(end - start + 1);
+
+            for (int roundNumber = start; roundNumber <= end; roundNumber++)
+            {
+                RoundRating rating = section.Get(mode, roundNumber);
+
+                if (rating == RoundRating.NotCompleted)
+                    return RoundRating.NotCompleted;
+
+                ratings.Add(rating);
+            }
+
+            return _calculator.CalculateAverage(ratings);
+        }
+
         //public bool TryGetRating(GameMode mode, out RoundRating rating)
         //{
         //    if (_modeRatings.TryGetValue(mode, out rating) == false)
@@ -70,19 +90,19 @@ namespace Assets.Source.Scripts.Game_Progress
         //    return true;
         //}
 
-        private RoundRating Calculate(GameMode mode)
-        {
-            RoundRatingSection section = YG2.saves.RoundRatings;
+        //private RoundRating Calculate(GameMode mode)
+        //{
+        //    RoundRatingSection section = YG2.saves.RoundRatings;
 
-            int start = _sequenceProvider.GetStartRoundNumber(mode);
-            int end = _sequenceProvider.GetEndRoundNumber(mode);
+        //    int start = _sequenceProvider.GetStartRoundNumber(mode);
+        //    int end = _sequenceProvider.GetEndRoundNumber(mode);
 
-            var ratings = new List<RoundRating>(end - start + 1);
+        //    var ratings = new List<RoundRating>(end - start + 1);
 
-            for (int roundNumber = start; roundNumber <= end; roundNumber++)
-                ratings.Add(section.Get(mode, roundNumber));
+        //    for (int roundNumber = start; roundNumber <= end; roundNumber++)
+        //        ratings.Add(section.Get(mode, roundNumber));
 
-            return _calculator.CalculateAverage(ratings);
-        }
+        //    return _calculator.CalculateAverage(ratings);
+        //}
     }
 }

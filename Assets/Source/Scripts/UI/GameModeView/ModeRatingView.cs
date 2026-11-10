@@ -16,11 +16,16 @@ namespace Assets.Source.Scripts.UI.GameModeView
 
         public void Show(RoundRating rating)
         {
+            if (rating == RoundRating.NotCompleted)
+            {
+                Hide();
+
+                return;
+            }
+
             gameObject.SetActive(true);
 
             int starsCount = GetStarsCount(rating);
-
-            Debug.Log($"[ModeRating] View.Show: {rating} -> {starsCount} of {_stars.Length} stars", this);
 
             for (int i = 0; i < _stars.Length; i++)
             {

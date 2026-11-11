@@ -15,7 +15,7 @@ namespace Assets.Source.Scripts.Player
 
         [SerializeField] private SkinSetter _scinSetter;
         [SerializeField] private ActionHandler _actionHandler;
-        [SerializeField] private VesselStateTracker _vesselStateTracker;
+        [SerializeField] private VesselRoundController _vesselRoundController;
 
         private Animator _animator;
 
@@ -25,19 +25,25 @@ namespace Assets.Source.Scripts.Player
 
             if (_animator == null)
                 throw new ArgumentNullException(nameof(_animator));
+
+            if (_actionHandler == null)
+                throw new ArgumentNullException(nameof(_actionHandler));
+
+            if (_vesselRoundController == null)
+                throw new ArgumentNullException(nameof(_vesselRoundController));
         }
 
         private void OnEnable()
         {
             _scinSetter.ItemChanged += OnPlayAnimationChangeClothes;
-            _vesselStateTracker.RoundOvering += OnPlayAnimationWinning;
+            _vesselRoundController.RoundOvering += OnPlayAnimationWinning;
             _actionHandler.SkillUsed += OnPlayInteract;
         }
 
         private void OnDisable()
         {
             _scinSetter.ItemChanged -= OnPlayAnimationChangeClothes;
-            _vesselStateTracker.RoundOvering -= OnPlayAnimationWinning;
+            _vesselRoundController.RoundOvering -= OnPlayAnimationWinning;
             _actionHandler.SkillUsed -= OnPlayInteract;
         }
 

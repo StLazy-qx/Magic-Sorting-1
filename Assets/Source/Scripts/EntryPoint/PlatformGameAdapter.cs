@@ -31,8 +31,7 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private MagicCell _magicCellMobile;
         [SerializeField] private MagicCellsFactory _magicCellsFactory;
         [Header("Links")]
-        [SerializeField] private VesselStateTracker _vesselsFulling;
-        [SerializeField] private FinalGameSession _finalGameSession;
+        [SerializeField] private VesselRoundController _vesselRoundController;
         [SerializeField] private ClickModeSwitcher _clickModeSwitcher;
         [SerializeField] private TutorialMatchHighlighter _seeker;
 
@@ -46,8 +45,7 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             _magicCellsFactory.SetCellPrefab(_magicCellMobile);
             _mobileObjectsPosition.Initialize();
-            _vesselsFulling.SetPanel(_finalMatchPanelMobile);
-            _finalGameSession.SetPanel(_finalMatchPanelMobile);
+            _vesselRoundController.SetPanel(_finalMatchPanelMobile);
             _clickModeSwitcher.SetModeButtons(_reverseButtonViewMobile);
             _seeker.SetButtonRewarded(_rewardedIconMobile, _reverseButtonMobile);
         }
@@ -56,8 +54,7 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             _magicCellsFactory.SetCellPrefab(_magicCellDesktop);
             _desktopObjectsPosition.Initialize();
-            _vesselsFulling.SetPanel(_finalMatchPanelDesktop);
-            _finalGameSession.SetPanel(_finalMatchPanelDesktop);
+            _vesselRoundController.SetPanel(_finalMatchPanelDesktop);
             _clickModeSwitcher.SetModeButtons(_reverseButtonViewDesktop);
             _seeker.SetButtonRewarded(_rewardedIconDesktop, _reverseButtonDesktop);
         }
@@ -76,11 +73,8 @@ namespace Assets.Source.Scripts.EntryPoint
             if (_finalMatchPanelMobile == null)
                 throw new ArgumentNullException(nameof(_finalMatchPanelMobile));
 
-            if (_vesselsFulling == null)
-                throw new ArgumentNullException(nameof(_vesselsFulling));
-
-            if (_finalGameSession == null)
-                throw new ArgumentNullException(nameof(_finalGameSession));
+            if (_vesselRoundController == null)
+                throw new ArgumentNullException(nameof(_vesselRoundController));
         }
     }
 }

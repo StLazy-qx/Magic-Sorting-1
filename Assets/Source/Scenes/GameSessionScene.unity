@@ -152396,6 +152396,7 @@ Transform:
   - {fileID: 1845276653}
   - {fileID: 1139587300}
   - {fileID: 845990819}
+  - {fileID: 1773993230}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &392530558
@@ -199917,8 +199918,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1c420200234d4b4a919767acc4239bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _finalGame: {fileID: 1845276654}
-  _effecter: {fileID: 43498391}
 --- !u!1001 &569252880
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -374252,7 +374251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02ebbfcfcda0c184595a3c21f44cd0e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _vesselStateTracker: {fileID: 569123143}
+  _vesselRoundController: {fileID: 0}
   _audioSource: {fileID: 1271734733}
   _interactClip: {fileID: 8300000, guid: 746580dfd13e61e41bbc1ae69507444c, type: 3}
 --- !u!1001 &999817061
@@ -379606,8 +379605,7 @@ MonoBehaviour:
   _magicCellDesktop: {fileID: 512643703}
   _magicCellMobile: {fileID: 39147150}
   _magicCellsFactory: {fileID: 8416172468163468308}
-  _vesselsFulling: {fileID: 569123143}
-  _finalGameSession: {fileID: 1845276654}
+  _vesselRoundController: {fileID: 0}
   _clickModeSwitcher: {fileID: 923747164}
   _seeker: {fileID: 404364796}
 --- !u!114 &1009920594
@@ -680133,6 +680131,37 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1 &1773993229
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1773993230}
+  m_Layer: 0
+  m_Name: ' Vessel Round Controller'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1773993230
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1773993229}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 392530555}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1793528847
 GameObject:
   m_ObjectHideFlags: 0
@@ -691822,11 +691851,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _handler: {fileID: 392530558}
-  _endModelPanel: {fileID: 916146995}
-  _roundRating:
-  - {fileID: 1019663873}
-  - {fileID: 1807815134}
-  - {fileID: 1725073008}
+  _endModePanel: {fileID: 0}
 --- !u!1 &1851286264
 GameObject:
   m_ObjectHideFlags: 0
@@ -798979,7 +799004,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scinSetter: {fileID: 2066365349}
   _actionHandler: {fileID: 2066365340}
-  _vesselStateTracker: {fileID: 569123143}
+  _vesselRoundController: {fileID: 0}
 --- !u!114 &2066365334
 MonoBehaviour:
   m_ObjectHideFlags: 0

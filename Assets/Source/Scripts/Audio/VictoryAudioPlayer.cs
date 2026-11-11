@@ -9,7 +9,7 @@ namespace Assets.Source.Scripts.Audio
     {
         private const float ValueUntilAudioTurnsOn = 0.25f;
 
-        [SerializeField] private VesselStateTracker _vesselStateTracker;
+        [SerializeField] private VesselRoundController _vesselRoundController;
         [SerializeField] private AudioSource _audioSource;
         [SerializeField] private AudioClip _interactClip;
 
@@ -21,7 +21,7 @@ namespace Assets.Source.Scripts.Audio
                     (nameof(_audioSource), "AudioSource cannot be null");
             }
 
-            if (_vesselStateTracker == null)
+            if (_vesselRoundController == null)
             {
                 throw new ArgumentNullException
                     (nameof(_audioSource), "AudioSource cannot be null");
@@ -33,12 +33,12 @@ namespace Assets.Source.Scripts.Audio
 
         private void OnEnable()
         {
-            _vesselStateTracker.VictoryAudioClipEnabled += OnPlayInteractSound;
+            _vesselRoundController.VictoryAudioClipEnabled += OnPlayInteractSound;
         }
 
         private void OnDisable()
         {
-            _vesselStateTracker.VictoryAudioClipEnabled -= OnPlayInteractSound;
+            _vesselRoundController.VictoryAudioClipEnabled -= OnPlayInteractSound;
         }
 
         private void OnPlayInteractSound()

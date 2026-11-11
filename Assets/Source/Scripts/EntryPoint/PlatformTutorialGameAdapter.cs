@@ -27,14 +27,12 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private IconRewardedAdvertisement _rewardedIconMobile;
         [SerializeField] private ReverseButtonView _reverseButtonViewDesktop;
         [SerializeField] private ReverseButtonView _reverseButtonViewMobile;
-        //[SerializeField] private ButtonColorMixer _buttonColorMixerDesktop;
-        //[SerializeField] private ButtonColorMixer _buttonColorMixerMobile;
         [Header("Game Objects")]
         [SerializeField] private MagicCell _magicCellDesktop;
         [SerializeField] private MagicCell _magicCellMobile;
         [SerializeField] private MagicCellsFactory _magicCellsFactory;
         [Header("Links")]
-        [SerializeField] private VesselStateTracker _vesselsFulling;
+        [SerializeField] private VesselRoundController _vesselRoundController;
         [SerializeField] private FinalGameSession _finalGameSession;
         [SerializeField] private ClickModeSwitcher _clickModeSwitcher;
 
@@ -48,8 +46,7 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             _magicCellsFactory.SetCellPrefab(_magicCellMobile);
             _mobileObjectsPosition.Initialize();
-            _vesselsFulling.SetPanel(_finalMatchPanelMobile);
-            _finalGameSession.SetPanel(_finalMatchPanelMobile);
+            _vesselRoundController.SetPanel(_finalMatchPanelMobile);
             _finalGameSession.SetTutorialPanel(_finishTutorialPanelMobile);
             _clickModeSwitcher.SetModeButtons(_reverseButtonViewMobile);
         }
@@ -58,8 +55,7 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             _magicCellsFactory.SetCellPrefab(_magicCellDesktop);
             _desktopObjectsPosition.Initialize();
-            _vesselsFulling.SetPanel(_finalMatchPanelDesktop);
-            _finalGameSession.SetPanel(_finalMatchPanelDesktop);
+            _vesselRoundController.SetPanel(_finalMatchPanelDesktop);
             _finalGameSession.SetTutorialPanel(_finishTutorialPanelDesktop);
             _clickModeSwitcher.SetModeButtons(_reverseButtonViewDesktop);
         }
@@ -84,8 +80,8 @@ namespace Assets.Source.Scripts.EntryPoint
             if (_finalMatchPanelMobile == null)
                 throw new ArgumentNullException(nameof(_finalMatchPanelMobile));
 
-            if (_vesselsFulling == null)
-                throw new ArgumentNullException(nameof(_vesselsFulling));
+            if (_vesselRoundController == null)
+                throw new ArgumentNullException(nameof(_vesselRoundController));
 
             if (_finalGameSession == null)
                 throw new ArgumentNullException(nameof(_finalGameSession));

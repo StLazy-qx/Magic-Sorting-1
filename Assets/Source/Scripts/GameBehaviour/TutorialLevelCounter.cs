@@ -16,27 +16,40 @@ namespace Assets.Source.Scripts.GameBehaviour
         public int RoundNumber { get; private set; }
         public bool IsLastRound => RoundNumber == EndTutorialRoundNumber;
 
-        private void OnEnable()
-        {
-            _tutorialProgress.RoundStarted += OnRoundStarted;
-        }
-
-        private void OnDisable()
-        {
-            _tutorialProgress.RoundStarted -= OnRoundStarted;
-        }
-
         public void Initialize(TutorialProgress tutorialProgress)
         {
             Guard.NotNull(tutorialProgress, nameof(tutorialProgress));
 
+            Unsubscribe();
             _tutorialProgress = tutorialProgress;
+            Subscribe();
+        }
+
+        private void OnDestroy()
+        {
+            Unsubscribe();
+        }
+
+        private void Subscribe()
+        {
+            if (_tutorialProgress == null)
+                return;
+
+            _tutorialProgress.RoundStarted -= OnRoundStarted;
+            _tutorialProgress.RoundStarted += OnRoundStarted;
+        }
+
+        private void Unsubscribe()
+        {
+            if (_tutorialProgress == null)
+                return;
+
+            _tutorialProgress.RoundStarted -= OnRoundStarted;
         }
 
         private void OnRoundStarted(int roundNumber)
         {
             RoundNumber = roundNumber;
-
             RoundChanged?.Invoke();
         }
     }

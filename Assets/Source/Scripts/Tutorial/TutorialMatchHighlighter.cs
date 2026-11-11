@@ -48,21 +48,33 @@ namespace Assets.Source.Scripts.Tutorial
 
         private void OnEnable()
         {
-            _gameHandler.GameLaunching += OnStartInitialSearch;
-            _cellRouter.CellDeparturing += OnStartSearchLoop;
-            _modeSwitcher.RewardedEnded += OnStartSearchLoopAfterRewarded;
+            if (_gameHandler != null)
+                _gameHandler.GameLaunching += OnStartInitialSearch;
+
+            if (_cellRouter != null)
+                _cellRouter.CellDeparturing += OnStartSearchLoop;
+
+            if (_modeSwitcher != null)
+                _modeSwitcher.RewardedEnded += OnStartSearchLoopAfterRewarded;
         }
 
         private void OnDisable()
         {
-            _gameHandler.GameLaunching -= OnStartInitialSearch;
-            _cellRouter.CellDeparturing -= OnStartSearchLoop;
-            _modeSwitcher.RewardedEnded -= OnStartSearchLoopAfterRewarded;
+            if (_gameHandler != null)
+                _gameHandler.GameLaunching -= OnStartInitialSearch;
 
-            if (_reverseButton != null)
-                _modeSwitcher.ReverseButtonActivating -= OnReverseButtonActivated;
+            if (_cellRouter != null)
+                _cellRouter.CellDeparturing -= OnStartSearchLoop;
 
-            _timer.StopTimer();
+            if (_modeSwitcher != null)
+            {
+                _modeSwitcher.RewardedEnded -= OnStartSearchLoopAfterRewarded;
+
+                if (_reverseButton != null)
+                    _modeSwitcher.ReverseButtonActivating -= OnReverseButtonActivated;
+            }
+
+            _timer?.StopTimer();
         }
 
         public void SetButtonRewarded(
@@ -72,8 +84,13 @@ namespace Assets.Source.Scripts.Tutorial
             Guard.NotNull(rewardedButton, nameof(rewardedButton));
             Guard.NotNull(reverseButton, nameof(reverseButton));
 
+            if (_reverseButton != null)
+                _modeSwitcher.ReverseButtonActivating -= OnReverseButtonActivated;
+
             _reverseButton = reverseButton;
-            _modeSwitcher.ReverseButtonActivating += OnReverseButtonActivated;
+
+            if (_modeSwitcher != null)
+                _modeSwitcher.ReverseButtonActivating += OnReverseButtonActivated;
         }
 
         public void LoadCurrentColumns()
@@ -109,6 +126,9 @@ namespace Assets.Source.Scripts.Tutorial
 
         private void OnStartInitialSearch()
         {
+            if (_reverseButton == null)
+                return;
+
             _reverseButton.UIButton.interactable = true;
 
             _animationParticle.Stop();
@@ -136,8 +156,10 @@ namespace Assets.Source.Scripts.Tutorial
             if (anyCanReverse == false)
             {
                 Button reverseButton = GetComponentButton(_reverseButton);
+
                 if (reverseButton != null)
                     _animationParticle.Play(reverseButton);
+
                 return;
             }
 
@@ -205,7 +227,6 @@ namespace Assets.Source.Scripts.Tutorial
                     if (topCell != null)
                     {
                         PlayAnimationCell(topCell);
-
                         return true;
                     }
                 }
@@ -243,11 +264,14 @@ namespace Assets.Source.Scripts.Tutorial
                 return;
             }
 
-            if (_modeSwitcher.CurrentMode == _modeSwitcher.CurrentMode)
+            // Совпадений нет и WaitingPoint занят — подсказываем кнопку Reverse.
+            if (_reverseButton == null)
                 return;
 
-
             Button reverseButton = GetComponentButton(_reverseButton);
+
+            if (reverseButton == null)
+                return;
 
             _animationParticle.Play(reverseButton);
         }
@@ -259,10 +283,12 @@ namespace Assets.Source.Scripts.Tutorial
 
             Button button = GetComponentButton(_reverseButton);
 
+            if (button == null)
+                return;
+
             if (AreAllColumnsEmpty())
             {
                 button.interactable = false;
-
                 return;
             }
 
@@ -298,10 +324,7 @@ namespace Assets.Source.Scripts.Tutorial
             if (component == null)
                 return null;
 
-            Button button = component.GetComponent<Button>();
-            Guard.NotNull(button, nameof(button));
-
-            return button;
+            return component.GetComponent<Button>();
         }
 
         private void ValidateDependencies()

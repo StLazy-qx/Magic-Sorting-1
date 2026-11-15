@@ -1,5 +1,4 @@
 ﻿using Assets.Source.Scripts.Enums;
-using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.Player;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,6 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private bool _isFixedMode;
         private int _currentIndex;
-        private RandomDifficultyProvider _randomDifficultyProvider;
         private PlayerProgress _playerProgress;
         private GameMode _gameMode = GameMode.FreeMode;
         private GameMode? _builtMode;
@@ -47,9 +45,7 @@ namespace Assets.Source.Scripts.EntryPoint
             if (_gameMode == GameMode.FreeMode)
             {
                 _isFixedMode = false;
-                _randomDifficultyProvider = new RandomDifficultyProvider();
 
-                _randomDifficultyProvider.Initialize();
                 CreateFreeModeSequence(FreeModeInitialLength, 0);
             }
             else

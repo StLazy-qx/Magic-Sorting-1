@@ -29,7 +29,7 @@ namespace Assets.Source.Scripts.GameBehaviour
 
         private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private DifficultyState _difficultyState;
-        private DifficultySetProvider _settingsProvider;
+        private DifficultySettingsProvider _settingsProvider;
         private RoundLauncher _roundLauncher;
         private PlayerProgress _playerProgress;
         private bool _isAdShowing;
@@ -93,7 +93,7 @@ namespace Assets.Source.Scripts.GameBehaviour
 
             _difficultyState = difficultyState;
             _sequenceDifficultyLevel = level;
-            _settingsProvider = new DifficultySetProvider(
+            _settingsProvider = new DifficultySettingsProvider(
                 _difficultyDatabase,
                 _difficultyState);
             _playerProgress = playerProgress;

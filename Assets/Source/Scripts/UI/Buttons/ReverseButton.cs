@@ -1,4 +1,4 @@
-﻿namespace Assets.Source.Scripts.UI.Buttons
+﻿ namespace Assets.Source.Scripts.UI.Buttons
 {
     public class ReverseButton : StatefulButton
     {

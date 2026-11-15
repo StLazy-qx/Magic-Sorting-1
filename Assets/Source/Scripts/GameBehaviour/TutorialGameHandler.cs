@@ -27,7 +27,7 @@ namespace Assets.Source.Scripts.GameBehaviour
         [SerializeField] private DifficultyDatabase _difficultyDatabase;
 
         private DifficultyState _difficultyState;
-        private DifficultySetProvider _settingsProvider;
+        private DifficultySettingsProvider _settingsProvider;
         private RoundLauncher _roundLauncher;
         private TutorialProgress _tutorialProgress;
 
@@ -48,7 +48,7 @@ namespace Assets.Source.Scripts.GameBehaviour
             Guard.NotNull(_tutorialLevelCounter, nameof(_tutorialLevelCounter));
 
             _difficultyState = difficultyState;
-            _settingsProvider = new DifficultySetProvider(
+            _settingsProvider = new DifficultySettingsProvider(
                 _difficultyDatabase,
                 _difficultyState);
 

@@ -1,17 +1,9 @@
 using Assets.Source.Scripts.EntryPoint;
-using Assets.Source.Scripts.GameBehaviour;
-using Assets.Source.Scripts.Player;
-using Assets.Source.Scripts.UI.GamePanel;
 using Assets.Source.Scripts.Extensions;
-using Assets.Source.Scripts.Game_Progress;
-using Assets.Source.Scripts.Enums;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 using UnityEngine;
-using Zenject;
 using System.Linq;
-using YG;
 
 namespace Assets.Source.Scripts.Vessels
 {

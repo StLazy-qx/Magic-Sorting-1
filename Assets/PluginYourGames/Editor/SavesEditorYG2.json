@@ -13,8 +13,8 @@
     false,
     false
   ],
-  "idSave": 30,
-  "MainPoints": 60,
+  "idSave": 41,
+  "MainPoints": 260,
   "ActualRoundNumber": 1,
   "SavedGameMode": 1,
   "MasterVolume": 0.5,
@@ -34,17 +34,17 @@
     {
       "GameMode": 1,
       "RoundIndex": 2,
-      "Rating": 2
+      "Rating": 3
     },
     {
       "GameMode": 1,
       "RoundIndex": 3,
-      "Rating": 2
+      "Rating": 1
     },
     {
       "GameMode": 1,
       "RoundIndex": 4,
-      "Rating": 2
+      "Rating": 1
     },
     {
       "GameMode": 1,
@@ -59,12 +59,12 @@
     {
       "GameMode": 2,
       "RoundIndex": 1,
-      "Rating": 2
+      "Rating": 1
     },
     {
       "GameMode": 2,
       "RoundIndex": 2,
-      "Rating": 1
+      "Rating": 3
     },
     {
       "GameMode": 1,
@@ -76,7 +76,7 @@
     "HasSavedMode": true
   },
   "Score": {
-    "Points": 60
+    "Points": 260
   },
   "Round": {
     "ActualRoundNumber": 1
@@ -92,16 +92,16 @@
   "RoundRatings": {
     "Ratings": {
       "(Easy, 1)": 1,
-      "(Easy, 2)": 2,
-      "(Easy, 3)": 2,
-      "(Easy, 4)": 2,
+      "(Easy, 2)": 3,
+      "(Easy, 3)": 1,
+      "(Easy, 4)": 1,
       "(Easy, 5)": 2,
       "(Easy, 6)": 3,
-      "(Medium, 1)": 2,
-      "(Medium, 2)": 1,
+      "(Medium, 1)": 1,
+      "(Medium, 2)": 3,
       "(Easy, 0)": 2
     }
   },
-  "Points": 60,
+  "Points": 260,
   "EquippedItemIdentifier": "11111"
 }

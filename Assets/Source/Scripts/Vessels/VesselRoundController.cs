@@ -56,6 +56,7 @@ namespace Assets.Source.Scripts.Vessels
                 return;
 
             ValidateInitializeArguments();
+
             IsInitialized = true;
         }
 
@@ -74,11 +75,14 @@ namespace Assets.Source.Scripts.Vessels
             _tracker.SetVesselsList(vessels);
         }
 
-        public bool IsAllVesselsComplete() => _tracker.IsAllVesselsComplete;
+        public bool IsAllVesselsComplete() 
+            => _tracker.IsAllVesselsComplete;
 
-        private void OnRoundReset() => StopAllCoroutines();
+        private void OnRoundReset() 
+            => StopAllCoroutines();
 
-        private void OnAllVesselsCompleted() => VictoryAudioClipEnabled?.Invoke();
+        private void OnAllVesselsCompleted()
+            => VictoryAudioClipEnabled?.Invoke();
 
         private void OnVesselCompleted(VesselCompletionInfo info)
         {

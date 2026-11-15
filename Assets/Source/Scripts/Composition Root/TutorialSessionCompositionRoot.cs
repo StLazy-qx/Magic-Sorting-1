@@ -5,6 +5,7 @@ using Assets.Source.Scripts.Factory;
 using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.Player;
+using Assets.Source.Scripts.Vessels;
 using System.Collections;
 using UnityEngine;
 using Zenject;
@@ -21,6 +22,7 @@ namespace Assets.Source.Scripts.Composition_Root
         [SerializeField] private ColumnsFactory _columnsFactory;
         [SerializeField] private VesselFactory _vesselFactory;
         [SerializeField] private ColorColumnDistributor _columnDistributor;
+        [SerializeField] private VesselRoundController _vesselRoundController;
         [SerializeField] private TutorialGameHandler _tutorialGameHandler;
 
         private DifficultyState _difficultyState;
@@ -79,9 +81,11 @@ namespace Assets.Source.Scripts.Composition_Root
         protected override IEnumerator InitializeFactoriesAsync()
         {
             _vesselFactory.Spawn();
+
             yield return new WaitUntil(() => _vesselFactory.IsReady);
 
             Guard.NotNull(_vesselFactory.Objects, nameof(_vesselFactory.Objects));
+            _vesselRoundController.SetVesselsList(_vesselFactory.Objects);
 
             if (_vesselFactory.Objects.Count > 0)
             {

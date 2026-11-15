@@ -58,8 +58,8 @@ namespace Assets.Source.Scripts.Composition_Root
             _tutorialGameHandler.RegisterFirstRound();
 
             _currentSettings = _difficultyDatabase.GetSettings(_difficultyState.CurrentDifficulty);
-            Guard.NotNull(_currentSettings, nameof(_currentSettings));
 
+            Guard.NotNull(_currentSettings, nameof(_currentSettings));
             _colorRandomizer.SetDifficultySettings(_currentSettings.ColorsCount);
             _platformSetter.Initialize();
             _entryColorListsFactory.Initialize(

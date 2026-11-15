@@ -241353,7 +241353,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _waitingPoint: {fileID: 1861908055}
-  _magicMixer: {fileID: 0}
+  _magicMixer: {fileID: 1850938333}
   _delayDispatcher: {fileID: 845990818}
 --- !u!1 &657182783
 GameObject:
@@ -335205,7 +335205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec1012df3128f0e45a6c0efcc2ade6b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _vesselMixer: {fileID: 0}
+  _vesselMixer: {fileID: 1850938332}
   RewardID: 1
 --- !u!1 &925142657
 GameObject:

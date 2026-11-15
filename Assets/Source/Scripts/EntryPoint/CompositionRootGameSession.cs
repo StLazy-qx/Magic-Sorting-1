@@ -63,12 +63,12 @@ namespace Assets.Source.Scripts.EntryPoint
             ValidateDependencies();
 
             _colorCatalog = new ColorCatalog();
-            _colorRecipes = new ColorRecipes(_colorCatalog);
             _colorConverter = new ColorConverter(_colorCatalog);
+            _colorRecipes = new ColorRecipes(_colorCatalog);
 
             Guard.NotNull(_colorCatalog, nameof(_colorCatalog));
-            Guard.NotNull(_colorRecipes, nameof(_colorRecipes));
             Guard.NotNull(_colorConverter, nameof(_colorConverter));
+            Guard.NotNull(_colorRecipes, nameof(_colorRecipes));
             _colorRandomizer.Initialize(
                 _colorCatalog,
                 _colorConverter,

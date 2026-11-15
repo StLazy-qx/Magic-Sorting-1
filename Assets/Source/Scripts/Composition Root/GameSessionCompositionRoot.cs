@@ -9,6 +9,7 @@ using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.InteractiveObjects;
 using Assets.Source.Scripts.MagicCells;
 using Assets.Source.Scripts.Player;
+using Assets.Source.Scripts.Vessels;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,6 +31,7 @@ namespace Assets.Source.Scripts.Composition_Root
         [SerializeField] private MagicMixer _magicMixer;
         [SerializeField] private MagicCellRouter _magicCellRouter;
         [SerializeField] private ClickModeSwitcher _clickModeSwitcher;
+        [SerializeField] private VesselRoundController _vesselRoundController;
         [SerializeField] private GameSessionHandler _gameSessionHandler;
 
         private DifficultyState _difficultyState;
@@ -85,12 +87,9 @@ namespace Assets.Source.Scripts.Composition_Root
                 _colorContext.Catalog,
                 _colorContext.Converter,
                 _colorContext.Recipes);
-
             _platformGameAdapter.Initialize();
             _vesselFactory.InitRandomizer(_colorRandomizer);
             _magicMixer.Initialize(_colorContext.Recipes, _colorContext.Converter);
-
-            // Двойная подписка MixFailed (тут и в OnEnable) была багом — оставляем только OnEnable.
             _gameSessionHandler.SetLauncherDependencies(
                 _columnsFactory,
                 _vesselFactory,
@@ -102,25 +101,22 @@ namespace Assets.Source.Scripts.Composition_Root
 
         protected override IEnumerator InitializeSceneDependenciesAsync()
         {
-            if (!_playerProgress.IsInitialized)
+            if (_playerProgress.IsInitialized == false)
                 _playerProgress.Initialize();
 
             yield return new WaitUntil(() => _playerProgress.IsInitialized);
 
             var level = ResolveRoundDifficulty();
             _currentDifficultySettings = _difficultyDatabase.GetSettings(level);
+
             Guard.NotNull(_currentDifficultySettings, nameof(_currentDifficultySettings));
-
             _colorRandomizer.SetDifficultySettings(_currentDifficultySettings.ColorsCount);
-
             ValidateRoundColorsOwnership(_colorRandomizer.RoundColors);
-
             _columnDistributor.Initialize(
                 _colorContext.Recipes,
                 _colorContext.Converter,
                 _colorRandomizer.RoundColors,
                 _currentDifficultySettings.CountMixeColor);
-
             _entryColorListsFactory.Initialize(
                 _colorRandomizer.BeginColors,
                 _colorRandomizer.RemainingColors);
@@ -132,7 +128,9 @@ namespace Assets.Source.Scripts.Composition_Root
             _storeItemFactory.Spawn();
 
             yield return new WaitUntil(() => _vesselFactory.IsReady);
+
             Guard.NotNull(_vesselFactory.Objects, nameof(_vesselFactory.Objects));
+            _vesselRoundController.SetVesselsList(_vesselFactory.Objects);
 
             if (_vesselFactory.Objects.Count > 0)
             {
@@ -146,9 +144,9 @@ namespace Assets.Source.Scripts.Composition_Root
             _columnDistributor.Distribute();
         }
 
-        protected override void OnEntityInitialized(IObjectInitilizable obj)
+        protected override void OnEntityInitialized(IObjectInitilizable @object)
         {
-            if (obj is Inventory inventory)
+            if (@object is Inventory inventory)
                 inventory.SetScin();
         }
 
@@ -158,6 +156,7 @@ namespace Assets.Source.Scripts.Composition_Root
                 return _playerProgress.CurrentDifficultyLevel;
 
             _sequenceDifficultyLevel.SyncWithProgress();
+
             return _sequenceDifficultyLevel.GetCurrent();
         }
 
@@ -168,16 +167,18 @@ namespace Assets.Source.Scripts.Composition_Root
             foreach (var strategy in roundColors)
             {
                 bool owned = false;
+
                 foreach (var catalogStrategy in _colorContext.Catalog.All)
                 {
                     if (ReferenceEquals(catalogStrategy, strategy))
                     {
                         owned = true;
+
                         break;
                     }
                 }
 
-                if (!owned)
+                if (owned == false)
                     foreignCount++;
             }
 

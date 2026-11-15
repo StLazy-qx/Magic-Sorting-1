@@ -15,6 +15,12 @@ namespace Assets.Source.Scripts.Pool
             _provider.PoolEffectSizeReading += OnInitPoolSize;
         }
 
+        private void Start()
+        {
+            if (_provider.LastSize > 0)
+                OnInitPoolSize(_provider.LastSize);
+        }
+
         private void OnDestroy()
         {
             _provider.PoolEffectSizeReading -= OnInitPoolSize;

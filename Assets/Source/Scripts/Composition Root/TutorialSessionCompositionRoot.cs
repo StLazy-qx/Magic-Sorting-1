@@ -25,6 +25,7 @@ namespace Assets.Source.Scripts.Composition_Root
 
         private DifficultyState _difficultyState;
         private DifficultySettings _currentSettings;
+        private ColorContext _colorContext;
 
         [Inject]
         private void Construct(
@@ -60,6 +61,13 @@ namespace Assets.Source.Scripts.Composition_Root
             _currentSettings = _difficultyDatabase.GetSettings(_difficultyState.CurrentDifficulty);
 
             Guard.NotNull(_currentSettings, nameof(_currentSettings));
+
+            _colorContext = new ColorContext();
+
+            _colorRandomizer.Initialize(
+                _colorContext.Catalog,
+                _colorContext.Converter,
+                _colorContext.Recipes);
             _colorRandomizer.SetDifficultySettings(_currentSettings.ColorsCount);
             _platformSetter.Initialize();
             _entryColorListsFactory.Initialize(

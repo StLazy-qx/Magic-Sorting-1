@@ -36,17 +36,5 @@ namespace Assets.Source.Scripts.YG
 
             _savePolicy.RequestSave();
         }
-
-        //protected readonly SavesYG _saves;
-
-        //protected BaseSection(SavesYG saves)
-        //{
-        //    _saves = saves;
-        //}
-
-        //protected void SaveProgress()
-        //{
-        //    YG2.SaveProgress();
-        //}
     }
 }

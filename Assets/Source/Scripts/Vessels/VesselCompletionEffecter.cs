@@ -14,9 +14,14 @@ namespace Assets.Source.Scripts.Vessels
 
         public event Action<int> PoolEffectSizeReading;
 
+        public int LastSize { get; private set; }
+
         public void Initialize(int value)
         {
             Guard.Positive(value, nameof(value));
+
+            LastSize = value;
+
             PoolEffectSizeReading?.Invoke(value);
         }
 

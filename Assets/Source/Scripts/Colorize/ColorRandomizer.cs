@@ -27,7 +27,10 @@ namespace Assets.Source.Scripts.Colorize
         public ColorConverter Converter => _colorConverter;
         public ColorRecipes Recipes => _colorRecipes;
 
-        public void Initialize(ColorCatalog catalog, ColorConverter converter, ColorRecipes recipes)
+        public void Initialize(
+            ColorCatalog catalog, 
+            ColorConverter converter, 
+            ColorRecipes recipes)
         {
             Guard.NotNull(catalog, nameof(catalog));
             Guard.NotNull(converter, nameof(converter));

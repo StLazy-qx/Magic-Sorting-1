@@ -18,6 +18,8 @@ namespace Assets.Source.Scripts.Colorize
 
         public event Action<int> PoolEffectSizeReading;
 
+        public int LastSize { get; private set; }
+
         public void Initialize(IReadOnlyList<Vessel> vessels)
         {
             ValidateVessels(vessels);

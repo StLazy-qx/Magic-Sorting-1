@@ -98,7 +98,7 @@ namespace Assets.Source.Scripts.Vessels
 
             _tracker.RegisterEffectFinished();
 
-            if (!_tracker.IsReadyToFinish)
+            if (_tracker.IsReadyToFinish == false)
                 yield break;
 
             _tracker.MarkRoundFinished();

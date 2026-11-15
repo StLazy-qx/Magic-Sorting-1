@@ -374251,7 +374251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02ebbfcfcda0c184595a3c21f44cd0e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _vesselRoundController: {fileID: 0}
+  _vesselRoundController: {fileID: 1773993231}
   _audioSource: {fileID: 1271734733}
   _interactClip: {fileID: 8300000, guid: 746580dfd13e61e41bbc1ae69507444c, type: 3}
 --- !u!1001 &999817061
@@ -379469,6 +379469,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1009920589}
   - component: {fileID: 1009920590}
+  - component: {fileID: 1009920595}
   - component: {fileID: 1009920591}
   - component: {fileID: 1009920592}
   - component: {fileID: 1009920593}
@@ -379502,7 +379503,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1009920587}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35eae68bc62f8c34ca1ae776ad569534, type: 3}
   m_Name: 
@@ -379526,6 +379527,7 @@ MonoBehaviour:
   - {fileID: 908648324}
   - {fileID: 2066365334}
   - {fileID: 460316045}
+  - {fileID: 1773993231}
 --- !u!114 &1009920591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379605,7 +379607,7 @@ MonoBehaviour:
   _magicCellDesktop: {fileID: 512643703}
   _magicCellMobile: {fileID: 39147150}
   _magicCellsFactory: {fileID: 8416172468163468308}
-  _vesselRoundController: {fileID: 0}
+  _vesselRoundController: {fileID: 1773993231}
   _clickModeSwitcher: {fileID: 923747164}
   _seeker: {fileID: 404364796}
 --- !u!114 &1009920594
@@ -379620,6 +379622,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e40d14156cd3ff4468ac5ef5c575861f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1009920595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009920587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e0ca54765eea244ae99acafdc6ffb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _objectsToInitialize:
+  - {fileID: 569123143}
+  - {fileID: 1845276654}
+  - {fileID: 908648324}
+  - {fileID: 2066365334}
+  - {fileID: 460316045}
+  - {fileID: 1773993231}
+  _difficultyDatabase: {fileID: 11400000, guid: a0c325b75a00c9641a7203ac82d7b2f8,
+    type: 2}
+  _platformGameAdapter: {fileID: 1009920593}
+  _colorRandomizer: {fileID: 1009920594}
+  _entryColorListsFactory: {fileID: 1086977958}
+  _columnsFactory: {fileID: 946066169}
+  _vesselFactory: {fileID: 654057274}
+  _storeItemFactory: {fileID: 203805686}
+  _columnDistributor: {fileID: 1892001528}
+  _magicMixer: {fileID: 1853108563}
+  _magicCellRouter: {fileID: 654057276}
+  _clickModeSwitcher: {fileID: 923747164}
+  _gameSessionHandler: {fileID: 392530558}
 --- !u!1 &1012964950
 GameObject:
   m_ObjectHideFlags: 0
@@ -680140,8 +680174,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1773993230}
+  - component: {fileID: 1773993231}
   m_Layer: 0
-  m_Name: ' Vessel Round Controller'
+  m_Name: Vessel Round Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -680162,6 +680197,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 392530555}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1773993231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1773993229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f53214a918d058428a0567efcec1b21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tracker: {fileID: 569123143}
+  _effecter: {fileID: 43498391}
+  _finalGame: {fileID: 1845276654}
 --- !u!1 &1793528847
 GameObject:
   m_ObjectHideFlags: 0
@@ -691851,7 +691901,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _handler: {fileID: 392530558}
-  _endModePanel: {fileID: 0}
+  _endModePanel: {fileID: 916146995}
 --- !u!1 &1851286264
 GameObject:
   m_ObjectHideFlags: 0
@@ -799004,7 +799054,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scinSetter: {fileID: 2066365349}
   _actionHandler: {fileID: 2066365340}
-  _vesselRoundController: {fileID: 0}
+  _vesselRoundController: {fileID: 1773993231}
 --- !u!114 &2066365334
 MonoBehaviour:
   m_ObjectHideFlags: 0

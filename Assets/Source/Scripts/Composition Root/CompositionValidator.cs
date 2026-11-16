@@ -1,4 +1,5 @@
 ﻿using Assets.Source.Scripts.Extensions;
+using UnityEngine;
 
 namespace Assets.Source.Scripts.Composition_Root
 {
@@ -10,7 +11,18 @@ namespace Assets.Source.Scripts.Composition_Root
                 return;
 
             foreach (var (value, name) in items)
-                Guard.NotNull(value, name);
+            {
+                if (IsNullOrDestroyed(value))
+                    Guard.NotNull((object)null, name);
+            }
+        }
+
+        private bool IsNullOrDestroyed(object value)
+        {
+            if (value == null)
+                return true;
+
+            return value is Object unityObject && unityObject == null;
         }
     }
 }

@@ -6,7 +6,7 @@ using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.SceneManagement;
-using UnityEngine;
+using System.Collections.Generic;
 using YG;
 using Zenject;
 
@@ -18,11 +18,13 @@ namespace Assets.Source.Scripts.Installers
         {
             YG2.saves.Initialize();
             YG2.saves.EnableAutoSaveOnExit();
+            Container.Bind<IReadOnlyList<GameModeData>>()
+                .FromMethod(_ => GameModeDataCatalog.CreateAll())
+                .AsSingle();
             Container.Bind<IGameModeDataProvider>()
                 .To<GameModeDataProvider>()
                 .AsSingle();
-            Container.Bind<GameModeRuntimeProvider>()
-                .AsSingle();
+            Container.Bind<GameModeRuntimeProvider>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerProgress>().AsSingle().NonLazy();
             Container.Bind<RoundSequenceProvider>().AsSingle();
             Container.Bind<SequenceDifficultyLevel>().AsSingle();

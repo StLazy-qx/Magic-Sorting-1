@@ -47,20 +47,20 @@ namespace Assets.Source.Scripts.Vessels
 
         private void OnEnable()
         {
-            _closeButton.Clicked += OnClose;
+            _closeButton.Clicked += CompleteVessel;
         }
 
-        private void OnValidate() 
+        private void OnValidate()
             => ValidateInitializeArguments();
 
         private void OnDisable()
         {
-            _closeButton.Clicked -= OnClose;
+            _closeButton.Clicked -= CompleteVessel;
 
             _deliveryHandler?.Cancel();
         }
 
-        private void OnDestroy() 
+        private void OnDestroy()
             => _deliveryHandler?.Dispose();
 
         private void OnMouseDown()
@@ -73,13 +73,13 @@ namespace Assets.Source.Scripts.Vessels
 
         public void TakeMagic(MagicCell cell)
         {
-            if (cell == null || IsSubmitted) 
+            if (cell == null || IsSubmitted)
                 return;
 
             _deliveryHandler.TakeMagic(cell, HandleMagicDelivered);
         }
 
-        public void SetColor(Color color) 
+        public void SetColor(Color color)
             => _mainColor = color;
 
         public void CompleteVessel()
@@ -87,19 +87,6 @@ namespace Assets.Source.Scripts.Vessels
             if (IsSubmitted)
                 return;
 
-            _closeButton?.Hide();
-
-            IsSubmitted = true;
-            int reward = _reward.Calculate
-                (_points, _maxSize, _aggregator.CurrentVolume);
-
-            RewardIssued?.Invoke(transform.position, reward, _mainColor);
-            Filled?.Invoke(transform.position);
-            gameObject.SetActive(false);
-        }
-
-        private void OnClose()
-        {
             _closeButton?.Hide();
 
             IsSubmitted = true;

@@ -28,8 +28,8 @@ namespace Assets.Source.Scripts.Colorize
         public ColorRecipes Recipes => _colorRecipes;
 
         public void Initialize(
-            ColorCatalog catalog, 
-            ColorConverter converter, 
+            ColorCatalog catalog,
+            ColorConverter converter,
             ColorRecipes recipes)
         {
             Guard.NotNull(catalog, nameof(catalog));
@@ -39,6 +39,8 @@ namespace Assets.Source.Scripts.Colorize
             _catalog = catalog;
             _colorConverter = converter;
             _colorRecipes = recipes;
+
+            ResetRoundState();
         }
 
         public void SetDifficultySettings(int colorsNumber)
@@ -46,6 +48,7 @@ namespace Assets.Source.Scripts.Colorize
             Guard.Positive(colorsNumber, nameof(colorsNumber));
 
             EnsureInitialized();
+            ResetRoundState();
 
             int count = NormalizeColorsCount(colorsNumber);
             _allColors = BuildRoundColors(count);
@@ -58,6 +61,32 @@ namespace Assets.Source.Scripts.Colorize
             _beginRoundColors = ConvertColors(_allColors, 0, beginCount);
             _remainingColors = ConvertColors(_allColors, beginCount, _allColors.Length - beginCount);
         }
+
+        private void ResetRoundState()
+        {
+            _allColors = null;
+            _beginRoundColors = null;
+            _remainingColors = null;
+            _targetColor = default;
+        }
+
+        //public void SetDifficultySettings(int colorsNumber)
+        //{
+        //    Guard.Positive(colorsNumber, nameof(colorsNumber));
+
+        //    EnsureInitialized();
+
+        //    int count = NormalizeColorsCount(colorsNumber);
+        //    _allColors = BuildRoundColors(count);
+
+        //    Guard.NotNullOrEmpty(_allColors, nameof(_allColors));
+
+        //    int beginCount = Mathf.Min(BeginCountColors, _allColors.Length);
+
+        //    _targetColor = _colorConverter.TransformStrategyToColor(_allColors[0]);
+        //    _beginRoundColors = ConvertColors(_allColors, 0, beginCount);
+        //    _remainingColors = ConvertColors(_allColors, beginCount, _allColors.Length - beginCount);
+        //}
 
         private void EnsureInitialized()
         {
@@ -99,7 +128,10 @@ namespace Assets.Source.Scripts.Colorize
             return result.ToArray();
         }
 
-        private static void AddColor(IColorStrategy color, List<IColorStrategy> result, HashSet<IColorStrategy> used)
+        private static void AddColor(
+            IColorStrategy color, 
+            List<IColorStrategy> result, 
+            HashSet<IColorStrategy> used)
         {
             Guard.NotNull(color, nameof(color));
 
@@ -107,7 +139,9 @@ namespace Assets.Source.Scripts.Colorize
                 result.Add(color);
         }
 
-        private IColorStrategy PickNextColor(List<IColorStrategy> selected, HashSet<IColorStrategy> used)
+        private IColorStrategy PickNextColor(
+            List<IColorStrategy> selected, 
+            HashSet<IColorStrategy> used)
         {
             List<IColorStrategy> candidates = GetMixResults(selected, used);
 
@@ -119,10 +153,12 @@ namespace Assets.Source.Scripts.Colorize
 
             Guard.NotNullOrEmpty(candidates, nameof(candidates));
 
-            return candidates[UnityEngine.Random.Range(0, candidates.Count)];
+            return candidates[Random.Range(0, candidates.Count)];
         }
 
-        private List<IColorStrategy> GetMixResults(List<IColorStrategy> selected, HashSet<IColorStrategy> used)
+        private List<IColorStrategy> GetMixResults(
+            List<IColorStrategy> selected, 
+            HashSet<IColorStrategy> used)
         {
             List<IColorStrategy> results = new List<IColorStrategy>();
 
@@ -130,7 +166,8 @@ namespace Assets.Source.Scripts.Colorize
             {
                 for (int j = i + 1; j < selected.Count; j++)
                 {
-                    if (_colorRecipes.TryGetResult(selected[i], selected[j], out IColorStrategy result)
+                    if (_colorRecipes.TryGetResult(selected[i], 
+                        selected[j], out IColorStrategy result)
                         && used.Contains(result) == false
                         && results.Contains(result) == false)
                     {
@@ -167,7 +204,7 @@ namespace Assets.Source.Scripts.Colorize
 
             Guard.NotNullOrEmpty(withRecipe, nameof(withRecipe));
 
-            return withRecipe[UnityEngine.Random.Range(0, withRecipe.Count)];
+            return withRecipe[Random.Range(0, withRecipe.Count)];
         }
 
         private List<IColorStrategy> GetRecipeCompleters(HashSet<IColorStrategy> used)

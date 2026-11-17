@@ -14,7 +14,6 @@ namespace Assets.Source.Scripts.Composition_Root
 {
     public class TutorialSessionCompositionRoot : CompositionRootBase
     {
-        [Header("Scene")]
         [SerializeField] private DifficultyDatabase _difficultyDatabase;
         [SerializeField] private PlatformTutorialGameAdapter _platformSetter;
         [SerializeField] private ColorRandomizer _colorRandomizer;
@@ -27,6 +26,7 @@ namespace Assets.Source.Scripts.Composition_Root
 
         private DifficultyState _difficultyState;
         private DifficultySettings _currentSettings;
+        private ColorCatalog _colorCatalog;
         private ColorContext _colorContext;
 
         [Inject]
@@ -64,7 +64,8 @@ namespace Assets.Source.Scripts.Composition_Root
 
             Guard.NotNull(_currentSettings, nameof(_currentSettings));
 
-            _colorContext = new ColorContext();
+            _colorCatalog = new ColorCatalog();
+            _colorContext = new ColorContext(_colorCatalog);
 
             _colorRandomizer.Initialize(
                 _colorContext.Catalog,

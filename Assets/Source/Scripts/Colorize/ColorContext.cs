@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Assets.Source.Scripts.Extensions;
 
 namespace Assets.Source.Scripts.Colorize
 {
     public class ColorContext
     {
         public ColorCatalog Catalog { get; }
-        public ColorRecipes Recipes { get; }
         public ColorConverter Converter { get; }
+        public ColorRecipes Recipes { get; }
 
-        public ColorContext()
+        public ColorContext(ColorCatalog catalog)
         {
-            Catalog = new ColorCatalog();
-            Recipes = new ColorRecipes(Catalog);
-            Converter = new ColorConverter(Catalog);
+            Guard.NotNull(catalog, nameof(catalog));
+
+            Catalog = catalog;
+            Converter = new ColorConverter(catalog);
+            Recipes = new ColorRecipes(catalog);
         }
     }
 }

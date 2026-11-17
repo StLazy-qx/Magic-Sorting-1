@@ -19,7 +19,6 @@ namespace Assets.Source.Scripts.Composition_Root
 {
     public class GameSessionCompositionRoot : CompositionRootBase
     {
-        [Header("Scene")]
         [SerializeField] private DifficultyDatabase _difficultyDatabase;
         [SerializeField] private PlatformGameAdapter _platformGameAdapter;
         [SerializeField] private ColorRandomizer _colorRandomizer;
@@ -38,11 +37,8 @@ namespace Assets.Source.Scripts.Composition_Root
         private PlayerProgress _playerProgress;
         private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private DifficultySettings _currentDifficultySettings;
+        private ColorCatalog _colorCatalog;
         private ColorContext _colorContext;
-
-        public ColorContext ColorContext => _colorContext;
-        public ColorRecipes ColorRecipes => _colorContext?.Recipes;
-        public ColorConverter ColorConverter => _colorContext?.Converter;
 
         [Inject]
         private void Construct(
@@ -81,10 +77,11 @@ namespace Assets.Source.Scripts.Composition_Root
 
         protected override void InitializeSceneDependenciesSync()
         {
-            _colorContext = new ColorContext();
+            _colorCatalog = new ColorCatalog();
+            _colorContext = new ColorContext(_colorCatalog);
 
             _colorRandomizer.Initialize(
-                _colorContext.Catalog,
+                _colorCatalog,
                 _colorContext.Converter,
                 _colorContext.Recipes);
             _platformGameAdapter.Initialize();

@@ -25,6 +25,13 @@ namespace Assets.Source.Scripts.Vessels
             PoolEffectSizeReading?.Invoke(value);
         }
 
+        public void ResetPool()
+        {
+            Guard.NotNull(_particlePool, nameof(_particlePool));
+
+            _particlePool.ReturnAll();
+        }
+
         public IEnumerator PlayEffect(
             Vector3 position,
             Color color)
@@ -34,7 +41,11 @@ namespace Assets.Source.Scripts.Vessels
             float timeEndSession = 2f;
             ParticleSystem particle = _particlePool.HandOver();
 
-            Guard.IsTrue(particle != null, "No available particles in pool.");
+            while (particle == null)
+            {
+                yield return null;
+                particle = _particlePool.HandOver();
+            }
 
             particle.transform.position = new Vector3
                 (position.x, position.y - _offsetY, position.z);
@@ -44,13 +55,29 @@ namespace Assets.Source.Scripts.Vessels
             particle.Play();
 
             yield return new WaitForSeconds(timeEndSession);
+
+            //Guard.NotNull(_particlePool, nameof(_particlePool));
+
+            //float timeEndSession = 2f;
+            //ParticleSystem particle = _particlePool.HandOver();
+
+            //Guard.IsTrue(particle != null, "No available particles in pool.");
+
+            //particle.transform.position = new Vector3
+            //    (position.x, position.y - _offsetY, position.z);
+
+            //SetParticleStartColor(particle, color);
+            //SetChildParticlesStartColor(particle, color);
+            //particle.Play();
+
+            //yield return new WaitForSeconds(timeEndSession);
         }
 
         private void SetParticleStartColor(ParticleSystem particleSystem, Color color)
         {
             Guard.NotNull(particleSystem, nameof(particleSystem));
 
-            var main = particleSystem.main;
+            ParticleSystem.MainModule main = particleSystem.main;
             main.startColor = color;
         }
 
@@ -66,11 +93,11 @@ namespace Assets.Source.Scripts.Vessels
                     SetParticleStartColor(child, color);
             }
 
-            var subEmitters = parent.subEmitters;
+            ParticleSystem.SubEmittersModule subEmitters = parent.subEmitters;
 
             for (int i = 0; i < subEmitters.subEmittersCount; i++)
             {
-                var subEmitter = subEmitters.GetSubEmitterSystem(i);
+                ParticleSystem subEmitter = subEmitters.GetSubEmitterSystem(i);
 
                 if (subEmitter != null)
                     SetParticleStartColor(subEmitter, color);

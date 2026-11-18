@@ -56,6 +56,13 @@ namespace Assets.Source.Scripts.Composition_Root
             _sequenceDifficultyLevel = sequenceDifficultyLevel;
         }
 
+        public void ResetRoundState()
+        {
+            Guard.NotNull(_vesselRoundController, nameof(_vesselRoundController));
+
+            _vesselRoundController.ResetPool();
+        }
+
         protected override void ValidateDependencies()
         {
             Validator.AllNotNull(
@@ -71,6 +78,7 @@ namespace Assets.Source.Scripts.Composition_Root
                 (_magicCellRouter, nameof(_magicCellRouter)),
                 (_clickModeSwitcher, nameof(_clickModeSwitcher)),
                 (_gameSessionHandler, nameof(_gameSessionHandler)),
+                (_vesselRoundController, nameof(_vesselRoundController)),
                 (_playerProgress, nameof(_playerProgress)),
                 (_sequenceDifficultyLevel, nameof(_sequenceDifficultyLevel)));
         }

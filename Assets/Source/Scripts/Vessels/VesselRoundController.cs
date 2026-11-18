@@ -75,11 +75,18 @@ namespace Assets.Source.Scripts.Vessels
             _tracker.SetVesselsList(vessels);
         }
 
-        public bool IsAllVesselsComplete() 
-            => _tracker.IsAllVesselsComplete;
+        public void ResetPool()
+        {
+            Guard.NotNull(_effecter, nameof(_effecter));
 
-        private void OnRoundReset() 
-            => StopAllCoroutines();
+            _effecter.ResetPool();
+        }
+
+        private void OnRoundReset()
+        {
+            StopAllCoroutines();
+            _effecter.ResetPool();
+        }
 
         private void OnAllVesselsCompleted()
             => VictoryAudioClipEnabled?.Invoke();

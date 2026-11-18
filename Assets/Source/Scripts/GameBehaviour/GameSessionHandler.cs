@@ -6,6 +6,7 @@ using Assets.Source.Scripts.ActionsHandlers;
 using Assets.Source.Scripts.GameDifficulty;
 using Assets.Source.Scripts.Colorize;
 using Assets.Source.Scripts.Extensions;
+using Assets.Source.Scripts.Composition_Root;
 using UnityEngine;
 using System;
 using Zenject;
@@ -26,6 +27,7 @@ namespace Assets.Source.Scripts.GameBehaviour
         [SerializeField] private ClickModeSwitcher _clickImpactHandler;
         [SerializeField] private ColorColumnDistributor _columnDistributor;
         [SerializeField] private DifficultyDatabase _difficultyDatabase;
+        [SerializeField] private GameSessionCompositionRoot _compositionRoot;
 
         private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private DifficultyState _difficultyState;
@@ -35,9 +37,6 @@ namespace Assets.Source.Scripts.GameBehaviour
         private bool _isAdShowing;
 
         public event Action GameLaunching;
-
-        //public bool IsCurrentRoundLastMode =>
-        //    _playerProgress.IsLastRoundOfMode(_playerProgress.CurrentMode, _levelCounter.RoundNumber);
 
         private void Awake()
         {
@@ -154,15 +153,16 @@ namespace Assets.Source.Scripts.GameBehaviour
             Wallet.Reset();
             _waitingPoint.Reset();
             _clickImpactHandler.Reset();
+            _compositionRoot.ResetRoundState();
         }
 
-        private void OnCloseInterAdv() 
+        private void OnCloseInterAdv()
             => HandleAdClosed();
 
-        private void OnCloseInterAdvWasShow(bool wasShown) 
+        private void OnCloseInterAdvWasShow(bool wasShown)
             => HandleAdClosed();
 
-        private void OnErrorInterAdv() 
+        private void OnErrorInterAdv()
             => HandleAdClosed();
 
         private void HandleAdClosed()
@@ -187,6 +187,7 @@ namespace Assets.Source.Scripts.GameBehaviour
             Guard.NotNull(_clickImpactHandler, nameof(_clickImpactHandler));
             Guard.NotNull(_columnDistributor, nameof(_columnDistributor));
             Guard.NotNull(_difficultyDatabase, nameof(_difficultyDatabase));
+            Guard.NotNull(_compositionRoot, nameof(_compositionRoot));
         }
     }
 }

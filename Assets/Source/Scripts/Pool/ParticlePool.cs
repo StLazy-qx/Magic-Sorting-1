@@ -29,7 +29,7 @@ namespace Assets.Source.Scripts.Pool
             else if (difference < 0)
                 DestroyParticles(-difference);
 
-            Reset();
+            ReturnAll();
         }
 
         public ParticleSystem HandOver()
@@ -45,6 +45,18 @@ namespace Assets.Source.Scripts.Pool
             }
 
             return null;
+        }
+
+        public void ReturnAll()
+        {
+            foreach (ParticleSystem particle in _particles)
+            {
+                if (particle == null)
+                    continue;
+
+                particle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                particle.gameObject.SetActive(false);
+            }
         }
 
         private void CreateParticles(int amount)

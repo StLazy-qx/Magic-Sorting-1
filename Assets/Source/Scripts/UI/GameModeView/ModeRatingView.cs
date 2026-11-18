@@ -1,5 +1,6 @@
 ﻿using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
+using Assets.Source.Scripts.Game_Progress;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,37 +25,10 @@ namespace Assets.Source.Scripts.UI.GameModeView
             }
 
             gameObject.SetActive(true);
-
-            int starsCount = GetStarsCount(rating);
-
-            for (int i = 0; i < _stars.Length; i++)
-            {
-                if (_stars[i] == null)
-                    continue;
-
-                _stars[i].enabled = i < starsCount;
-            }
+            RoundRatingStars.Apply(_stars, rating);
         }
 
         public void Hide()
             => gameObject.SetActive(false);
-
-        private int GetStarsCount(RoundRating rating)
-        {
-            switch (rating)
-            {
-                case RoundRating.Bad:
-                    return 1;
-
-                case RoundRating.Medium:
-                    return 2;
-
-                case RoundRating.Good:
-                    return 3;
-
-                default:
-                    return 0;
-            }
-        }
     }
 }

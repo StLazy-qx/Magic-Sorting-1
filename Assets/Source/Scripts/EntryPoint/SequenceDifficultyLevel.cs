@@ -122,7 +122,9 @@ namespace Assets.Source.Scripts.EntryPoint
 
         private DifficultyLevel[] BuildFixedPlan(GameMode mode)
         {
-            DifficultyLevel level = PlayerProgress.GetBaseDifficulty(mode);
+            //DifficultyLevel level = PlayerProgress.GetBaseDifficulty(mode);
+            DifficultyLevel level = _playerProgress.GetModeData(mode).GetDifficulty(0);
+
             DifficultyLevel[] plan = new DifficultyLevel[ModeRoundsLength];
 
             for (int i = 0; i < plan.Length; i++)

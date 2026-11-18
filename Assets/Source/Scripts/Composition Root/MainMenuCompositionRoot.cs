@@ -1,6 +1,6 @@
-﻿using Assets.Source.Scripts.DebugTools;
-using Assets.Source.Scripts.EntryPoint;
+﻿using Assets.Source.Scripts.EntryPoint;
 using Assets.Source.Scripts.Factory;
+using Assets.Source.Scripts.Game_Modes;
 using Assets.Source.Scripts.Game_Progress;
 using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Language;
@@ -21,9 +21,8 @@ namespace Assets.Source.Scripts.Composition_Root
 
         private LanguageSetter _languageSetter;
 
-        [Inject] private SequenceDifficultyLevel _sequenceDifficultyLevel;
         [Inject] private PlayerProgress _playerProgress;
-        [Inject] private RoundSequenceProvider _roundSequenceProvider;
+        [Inject] private IGameModeDataProvider _gameModeDataProvider;
 
         protected override void ValidateDependencies()
         {
@@ -31,27 +30,22 @@ namespace Assets.Source.Scripts.Composition_Root
                 (_platformSetter, nameof(_platformSetter)),
                 (_storeItemFactory, nameof(_storeItemFactory)),
                 (_modePanelsPresenter, nameof(_modePanelsPresenter)),
-                (_roundProgressDisplay, nameof(_roundProgressDisplay)),
-                (_playerProgress, nameof(_playerProgress)),
-                (_sequenceDifficultyLevel, nameof(_sequenceDifficultyLevel)),
-                (_roundSequenceProvider, nameof(_roundSequenceProvider)));
-        }
-
-        protected override void CollectSceneInitializables()
-        {
-            if (_sequenceDifficultyLevel is IObjectInitilizable sequence)
-                AddInitializable(sequence);
+                (_roundProgressDisplay, nameof(_roundProgressDisplay)));
         }
 
         protected override void InitializeSceneDependenciesSync()
         {
             _languageSetter = new LanguageSetter();
 
-            DebugSavesSeeder.SeedRatingsForAllRounds();
-            _playerProgress.Initialize();
+#if UNITY_EDITOR
+            // Полное имя: в билде namespace DebugTools не существует, обычный using сломал бы сборку
+            Assets.Source.Scripts.DebugTools.DebugSavesSeeder.SeedRatingsForAllRounds(_gameModeDataProvider);
+#endif
+            // Меню каждый раз перечитывает снимок из сейва (после игры он устаревает)
+            _playerProgress.Reload();
             _platformSetter.Initialize(_languageSetter);
             _modePanelsPresenter.Initialize();
-            _roundProgressDisplay.Initialize(_roundSequenceProvider);
+            _roundProgressDisplay.Initialize();
         }
 
         protected override IEnumerator InitializeFactoriesAsync()

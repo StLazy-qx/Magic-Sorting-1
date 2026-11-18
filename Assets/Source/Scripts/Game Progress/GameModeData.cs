@@ -1,47 +1,92 @@
 ﻿using Assets.Source.Scripts.Enums;
+using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.Player;
+using System;
 using System.Collections.Generic;
 
 namespace Assets.Source.Scripts.Game_Progress
 {
-    public abstract class GameModeData
+    public sealed class GameModeData
     {
-        public const int ExpectedRoundsCount = 6;
+        private const int DefaultEndlessStep = 6;
 
-        public abstract GameMode Mode { get; }
-        public abstract bool IsEndless { get; }
-        public abstract IReadOnlyList<RoundData> Rounds { get; }
-        public int RoundsCount => Rounds.Count;
+        private readonly DifficultyLevel[] _fixedPlan;
+        private readonly DifficultyLevel[] _endlessLevels;
+        private readonly int _endlessStep;
 
-        protected static RoundData[] BuildRounds(params DifficultyLevel[] difficulties)
+        private GameModeData(
+            GameMode mode,
+            bool isRated,
+            GameMode[] requiredModes,
+            DifficultyLevel[] fixedPlan,
+            int endlessStep)
         {
-            var rounds = new RoundData[difficulties.Length];
+            Guard.NotNull(requiredModes, nameof(requiredModes));
 
-            for (int i = 0; i < difficulties.Length; i++)
-                rounds[i] = new FixedDifficultyRoundData(i + 1, difficulties[i]);
+            Mode = mode;
+            IsRated = isRated;
+            RequiredModes = requiredModes;
+            _fixedPlan = fixedPlan;
+            _endlessStep = endlessStep;
 
-            return rounds;
+            if (fixedPlan == null)
+            {
+                _endlessLevels = (DifficultyLevel[])Enum.
+                    GetValues(typeof(DifficultyLevel));
+
+                Array.Sort(_endlessLevels);
+            }
+        }
+
+        public GameMode Mode { get; }
+        public bool IsRated { get; }
+        public IReadOnlyList<GameMode> RequiredModes { get; }
+        public bool IsEndless => _fixedPlan == null;
+        public int RoundsCount => IsEndless ? int.MaxValue : _fixedPlan.Length;
+
+        public static GameModeData Fixed(
+            GameMode mode,
+            bool isRated,
+            GameMode[] requiredModes,
+            params DifficultyLevel[] plan)
+        {
+            Guard.NotNullOrEmpty(plan, nameof(plan));
+
+            return new GameModeData(
+                mode, 
+                isRated, 
+                requiredModes, 
+                (DifficultyLevel[])plan.Clone(), 
+                0);
+        }
+
+        public static GameModeData Endless(
+            GameMode mode,
+            GameMode[] requiredModes,
+            int difficultyStep = DefaultEndlessStep)
+        {
+            Guard.Positive(difficultyStep, nameof(difficultyStep));
+
+            return new GameModeData(
+                mode, 
+                false, 
+                requiredModes, 
+                null, 
+                difficultyStep);
+        }
+
+        public DifficultyLevel GetDifficulty(int roundIndex)
+        {
+            if (IsEndless)
+            {
+                Guard.NotNegative(roundIndex, nameof(roundIndex));
+
+                return _endlessLevels[(roundIndex / _endlessStep) % _endlessLevels.Length];
+            }
+
+            Guard.InRange(roundIndex, 0, _fixedPlan.Length - 1, nameof(roundIndex));
+
+            return _fixedPlan[roundIndex];
         }
     }
-
-    //    [CreateAssetMenu(menuName = "Game/Game Mode Data", fileName = "Mode_")]
-    //    public class GameModeData : ScriptableObject
-    //    {
-    //        public const int ExpectedRoundsCount = 6;
-
-    //        [SerializeField] private GameMode _mode;
-    //        [SerializeField] private RoundData[] _rounds = new RoundData[ExpectedRoundsCount];
-
-    //        public GameMode Mode => _mode;
-    //        public RoundData[] Rounds => _rounds;
-    //        public int RoundsCount => _rounds?.Length ?? 0;
-
-    //#if UNITY_EDITOR
-    //        private void OnValidate()
-    //        {
-    //            if (_rounds == null || _rounds.Length != ExpectedRoundsCount)
-    //                _rounds = new RoundData[ExpectedRoundsCount];
-    //        }
-    //#endif
-    //    }
 }

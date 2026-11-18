@@ -4,43 +4,43 @@ using System.Collections.Generic;
 
 namespace Assets.Source.Scripts.Game_Progress
 {
-    public sealed class GameModeRuntimeProvider
-    {
-        private readonly Dictionary<GameMode, GameModeRuntime> _modes = new();
+    //public sealed class GameModeRuntimeProvider
+    //{
+    //    private readonly Dictionary<GameMode, GameModeRuntime> _modes = new();
 
-        public GameModeRuntimeProvider(IEnumerable<GameModeData> modeDatas)
-        {
-            if (modeDatas == null)
-                throw new ArgumentNullException(nameof(modeDatas));
+    //    public GameModeRuntimeProvider(IEnumerable<GameModeData> modeDatas)
+    //    {
+    //        if (modeDatas == null)
+    //            throw new ArgumentNullException(nameof(modeDatas));
 
-            foreach (GameModeData data in modeDatas)
-            {
-                if (data == null) continue;
-                _modes[data.Mode] = new GameModeRuntime(data);
-            }
-        }
+    //        foreach (GameModeData data in modeDatas)
+    //        {
+    //            if (data == null) continue;
+    //            _modes[data.Mode] = new GameModeRuntime(data);
+    //        }
+    //    }
 
-        public GameModeRuntime Get(GameMode mode)
-        {
-            if (_modes.TryGetValue(mode, out GameModeRuntime runtime) == false)
-                throw new KeyNotFoundException($"GameModeData для {mode} не зарегистрирован.");
+    //    public GameModeRuntime Get(GameMode mode)
+    //    {
+    //        if (_modes.TryGetValue(mode, out GameModeRuntime runtime) == false)
+    //            throw new KeyNotFoundException($"GameModeData для {mode} не зарегистрирован.");
 
-            return runtime;
-        }
+    //        return runtime;
+    //    }
 
-        public bool TryGet(GameMode mode, out GameModeRuntime runtime)
-            => _modes.TryGetValue(mode, out runtime);
+    //    public bool TryGet(GameMode mode, out GameModeRuntime runtime)
+    //        => _modes.TryGetValue(mode, out runtime);
 
-        public void ResetMode(GameMode mode)
-        {
-            if (_modes.TryGetValue(mode, out GameModeRuntime runtime))
-                runtime.ResetAll();
-        }
+    //    public void ResetMode(GameMode mode)
+    //    {
+    //        if (_modes.TryGetValue(mode, out GameModeRuntime runtime))
+    //            runtime.ResetAll();
+    //    }
 
-        public void ResetAll()
-        {
-            foreach (var pair in _modes)
-                pair.Value.ResetAll();
-        }
-    }
+    //    public void ResetAll()
+    //    {
+    //        foreach (var pair in _modes)
+    //            pair.Value.ResetAll();
+    //    }
+    //}
 }

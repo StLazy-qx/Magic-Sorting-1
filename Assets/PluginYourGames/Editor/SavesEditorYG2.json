@@ -13,15 +13,15 @@
     false,
     false
   ],
-  "idSave": 128,
-  "MainPoints": 1110,
+  "idSave": 165,
+  "MainPoints": 1930,
   "ActualRoundNumber": 1,
   "SavedGameMode": 1,
-  "MasterVolume": 0.5,
+  "MasterVolume": 0.079486154,
   "AmbientVolume": 0.5,
   "EffectVolume": 0.5,
   "EquippedItem": "11111",
-  "SavedLanguage": null,
+  "SavedLanguage": "ru",
   "PurchasedItemIdentifiers": [
     "11111"
   ],
@@ -29,7 +29,7 @@
     {
       "GameMode": 1,
       "RoundIndex": 1,
-      "Rating": 2
+      "Rating": 3
     },
     {
       "GameMode": 1,
@@ -44,7 +44,7 @@
     {
       "GameMode": 1,
       "RoundIndex": 4,
-      "Rating": 2
+      "Rating": 1
     },
     {
       "GameMode": 1,
@@ -54,7 +54,7 @@
     {
       "GameMode": 1,
       "RoundIndex": 6,
-      "Rating": 2
+      "Rating": 1
     },
     {
       "GameMode": 2,
@@ -64,7 +64,7 @@
     {
       "GameMode": 2,
       "RoundIndex": 2,
-      "Rating": 1
+      "Rating": 2
     },
     {
       "GameMode": 1,
@@ -76,7 +76,7 @@
     "HasSavedMode": true
   },
   "Score": {
-    "Points": 1110
+    "Points": 1930
   },
   "Round": {
     "ActualRoundNumber": 1
@@ -86,22 +86,22 @@
     "EquippedItemIdentifier": "11111"
   },
   "Language": {
-    "Saved": null,
-    "HasSavedLanguage": false
+    "Saved": "ru",
+    "HasSavedLanguage": true
   },
   "RoundRatings": {
     "Ratings": {
-      "(Easy, 1)": 2,
+      "(Easy, 1)": 3,
       "(Easy, 2)": 1,
       "(Easy, 3)": 3,
-      "(Easy, 4)": 2,
+      "(Easy, 4)": 1,
       "(Easy, 5)": 1,
-      "(Easy, 6)": 2,
+      "(Easy, 6)": 1,
       "(Medium, 1)": 1,
-      "(Medium, 2)": 1,
+      "(Medium, 2)": 2,
       "(Easy, 0)": 2
     }
   },
-  "Points": 1110,
+  "Points": 1930,
   "EquippedItemIdentifier": "11111"
 }

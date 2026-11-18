@@ -1,6 +1,5 @@
 ﻿using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
-using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.SceneManagement;
 using Assets.Source.Scripts.UI.Buttons;
@@ -21,7 +20,6 @@ namespace Assets.Source.Scripts.Game_Progress
         [SerializeField] private GameResumerButton _playButton;
         [SerializeField] private ModeRatingView _ratingView;
 
-        private ModeRatingProvider _ratingProvider;
         private SceneLoader _sceneLoader;
         private PlayerProgress _playerProgress;
         private GameModePanel[] _gameModePanels;
@@ -41,8 +39,7 @@ namespace Assets.Source.Scripts.Game_Progress
 
             for (int i = 0; i < _gameModeButtons.Length; i++)
             {
-                GameModePanel panel = _gameModeButtons[i].GetComponent<GameModePanel>();
-                _gameModePanels[i] = panel;
+                _gameModePanels[i] = _gameModeButtons[i].GetComponent<GameModePanel>();
                 int index = i;
                 _gameModeButtons[i].Clicked += () => OnModeButtonClicked(index);
             }
@@ -58,7 +55,6 @@ namespace Assets.Source.Scripts.Game_Progress
         {
             _isStarted = true;
 
-            _ratingProvider.Refresh();
             SelectSavedModePanel();
             RefreshModeAvailability();
             UpdateView();
@@ -74,46 +70,34 @@ namespace Assets.Source.Scripts.Game_Progress
         }
 
         [Inject]
-        public void Construct(SceneLoader sceneLoader, 
-            PlayerProgress playerProgress,
-            RoundSequenceProvider sequenceProvider)
+        public void Construct(SceneLoader sceneLoader, PlayerProgress playerProgress)
         {
-            Guard.NotNull(sceneLoader, nameof(sceneLoader));
-            Guard.NotNull(playerProgress, nameof(playerProgress));
-            Guard.NotNull(sequenceProvider, nameof(sequenceProvider));
-
             _sceneLoader = sceneLoader;
             _playerProgress = playerProgress;
-            _ratingProvider = new ModeRatingProvider(sequenceProvider);
         }
 
         public void Initialize()
         {
-            if (_isStarted)
-            {
-                _ratingProvider.Refresh();
-                RefreshModeAvailability();
-                UpdatePlayButton();
-                UpdateRatingView();
-            }
+            if (_isStarted == false)
+                return;
+
+            RefreshModeAvailability();
+            UpdatePlayButton();
+            UpdateRatingView();
         }
 
         private void RefreshModeAvailability()
         {
-            for (int i = 0; i < _gameModePanels.Length; i++)
-            {
-                GameModePanel panel = _gameModePanels[i];
-
+            foreach (GameModePanel panel in _gameModePanels)
                 panel.SetAvailable(_playerProgress.IsModeAvailable(panel.Mode));
-            }
         }
 
         private void UpdateRatingView()
         {
-            if (_ratingView == null || _ratingProvider == null)
+            if (_ratingView == null || _isStarted == false)
                 return;
 
-            if (_ratingProvider.TryGetRating(CurrentPanel.Mode, out RoundRating rating))
+            if (_playerProgress.TryGetModeRating(CurrentPanel.Mode, out RoundRating rating))
                 _ratingView.Show(rating);
             else
                 _ratingView.Hide();
@@ -121,10 +105,6 @@ namespace Assets.Source.Scripts.Game_Progress
 
         private void SelectSavedModePanel()
         {
-            if (_playerProgress == null)
-                return;
-
-
             GameMode savedMode = _playerProgress.CurrentMode;
 
             for (int i = 0; i < _gameModePanels.Length; i++)
@@ -140,23 +120,17 @@ namespace Assets.Source.Scripts.Game_Progress
             _currentModeIndex = DefaultIndexMode;
         }
 
-
         private void UpdatePlayButton()
         {
             if (_isStarted == false)
                 return;
 
-            GameModePanel panel = CurrentPanel;
-
-            _playButton.SetInteractable(_playerProgress.IsModeAvailable(panel.Mode));
+            _playButton.SetInteractable(_playerProgress.IsModeAvailable(CurrentPanel.Mode));
         }
 
         private void OnModeButtonClicked(int index)
         {
             GameModePanel panel = _gameModePanels[index];
-
-            if (_playerProgress == null || _sceneLoader == null)
-                return;
 
             if (_playerProgress.IsModeAvailable(panel.Mode) == false)
                 return;

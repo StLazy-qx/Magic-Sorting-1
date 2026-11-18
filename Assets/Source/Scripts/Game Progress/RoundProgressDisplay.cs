@@ -1,6 +1,4 @@
-﻿using Assets.Source.Scripts.Extensions;
-using Assets.Source.Scripts.GameBehaviour;
-using Assets.Source.Scripts.Player;
+﻿using Assets.Source.Scripts.Player;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -18,20 +16,14 @@ namespace Assets.Source.Scripts.Game_Progress
 
         [Inject] private PlayerProgress _playerProgress;
 
-        private RoundSequenceProvider _sequenceProvider;
-
-        public void Initialize(RoundSequenceProvider sequenceProvider)
+        public void Initialize()
         {
-            Guard.NotNull(sequenceProvider, nameof(sequenceProvider));
-
-            _sequenceProvider = sequenceProvider;
-
             RefreshFromSaves();
         }
 
         public void RefreshFromSaves()
         {
-            if (_sequenceProvider == null || _playerProgress == null)
+            if (_playerProgress == null)
                 return;
 
             SetText(_easyProgressText, FormatProgress(GameMode.Easy));
@@ -46,7 +38,7 @@ namespace Assets.Source.Scripts.Game_Progress
                 return string.Empty;
 
             int completed = _playerProgress.GetCompletedRoundsCount(mode);
-            int total = _sequenceProvider.GetTotalRoundsInMode(mode);
+            int total = _playerProgress.GetTotalRoundsCount(mode);
 
             return string.Format(ProgressFormat, completed, total);
         }

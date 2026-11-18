@@ -1,7 +1,7 @@
 ﻿using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
+using Assets.Source.Scripts.Game_Modes;
 using Assets.Source.Scripts.Game_Progress;
-using Assets.Source.Scripts.GameBehaviour;
 using System;
 using UnityEngine;
 using YG;
@@ -11,362 +11,143 @@ namespace Assets.Source.Scripts.Player
 {
     public class PlayerProgress : IInitializable
     {
-        private RoundSequenceProvider _sequenceProvider;
-        private GameModeRuntimeProvider _runtimeProvider;
-        private PlayerProgressStatus _status;
-        private bool _isInitialized;
+        private const int FirstRoundNumber = 1;
 
-        public PlayerProgressStatus Status => _status;
+        private bool _isInitialized;
+        private int _roundNumber = FirstRoundNumber;
+        private IGameModeDataProvider _dataProvider;
+        private GameMode _currentMode = GameMode.Tutorial;
+
         public bool IsInitialized => _isInitialized;
-        public GameMode CurrentMode => _status?.CurrentMode ?? GameMode.Tutorial;
-        public DifficultyLevel CurrentDifficultyLevel => _status?.CurrentDifficulty ?? DifficultyLevel.Easy;
-        public int CurrentRoundNumber => _status?.RoundNumber ?? 1;
-        public bool IsEasyCompleted => _status?.IsEasyCompleted ?? false;
-        public bool IsMediumCompleted => _status?.IsMediumCompleted ?? false;
-        public bool IsHardCompleted => _status?.IsHardCompleted ?? false;
-        public bool IsFreeModeAvailable => _status?.IsFreeModeAvailable ?? false;
+        public bool IsFreeModeAvailable => IsModeAvailable(GameMode.FreeMode);
+        public int CurrentRoundNumber => _roundNumber;
+        public GameMode CurrentMode => _currentMode;
+
+        [Obsolete("Временная заглушка этапа 1, удалить на этапе 2")]
+        public DifficultyLevel CurrentDifficultyLevel
+            => GetModeData(_currentMode).GetDifficulty(_currentMode == GameMode.FreeMode ? _roundNumber - 1 : 0);
 
         [Inject]
-        private void Construct(RoundSequenceProvider sequenceProvider, GameModeRuntimeProvider runtimeProvider)
+        private void Construct(IGameModeDataProvider dataProvider)
         {
-            Guard.NotNull(sequenceProvider, nameof(sequenceProvider));
-            Guard.NotNull(runtimeProvider, nameof(runtimeProvider));
-
-            _sequenceProvider = sequenceProvider;
-            _runtimeProvider = runtimeProvider;
+            _dataProvider = dataProvider;
         }
 
         public void Initialize()
         {
-            if (_isInitialized) return;
+            if (_isInitialized)
+                return;
 
-            int roundNumber = YG2.saves.Round.GetNumber();
-            if (roundNumber < 1) roundNumber = 1;
+            Reload();
+        }
 
-            GameMode mode = YG2.saves.GameMode.HasSavedMode
+        public void Reload()
+        {
+            _currentMode = YG2.saves.GameMode.HasSavedMode
                 ? YG2.saves.GameMode.Load()
                 : GameMode.Tutorial;
 
-            // Восстанавливаем сессионное состояние из сейва (включая данные дебаг-сида)
-            RestoreRuntimeFromSaves();
-
-            DifficultyLevel difficulty = mode == GameMode.FreeMode
-                ? PickRandomDifficulty()
-                : GetBaseDifficulty(mode);
-
-            _status = BuildStatus(roundNumber, mode, difficulty);
+            _roundNumber = ResolveRoundNumber(_dataProvider.Get(_currentMode));
             _isInitialized = true;
-
-            Debug.Log($"[PlayerProgress] Init: mode={mode}, round={roundNumber}, " +
-                      $"Easy={IsEasyCompleted}, Medium={IsMediumCompleted}, Hard={IsHardCompleted}");
         }
 
         public void SaveSelectedMode(GameMode mode)
         {
-            ValidateMode(mode, nameof(mode));
-
-            if (CurrentMode == mode && YG2.saves.GameMode.Load() == mode)
-                return;
-
             YG2.saves.GameMode.Save(mode);
-
-            if (_runtimeProvider.TryGet(mode, out var runtime))
-                runtime.ResetAll();
-
-            DifficultyLevel difficulty = mode == GameMode.FreeMode
-                ? PickRandomDifficulty()
-                : GetBaseDifficulty(mode);
-
-            _status = BuildStatus(1, mode, difficulty);
-        }
-
-        public void MarkRoundFinished(GameMode mode, int roundIndex, RoundRating rating, bool keepBest = true)
-        {
-            ValidateMode(mode, nameof(mode));
-
-            if (_runtimeProvider.TryGet(mode, out var runtime) == false)
-                return;
-
-            runtime.MarkRoundFinished(roundIndex, rating, keepBest);
-            YG2.saves.RoundRatings.Save(mode, roundIndex, rating, keepBest);
-
-            _status = BuildStatus(CurrentRoundNumber, CurrentMode, CurrentDifficultyLevel);
-        }
-
-        public int GetCompletedRoundsCount(GameMode mode)
-        {
-            ValidateMode(mode, nameof(mode));
-
-            if (mode != GameMode.Easy && mode != GameMode.Medium && mode != GameMode.Hard)
-                return 0;
-
-            int start = _sequenceProvider.GetStartRoundNumber(mode);
-            int end = _sequenceProvider.GetEndRoundNumber(mode);
-            int count = 0;
-
-            for (int roundIndex = start; roundIndex <= end; roundIndex++)
-            {
-                if (YG2.saves.RoundRatings.Get(mode, roundIndex) != RoundRating.NotCompleted)
-                    count++;
-            }
-
-            return count;
-        }
-
-        public static DifficultyLevel GetBaseDifficulty(GameMode mode)
-        {
-            ValidateMode(mode, nameof(mode));
-
-            return mode switch
-            {
-                GameMode.Easy => DifficultyLevel.Easy,
-                GameMode.Medium => DifficultyLevel.Medium,
-                GameMode.Hard => DifficultyLevel.MediumHard,
-                GameMode.Tutorial => DifficultyLevel.Easy,
-                _ => DifficultyLevel.Easy
-            };
+            Reload();
         }
 
         public bool IsModeAvailable(GameMode mode)
         {
-            ValidateMode(mode, nameof(mode));
-
-            return mode switch
+            foreach (GameMode required in _dataProvider.Get(mode).RequiredModes)
             {
-                GameMode.Tutorial => true,
-                GameMode.Easy => true,
-                GameMode.Medium => IsEasyCompleted,
-                GameMode.Hard => IsMediumCompleted,
-                GameMode.FreeMode => IsFreeModeAvailable,
-                _ => false
-            };
-        }
-
-        private bool IsModeCompleted(GameMode mode)
-        {
-            if (mode != GameMode.Easy && mode != GameMode.Medium && mode != GameMode.Hard)
-                return false;
-
-            int start = _sequenceProvider.GetStartRoundNumber(mode);
-            int end = _sequenceProvider.GetEndRoundNumber(mode);
-
-            for (int roundIndex = start; roundIndex <= end; roundIndex++)
-            {
-                if (YG2.saves.RoundRatings.Get(mode, roundIndex) == RoundRating.NotCompleted)
+                if (IsModeCompleted(required) == false)
                     return false;
             }
 
             return true;
         }
 
-        private void RestoreRuntimeFromSaves()
+        public GameModeData GetModeData(GameMode mode)
+            => _dataProvider.Get(mode);
+
+        public int GetTotalRoundsCount(GameMode mode)
         {
-            RestoreModeFromSaves(GameMode.Easy);
-            RestoreModeFromSaves(GameMode.Medium);
-            RestoreModeFromSaves(GameMode.Hard);
+            GameModeData data = _dataProvider.Get(mode);
+
+            return data.IsEndless ? 0 : data.RoundsCount;
         }
 
-        private void RestoreModeFromSaves(GameMode mode)
+        public void MarkRoundFinished(GameMode mode, int roundNumber, RoundRating rating, bool keepBest = true)
         {
-            if (_runtimeProvider.TryGet(mode, out var runtime) == false)
+            Guard.IsTrue(rating != RoundRating.NotCompleted, nameof(rating),
+                "Нельзя закончить раунд рейтингом NotCompleted.");
+
+            GameModeData data = _dataProvider.Get(mode);
+
+            if (data.IsRated == false)
                 return;
 
-            var ratings = YG2.saves.RoundRatings.GetModeRatings(mode);
+            Guard.InRange(roundNumber, 1, data.RoundsCount, nameof(roundNumber));
+            YG2.saves.RoundRatings.Save(mode, roundNumber, rating, keepBest);
+        }
 
-            foreach (var pair in ratings)
+        public RoundRating GetRoundRating(GameMode mode, int roundNumber)
+            => YG2.saves.RoundRatings.Get(mode, roundNumber);
+
+        public int GetCompletedRoundsCount(GameMode mode)
+        {
+            if (_dataProvider.Get(mode).IsRated == false)
+                return 0;
+
+            int total = GetTotalRoundsCount(mode);
+            int count = 0;
+
+            for (int roundNumber = 1; roundNumber <= total; roundNumber++)
             {
-                if (pair.Value == RoundRating.NotCompleted) continue;
-
-                try
-                {
-                    runtime.MarkRoundFinished(pair.Key, pair.Value, keepBest: false);
-                }
-                catch (ArgumentOutOfRangeException)
-                {
-                    Debug.LogWarning($"[PlayerProgress] Некорректный roundIndex={pair.Key} для {mode}.");
-                }
+                if (GetRoundRating(mode, roundNumber) != RoundRating.NotCompleted)
+                    count++;
             }
+
+            return count;
         }
 
-        private PlayerProgressStatus BuildStatus(int roundNumber, GameMode mode, DifficultyLevel difficulty)
+        public bool IsModeCompleted(GameMode mode)
         {
-            if (roundNumber < 1) roundNumber = 1;
+            int total = GetTotalRoundsCount(mode);
 
-            return new PlayerProgressStatus(
-                roundNumber,
-                mode,
-                difficulty,
-                IsModeCompleted(GameMode.Easy),
-                IsModeCompleted(GameMode.Medium),
-                IsModeCompleted(GameMode.Hard));
+            return _dataProvider.Get(mode).IsRated
+                && total > 0
+                && GetCompletedRoundsCount(mode) == total;
         }
 
-        private static DifficultyLevel PickRandomDifficulty()
+        public bool TryGetModeRating(GameMode mode, out RoundRating rating)
         {
-            var levels = (DifficultyLevel[])Enum.GetValues(typeof(DifficultyLevel));
+            rating = RoundRating.NotCompleted;
 
-            Guard.IsTrue(levels.Length > 0, nameof(levels),
-                $"В {nameof(DifficultyLevel)} нет ни одного значения.");
+            if (IsModeCompleted(mode) == false)
+                return false;
 
-            return levels[UnityEngine.Random.Range(0, levels.Length)];
+            int total = GetTotalRoundsCount(mode);
+            int sum = 0;
+
+            for (int roundNumber = 1; roundNumber <= total; roundNumber++)
+            {
+                sum += (int)GetRoundRating(mode, roundNumber);
+            }
+
+            int rounded = (int)Math.Round((double)sum / total, MidpointRounding.AwayFromZero);
+            rating = (RoundRating)Mathf.Clamp(rounded, (int)RoundRating.Bad, (int)RoundRating.Good);
+
+            return true;
         }
 
-        private static void ValidateMode(GameMode mode, string argumentName)
+        /// <summary>Только endless продолжает из сейва, остальные начинаются с первого раунда.</summary>
+        private static int ResolveRoundNumber(GameModeData data)
         {
-            Guard.IsTrue(
-                Enum.IsDefined(typeof(GameMode), mode),
-                argumentName,
-                $"Значение {mode} ({(int)mode}) не является допустимым {nameof(GameMode)}.");
+            return data.IsEndless
+                ? Mathf.Max(FirstRoundNumber, YG2.saves.Round.GetNumber())
+                : FirstRoundNumber;
         }
     }
 }
-
-//namespace Assets.Source.Scripts.Player
-//{
-//    public class PlayerProgress : IInitializable
-//    {
-//        private RoundSequenceProvider _sequenceProvider;
-//        private PlayerProgressStatus _status;
-//        private bool _isInitialized;
-
-//        public PlayerProgressStatus Status => _status;
-//        public bool IsInitialized => _isInitialized;
-//        public GameMode CurrentMode => _status?.CurrentMode ?? GameMode.Tutorial;
-//        public DifficultyLevel CurrentDifficultyLevel => _status?.CurrentDifficulty ?? DifficultyLevel.Easy;
-//        public int CurrentRoundNumber => _status?.RoundNumber ?? 0;
-//        public bool IsEasyCompleted => _status?.IsEasyCompleted ?? false;
-//        public bool IsMediumCompleted => _status?.IsMediumCompleted ?? false;
-//        public bool IsHardCompleted => _status?.IsHardCompleted ?? false;
-//        public bool IsFreeModeAvailable => _status?.IsFreeModeAvailable ?? false;
-
-//        [Inject]
-//        private void Construct(RoundSequenceProvider sequenceProvider)
-//        {
-//            Guard.NotNull(sequenceProvider, nameof(sequenceProvider));
-//            _sequenceProvider = sequenceProvider;
-//        }
-
-//        public void Initialize()
-//        {
-//            if (_isInitialized)
-//                return;
-
-//            Guard.NotNull(_sequenceProvider, nameof(_sequenceProvider));
-
-//            int roundNumber = YG2.saves.GetRoundNumber();
-//            Guard.Positive(roundNumber, nameof(roundNumber));
-
-//            GameMode mode = YG2.saves.HasSavedMode
-//                ? YG2.saves.LoadMode()
-//                : _sequenceProvider.DetermineModeByRoundNumber(roundNumber);
-
-//            ValidateMode(mode, nameof(mode));
-
-//            DifficultyLevel difficulty = mode == GameMode.FreeMode
-//                ? PickRandomDifficulty()
-//                : GetBaseDifficulty(mode);
-
-//            _status = BuildStatus(roundNumber, mode, difficulty);
-//            _isInitialized = true;
-//        }
-
-//        public void SaveSelectedMode(GameMode mode)
-//        {
-//            ValidateMode(mode, nameof(mode));
-
-//            if (CurrentMode == mode && YG2.saves.LoadMode() == mode)
-//                return;
-
-//            YG2.saves.SaveMode(mode);
-
-//            DifficultyLevel difficulty = mode == GameMode.FreeMode
-//                ? PickRandomDifficulty()
-//                : GetBaseDifficulty(mode);
-
-//            _status = BuildStatus(CurrentRoundNumber, mode, difficulty);
-//        }
-
-//        public static DifficultyLevel GetBaseDifficulty(GameMode mode)
-//        {
-//            ValidateMode(mode, nameof(mode));
-
-//            return mode switch
-//            {
-//                GameMode.Easy => DifficultyLevel.Easy,
-//                GameMode.Medium => DifficultyLevel.Medium,
-//                GameMode.Hard => DifficultyLevel.MediumHard,
-//                GameMode.Tutorial => DifficultyLevel.Easy,
-//                _ => DifficultyLevel.Easy
-//            };
-//        }
-
-//        public bool IsModeAvailable(GameMode mode)
-//        {
-//            ValidateMode(mode, nameof(mode));
-
-//            return mode switch
-//            {
-//                GameMode.Tutorial => true,
-//                GameMode.Easy => true,
-//                GameMode.Medium => IsEasyCompleted,
-//                GameMode.Hard => IsMediumCompleted,
-//                GameMode.FreeMode => IsFreeModeAvailable,
-//                _ => false
-//            };
-//        }
-
-//        public bool IsLastRoundOfMode(GameMode mode, int roundNumber)
-//        {
-//            ValidateMode(mode, nameof(mode));
-
-//            int end = _sequenceProvider.GetEndRoundNumber(mode);
-
-//            return end > 0 && roundNumber == end;
-//        }
-
-//        private PlayerProgressStatus BuildStatus(
-//            int roundNumber,
-//            GameMode mode,
-//            DifficultyLevel difficulty)
-//        {
-//            Guard.Positive(roundNumber, nameof(roundNumber));
-//            ValidateMode(mode, nameof(mode));
-
-//            return new PlayerProgressStatus(
-//                roundNumber,
-//                mode,
-//                difficulty,
-//                IsModeCompletedByRoundNumber(GameMode.Easy, roundNumber),
-//                IsModeCompletedByRoundNumber(GameMode.Medium, roundNumber),
-//                IsModeCompletedByRoundNumber(GameMode.Hard, roundNumber));
-//        }
-
-//        private bool IsModeCompletedByRoundNumber(GameMode mode, int roundNumber)
-//        {
-//            ValidateMode(mode, nameof(mode));
-//            Guard.Positive(roundNumber, nameof(roundNumber));
-
-//            int endRoundNumber = _sequenceProvider.GetEndRoundNumber(mode);
-
-//            return endRoundNumber > 0 && roundNumber > endRoundNumber;
-//        }
-
-//        private static DifficultyLevel PickRandomDifficulty()
-//        {
-//            var levels = (DifficultyLevel[])Enum.GetValues(typeof(DifficultyLevel));
-
-//            Guard.IsTrue(levels.Length > 0, nameof(levels),
-//                $"В {nameof(DifficultyLevel)} нет ни одного значения.");
-
-//            return levels[UnityEngine.Random.Range(0, levels.Length)];
-//        }
-
-//        private static void ValidateMode(GameMode mode, string argumentName)
-//        {
-//            Guard.IsTrue(
-//                Enum.IsDefined(typeof(GameMode), mode),
-//                argumentName,
-//                $"Значение {mode} ({(int)mode}) не является допустимым {nameof(GameMode)}.");
-//        }
-//    }
-//}

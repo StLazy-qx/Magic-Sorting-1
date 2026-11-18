@@ -8,66 +8,66 @@ using YG;
 
 namespace Assets.Source.Scripts.Game_Progress
 {
-    public class ModeRatingProvider
-    {
-        private readonly GameMode[] _ratedModes =
-        {
-            GameMode.Easy,
-            GameMode.Medium,
-            GameMode.Hard
-        };
+    ////public class ModeRatingProvider
+    ////{
+    ////    private readonly GameMode[] _ratedModes =
+    ////    {
+    ////        GameMode.Easy,
+    ////        GameMode.Medium,
+    ////        GameMode.Hard
+    ////    };
 
-        private readonly RoundSequenceProvider _sequenceProvider;
-        private readonly ModeRankCalculator _calculator = new();
-        private readonly Dictionary<GameMode, RoundRating> _modeRatings = new();
+    ////    private readonly RoundSequenceProvider _sequenceProvider;
+    ////    private readonly ModeRankCalculator _calculator = new();
+    ////    private readonly Dictionary<GameMode, RoundRating> _modeRatings = new();
 
-        public ModeRatingProvider(RoundSequenceProvider sequenceProvider)
-        {
-            Guard.NotNull(sequenceProvider, nameof(sequenceProvider));
+    ////    public ModeRatingProvider(RoundSequenceProvider sequenceProvider)
+    ////    {
+    ////        Guard.NotNull(sequenceProvider, nameof(sequenceProvider));
 
-            _sequenceProvider = sequenceProvider;
-        }
+    ////        _sequenceProvider = sequenceProvider;
+    ////    }
 
-        public void Refresh()
-        {
-            _modeRatings.Clear();
+    ////    public void Refresh()
+    ////    {
+    ////        _modeRatings.Clear();
 
-            RoundRatingSection section = YG2.saves.RoundRatings;
+    ////        RoundRatingSection section = YG2.saves.RoundRatings;
 
-            for (int i = 0; i < _ratedModes.Length; i++)
-                _modeRatings[_ratedModes[i]] = Calculate(_ratedModes[i]);
-        }
+    ////        for (int i = 0; i < _ratedModes.Length; i++)
+    ////            _modeRatings[_ratedModes[i]] = Calculate(_ratedModes[i]);
+    ////    }
 
-        public bool TryGetRating(GameMode mode, out RoundRating rating)
-        {
-            if (_modeRatings.TryGetValue(mode, out rating) == false)
-                return false;
+    ////    public bool TryGetRating(GameMode mode, out RoundRating rating)
+    ////    {
+    ////        if (_modeRatings.TryGetValue(mode, out rating) == false)
+    ////            return false;
 
-            if (rating == RoundRating.NotCompleted)
-                return false;
+    ////        if (rating == RoundRating.NotCompleted)
+    ////            return false;
 
-            return true;
-        }
+    ////        return true;
+    ////    }
 
-        private RoundRating Calculate(GameMode mode)
-        {
-            RoundRatingSection section = YG2.saves.RoundRatings;
-            int start = _sequenceProvider.GetStartRoundNumber(mode);
-            int end = _sequenceProvider.GetEndRoundNumber(mode);
-            var ratings = new List<RoundRating>(end - start + 1);
+    ////    private RoundRating Calculate(GameMode mode)
+    ////    {
+    ////        RoundRatingSection section = YG2.saves.RoundRatings;
+    ////        int start = _sequenceProvider.GetStartRoundNumber(mode);
+    ////        int end = _sequenceProvider.GetEndRoundNumber(mode);
+    ////        var ratings = new List<RoundRating>(end - start + 1);
 
-            for (int roundNumber = start; roundNumber <= end; roundNumber++)
-            {
-                RoundRating rating = section.Get(mode, roundNumber);
+    ////        for (int roundNumber = start; roundNumber <= end; roundNumber++)
+    ////        {
+    ////            RoundRating rating = section.Get(mode, roundNumber);
 
-                if (rating == RoundRating.NotCompleted)
-                    return RoundRating.NotCompleted;
+    ////            if (rating == RoundRating.NotCompleted)
+    ////                return RoundRating.NotCompleted;
 
-                ratings.Add(rating);
-            }
+    ////            ratings.Add(rating);
+    ////        }
 
-            return _calculator.CalculateAverage(ratings);
-        }
+    ////        return _calculator.CalculateAverage(ratings);
+    ////    }
 
         //public bool TryGetRating(GameMode mode, out RoundRating rating)
         //{
@@ -97,5 +97,5 @@ namespace Assets.Source.Scripts.Game_Progress
 
         //    return _calculator.CalculateAverage(ratings);
         //}
-    }
+    ////}
 }

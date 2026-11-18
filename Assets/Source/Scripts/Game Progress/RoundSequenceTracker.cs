@@ -1,141 +1,86 @@
-﻿using System;
-using System.Collections.Generic;
-using Assets.Source.Scripts.Enums;
+﻿using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.Player;
-using Assets.Source.Scripts.YG;
+using System;
+using UnityEngine;
+using Zenject;
 
 namespace Assets.Source.Scripts.GameBehaviour
 {
-    public class RoundSequenceTracker : IDisposable
+    public class RoundSequenceTracker : MonoBehaviour
     {
-        private const int FreeModeExtensionBatchSize = 50;
+        private LevelCounter _levelCounter;
+        private PlayerProgress _playerProgress;
+        private bool _isCurrentRoundCompleted;
 
-        private readonly List<int> _roundsSequence;
-        private readonly PlayerProgress _playerProgress;
-        private readonly RoundRatingSection _ratingSection;
-        private readonly RoundSequenceProvider _sequenceProvider;
-        private readonly bool _isEndlessMode;
-
-        private int _currentRoundIndex;
-        private int _maxRoundsInCurrentMode;
-
-        public event Action<int> CurrentRoundIndexChanged;
         public event Action<GameMode, int> RoundCompleted;
         public event Action<GameMode> ModeCompleted;
+        public event Action RoundOpened;
 
-        public RoundSequenceTracker(
-            IReadOnlyList<int> roundsSequence,
-            PlayerProgress playerProgress,
-            RoundRatingSection ratingSection,
-            RoundSequenceProvider sequenceProvider)
+        public bool IsInitialized => _levelCounter != null;
+        public GameMode CurrentMode => _levelCounter.Mode;
+        public int CurrentRoundIndex => _levelCounter.RoundIndex;
+        public int CurrentRoundNumber => _levelCounter.RoundNumber;
+        public bool IsLastRound => _levelCounter.IsLastRound;
+
+        [Inject]
+        private void Construct(PlayerProgress playerProgress)
         {
-            Guard.NotNullOrEmpty(roundsSequence, nameof(roundsSequence));
-            Guard.NotNull(playerProgress, nameof(playerProgress));
-            Guard.NotNull(ratingSection, nameof(ratingSection));
-            Guard.NotNull(sequenceProvider, nameof(sequenceProvider));
-
-            _roundsSequence = new List<int>(roundsSequence);
             _playerProgress = playerProgress;
-            _ratingSection = ratingSection;
-            _sequenceProvider = sequenceProvider;
-
-            _isEndlessMode = playerProgress.CurrentMode == GameMode.FreeMode;
-
-            _maxRoundsInCurrentMode = _roundsSequence.Count;
-            _currentRoundIndex = ResolveCurrentRoundIndexFromProgress();
         }
 
-        public int CurrentRoundIndex => _currentRoundIndex;
-        public int MaxRoundsInCurrentMode => _maxRoundsInCurrentMode;
-        public GameMode CurrentMode => _playerProgress.CurrentMode;
-        public bool IsEndlessMode => _isEndlessMode;
-
-        public bool IsModeCompleted
-            => !_isEndlessMode && _currentRoundIndex >= _maxRoundsInCurrentMode;
-
-        public int CurrentRoundNumber
-            => _currentRoundIndex >= 0 && _currentRoundIndex < _roundsSequence.Count
-                ? _roundsSequence[_currentRoundIndex]
-                : _roundsSequence[_roundsSequence.Count - 1];
-
-        public void SetCurrentRoundIndex(int index)
+        public void Initialize(LevelCounter levelCounter)
         {
-            Guard.InRange(index, 0, _maxRoundsInCurrentMode, nameof(index));
+            Guard.NotNull(levelCounter, nameof(levelCounter));
+            Unsubscribe();
 
-            if (_currentRoundIndex == index)
+            _levelCounter = levelCounter;
+            _isCurrentRoundCompleted = false;
+            _levelCounter.RoundChanged += OnRoundReopened;
+            _levelCounter.RoundRestarted += OnRoundReopened;
+        }
+
+        private void OnDestroy()
+        {
+            Unsubscribe();
+        }
+
+        public void CompleteRound(RoundRating rating)
+        {
+            Guard.IsTrue(IsInitialized, 
+                "[RoundSequenceTracker] Initialize(levelCounter) ещё не вызывался.");
+            Guard.IsTrue(rating != RoundRating.NotCompleted, nameof(rating),
+                "Нельзя завершить раунд рейтингом NotCompleted.");
+
+            if (_isCurrentRoundCompleted)
                 return;
 
-            _currentRoundIndex = index;
-            CurrentRoundIndexChanged?.Invoke(_currentRoundIndex);
+            _isCurrentRoundCompleted = true;
+
+            GameMode mode = _levelCounter.Mode;
+            int roundNumber = _levelCounter.RoundNumber;
+
+            _playerProgress.MarkRoundFinished(mode, roundNumber, rating);
+            RoundCompleted?.Invoke(mode, roundNumber);
+
+            if (_levelCounter.IsLastRound)
+                ModeCompleted?.Invoke(mode);
         }
 
-        public void SetMaxRoundNumber(int maxRounds)
+        private void OnRoundReopened()
         {
-            Guard.Positive(maxRounds, nameof(maxRounds));
-            _maxRoundsInCurrentMode = maxRounds;
+            _isCurrentRoundCompleted = false;
+
+            RoundOpened?.Invoke();
         }
 
-        public void OnRoundCompleted(RoundRating rating)
+        private void Unsubscribe()
         {
-            if (IsModeCompleted)
+            if (_levelCounter == null)
                 return;
 
-            if (rating == RoundRating.NotCompleted)
-                return;
-
-            int roundNumber = CurrentRoundNumber;
-
-            _ratingSection.Save(CurrentMode, roundNumber, rating);
-            RoundCompleted?.Invoke(CurrentMode, roundNumber);
-
-            _currentRoundIndex++;
-
-            if (_isEndlessMode)
-                EnsureNextRoundAvailable();
-
-            CurrentRoundIndexChanged?.Invoke(_currentRoundIndex);
-
-            if (_isEndlessMode == false &&
-                _currentRoundIndex == _maxRoundsInCurrentMode)
-            {
-                ModeCompleted?.Invoke(CurrentMode);
-            }
-        }
-
-        public void Dispose()
-        {
-            CurrentRoundIndexChanged = null;
-            RoundCompleted = null;
-            ModeCompleted = null;
-        }
-
-        private void EnsureNextRoundAvailable()
-        {
-            if (_currentRoundIndex < _roundsSequence.Count)
-                return;
-
-            int lastRoundNumber = _roundsSequence[_roundsSequence.Count - 1];
-
-            //IReadOnlyList<int> extension = _sequenceProvider.GetFreeMode(
-            //    lastRoundNumber + 1,
-            //    FreeModeExtensionBatchSize);
-
-            //_roundsSequence.AddRange(extension);
-            _maxRoundsInCurrentMode = _roundsSequence.Count;
-        }
-
-        private int ResolveCurrentRoundIndexFromProgress()
-        {
-            int savedRoundNumber = _playerProgress.CurrentRoundNumber;
-
-            for (int index = 0; index < _roundsSequence.Count; index++)
-            {
-                if (_roundsSequence[index] == savedRoundNumber)
-                    return index;
-            }
-
-            return 0;
+            _levelCounter.RoundChanged -= OnRoundReopened;
+            _levelCounter.RoundRestarted -= OnRoundReopened;
         }
     }
 }

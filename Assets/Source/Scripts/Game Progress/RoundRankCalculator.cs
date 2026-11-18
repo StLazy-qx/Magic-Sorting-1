@@ -1,30 +1,24 @@
 ﻿using Assets.Source.Scripts.Enums;
+using Assets.Source.Scripts.Extensions;
 
 namespace Assets.Source.Scripts.Game_Progress
 {
-    public class RoundRankCalculator
+    public static class RoundRankCalculator
     {
-        private const float BadThreshold = 0.3f; 
+        private const float BadThreshold = 0.3f;
         private const float MediumThreshold = 0.7f;
+        private const int MaxScorePerVessel = 50;
 
-        private int _countVessels;
-        private int _maxScore;
-
-        public RoundRankCalculator(int countVessels)
+        public static RoundRating Calculate(int earnedScore, int vesselCount)
         {
-            _countVessels = countVessels;
+            Guard.Positive(vesselCount, nameof(vesselCount));
 
-            _maxScore = _countVessels * 50;
-        }
+            float percent = (float)earnedScore / (vesselCount * MaxScorePerVessel);
 
-        public RoundRating Calculate(int earnedScore)
-        {
-            float percent = (float)earnedScore / _maxScore;
-
-            if (percent < BadThreshold) 
+            if (percent < BadThreshold)
                 return RoundRating.Bad;
 
-            if (percent < MediumThreshold) 
+            if (percent < MediumThreshold)
                 return RoundRating.Medium;
 
             return RoundRating.Good;

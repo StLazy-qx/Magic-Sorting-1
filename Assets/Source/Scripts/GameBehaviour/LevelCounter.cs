@@ -1,5 +1,7 @@
-﻿using Assets.Source.Scripts.EntryPoint;
+﻿using Assets.Source.Scripts.Enums;
 using Assets.Source.Scripts.Extensions;
+using Assets.Source.Scripts.Game_Modes;
+using Assets.Source.Scripts.Game_Progress;
 using Assets.Source.Scripts.Player;
 using System;
 using UnityEngine;
@@ -10,90 +12,81 @@ namespace Assets.Source.Scripts.GameBehaviour
 {
     public class LevelCounter : MonoBehaviour
     {
-        private const int FirstRound = 1;
+        private const int FirstRoundNumber = 1;
 
-        private SequenceDifficultyLevel _currentLevel;
-        private PlayerProgress _playerProgress;
-        private int _roundNumber;
+        private int _roundIndex;
+        private GameModeData _data;
+        private IGameModeDataProvider _dataProvider;
 
         public event Action RoundChanged;
-        public int RoundNumber => _roundNumber;
+        public event Action RoundRestarted;
+        public event Action LastRoundReached;
 
+        public bool IsInitialized => _data != null;
+        public bool IsEndless => Data.IsEndless;
+        public bool IsLastRound => Data.IsEndless == false && _roundIndex >= Data.RoundsCount - 1;
+        public int RoundsCount => Data.RoundsCount;
+        public int RoundIndex => _roundIndex;
+        public int RoundNumber => _roundIndex + 1;
+        public GameMode Mode => Data.Mode;
+        public DifficultyLevel CurrentDifficulty => Data.GetDifficulty(_roundIndex);
 
-        private void OnDisable()
+        private GameModeData Data
         {
-            if (_currentLevel != null)
-                _currentLevel.RoundChanged -= OnRoundChange;
+            get
+            {
+                Guard.IsTrue(_data != null, 
+                    "[LevelCounter] Initialize(mode) ещё не вызывался.");
+
+                return _data;
+            }
         }
 
         [Inject]
-        public void Initialize(SequenceDifficultyLevel level, PlayerProgress playerProgress)
+        private void Construct(IGameModeDataProvider dataProvider)
         {
-            Guard.NotNull(level, nameof(level));
-            Guard.NotNull(playerProgress, nameof(playerProgress));
-
-            _currentLevel = level;
-            _playerProgress = playerProgress;
-            _roundNumber = ResolveStartRoundNumber();
-            _currentLevel.RoundChanged += OnRoundChange;
-
-            RoundChanged?.Invoke();
+            _dataProvider = dataProvider;
         }
 
-        private int ResolveStartRoundNumber()
+        public void Initialize(GameMode mode)
         {
-            // FreeMode единственный продолжает из сейва
-            if (_playerProgress.CurrentMode == GameMode.FreeMode)
-                return YG2.saves.Round.GetNumber();
+            _data = _dataProvider.Get(mode);
 
-            return FirstRound;
+            _roundIndex = _data.IsEndless
+                ? Mathf.Max(FirstRoundNumber, YG2.saves.Round.GetNumber()) - 1
+                : 0;
+
+            Announce();
         }
 
-        private void OnRoundChange()
+        public void RestartCurrentRound()
         {
-            _roundNumber++;
+            Guard.IsTrue(IsInitialized, "[LevelCounter] Initialize(mode) ещё не вызывался.");
 
-            // Глобальный сейв нужен только для endless
-            if (_playerProgress.CurrentMode == GameMode.FreeMode)
-                YG2.saves.Round.SaveNumber(_roundNumber);
+            RoundRestarted?.Invoke();
+        }
 
+        public bool TryAdvance()
+        {
+            if (IsLastRound)
+                return false;
+
+            _roundIndex++;
+
+            if (Data.IsEndless)
+                YG2.saves.Round.SaveNumber(RoundNumber);
+
+            Announce();
+
+            return true;
+        }
+
+        private void Announce()
+        {
             RoundChanged?.Invoke();
+
+            if (IsLastRound)
+                LastRoundReached?.Invoke();
         }
     }
-
-    //public class LevelCounter : MonoBehaviour
-    //{
-    //    private SequenceDifficultyLevel _currentLevel;
-    //    private int _roundNumber;
-
-    //    public event Action RoundChanged;
-
-    //    public int RoundNumber => _roundNumber;
-
-    //    [Inject]
-    //    public void Initialize(SequenceDifficultyLevel level)
-    //    {
-    //        Guard.NotNull(level, nameof(level));
-
-    //        _currentLevel = level;
-    //        _roundNumber = YG2.saves.GetRoundNumber();
-    //        _currentLevel.RoundChanged += OnRoundChange;
-
-    //        RoundChanged?.Invoke();
-    //    }
-
-    //    private void OnDisable()
-    //    {
-    //        if (_currentLevel != null)
-    //            _currentLevel.RoundChanged -= OnRoundChange;
-    //    }
-
-    //    private void OnRoundChange()
-    //    {
-    //        _roundNumber++;
-
-    //        YG2.saves.SaveRoundNumber(_roundNumber);
-    //        RoundChanged?.Invoke();
-    //    }
-    //}
 }

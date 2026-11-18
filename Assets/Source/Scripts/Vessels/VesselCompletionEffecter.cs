@@ -1,8 +1,8 @@
 ﻿using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.Pool;
+using System;
 using System.Collections;
 using UnityEngine;
-using System;
 
 namespace Assets.Source.Scripts.Vessels
 {
@@ -25,59 +25,39 @@ namespace Assets.Source.Scripts.Vessels
             PoolEffectSizeReading?.Invoke(value);
         }
 
+        /// <summary>
+        /// Гасит частицы прошлого раунда сразу при (пере)открытии раунда (вызывается по RoundOpened).
+        /// Пул пересоздаётся тем же размером: ParticlePool.Initialize в конце делает Reset().
+        /// </summary>
         public void ResetPool()
         {
-            Guard.NotNull(_particlePool, nameof(_particlePool));
-
-            _particlePool.ReturnAll();
+            if (LastSize > 0)
+                _particlePool.Initialize(LastSize);
         }
 
-        public IEnumerator PlayEffect(
-            Vector3 position,
-            Color color)
+        public IEnumerator PlayEffect(Vector3 position, Color color)
         {
             Guard.NotNull(_particlePool, nameof(_particlePool));
 
             float timeEndSession = 2f;
             ParticleSystem particle = _particlePool.HandOver();
 
-            while (particle == null)
-            {
-                yield return null;
-                particle = _particlePool.HandOver();
-            }
+            Guard.IsTrue(particle != null, "No available particles in pool.");
 
-            particle.transform.position = new Vector3
-                (position.x, position.y - _offsetY, position.z);
+            particle.transform.position = new Vector3(position.x, position.y - _offsetY, position.z);
 
             SetParticleStartColor(particle, color);
             SetChildParticlesStartColor(particle, color);
             particle.Play();
 
             yield return new WaitForSeconds(timeEndSession);
-
-            //Guard.NotNull(_particlePool, nameof(_particlePool));
-
-            //float timeEndSession = 2f;
-            //ParticleSystem particle = _particlePool.HandOver();
-
-            //Guard.IsTrue(particle != null, "No available particles in pool.");
-
-            //particle.transform.position = new Vector3
-            //    (position.x, position.y - _offsetY, position.z);
-
-            //SetParticleStartColor(particle, color);
-            //SetChildParticlesStartColor(particle, color);
-            //particle.Play();
-
-            //yield return new WaitForSeconds(timeEndSession);
         }
 
         private void SetParticleStartColor(ParticleSystem particleSystem, Color color)
         {
             Guard.NotNull(particleSystem, nameof(particleSystem));
 
-            ParticleSystem.MainModule main = particleSystem.main;
+            var main = particleSystem.main;
             main.startColor = color;
         }
 
@@ -93,11 +73,11 @@ namespace Assets.Source.Scripts.Vessels
                     SetParticleStartColor(child, color);
             }
 
-            ParticleSystem.SubEmittersModule subEmitters = parent.subEmitters;
+            var subEmitters = parent.subEmitters;
 
             for (int i = 0; i < subEmitters.subEmittersCount; i++)
             {
-                ParticleSystem subEmitter = subEmitters.GetSubEmitterSystem(i);
+                var subEmitter = subEmitters.GetSubEmitterSystem(i);
 
                 if (subEmitter != null)
                     SetParticleStartColor(subEmitter, color);

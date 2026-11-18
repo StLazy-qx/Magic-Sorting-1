@@ -1,8 +1,10 @@
 ﻿using Assets.Source.Scripts.EntryPoint;
+using Assets.Source.Scripts.Enums;
+using Assets.Source.Scripts.Extensions;
+using Assets.Source.Scripts.Game_Progress;
 using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Player;
 using Assets.Source.Scripts.UI.GamePanel;
-using Assets.Source.Scripts.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,10 +18,11 @@ namespace Assets.Source.Scripts.Vessels
         [SerializeField] private VesselStateTracker _tracker;
         [SerializeField] private VesselCompletionEffecter _effecter;
         [SerializeField] private FinalGameSession _finalGame;
+        [SerializeField] private RoundSequenceTracker _roundTracker;
 
         private Wallet _wallet;
-        private SequenceDifficultyLevel _sequenceDifficultyLevel;
         private Panel _currentPanel;
+        private int _roundScore;
 
         public event Action RoundOvering;
         public event Action VictoryAudioClipEnabled;
@@ -27,13 +30,9 @@ namespace Assets.Source.Scripts.Vessels
         public bool IsInitialized { get; private set; }
 
         [Inject]
-        public void Construct(Wallet wallet, SequenceDifficultyLevel sequence)
+        public void Construct(Wallet wallet)
         {
-            Guard.NotNull(wallet, nameof(wallet));
-            Guard.NotNull(sequence, nameof(sequence));
-
             _wallet = wallet;
-            _sequenceDifficultyLevel = sequence;
         }
 
         private void OnEnable()
@@ -41,6 +40,10 @@ namespace Assets.Source.Scripts.Vessels
             _tracker.VesselCompleted += OnVesselCompleted;
             _tracker.AllVesselsCompleted += OnAllVesselsCompleted;
             _tracker.RoundReset += OnRoundReset;
+
+            _roundTracker.RoundOpened += OnRoundOpened;
+            _roundTracker.RoundCompleted += OnRoundCompleted;
+            _roundTracker.ModeCompleted += OnModeCompleted;
         }
 
         private void OnDisable()
@@ -48,6 +51,10 @@ namespace Assets.Source.Scripts.Vessels
             _tracker.VesselCompleted -= OnVesselCompleted;
             _tracker.AllVesselsCompleted -= OnAllVesselsCompleted;
             _tracker.RoundReset -= OnRoundReset;
+
+            _roundTracker.RoundOpened -= OnRoundOpened;
+            _roundTracker.RoundCompleted -= OnRoundCompleted;
+            _roundTracker.ModeCompleted -= OnModeCompleted;
         }
 
         public void Initialize()
@@ -56,7 +63,6 @@ namespace Assets.Source.Scripts.Vessels
                 return;
 
             ValidateInitializeArguments();
-
             IsInitialized = true;
         }
 
@@ -75,26 +81,28 @@ namespace Assets.Source.Scripts.Vessels
             _tracker.SetVesselsList(vessels);
         }
 
-        public void ResetPool()
-        {
-            Guard.NotNull(_effecter, nameof(_effecter));
+        public bool IsAllVesselsComplete() => _tracker.IsAllVesselsComplete;
 
+        /// <summary>
+        /// Единый сброс состояния раунда: следующий раунд и рестарт приходят одним сигналом.
+        /// Заменяет GameSessionCompositionRoot.ResetRoundState + ResetPool.
+        /// </summary>
+        private void OnRoundOpened()
+        {
+            _roundScore = 0;
+            _tracker.ResetForNewRound();
             _effecter.ResetPool();
         }
 
-        private void OnRoundReset()
-        {
-            StopAllCoroutines();
-            _effecter.ResetPool();
-        }
+        private void OnRoundReset() => StopAllCoroutines();
 
-        private void OnAllVesselsCompleted()
-            => VictoryAudioClipEnabled?.Invoke();
+        private void OnAllVesselsCompleted() => VictoryAudioClipEnabled?.Invoke();
 
         private void OnVesselCompleted(VesselCompletionInfo info)
         {
             _tracker.RegisterEffectStarted();
             _wallet.AddPoints(info.Points);
+            _roundScore += info.Points;
             StartCoroutine(PerformEffect(info));
         }
 
@@ -118,39 +126,40 @@ namespace Assets.Source.Scripts.Vessels
 
         private void FinishRound()
         {
+            // Максимум считается от числа сосудов ЭТОГО раунда (калькулятор без состояния)
+            RoundRating rating = RoundRankCalculator.Calculate(_roundScore, _tracker.TotalCount);
+
             _wallet.ConfirmPoints();
-            _wallet.Reset();
             _currentPanel.Close();
 
-            if (_sequenceDifficultyLevel.IsSequenceEnd)
-            {
-                _finalGame.ShowEndModePanel();
-                return;
-            }
+            // Wallet.Reset() здесь нет: кошелёк сбрасывается только при запуске раунда (BaseGameHandler.ResetEntity).
+            // События приходят синхронно: сначала RoundCompleted, для последнего раунда ещё ModeCompleted.
+            _roundTracker.CompleteRound(rating);
+        }
 
-            if (IsTutorialCompleted())
-            {
-                _finalGame.ShowTutorialPanel();
-                return;
-            }
+        private void OnRoundCompleted(GameMode mode, int roundNumber)
+        {
+            if (_roundTracker.IsLastRound)
+                return; // панель покажет OnModeCompleted
 
             _finalGame.ShowEndRoundPanel();
         }
 
-        private bool IsTutorialCompleted()
-            => _finalGame.Handler is TutorialGameHandler tutorial && tutorial.IsTutorialCompleted;
+        private void OnModeCompleted(GameMode mode)
+        {
+            if (mode == GameMode.Tutorial)
+                _finalGame.ShowTutorialPanel();
+            else
+                _finalGame.ShowEndModePanel();
+        }
 
         private void ValidateInitializeArguments()
         {
             Guard.NotNull(_tracker, nameof(_tracker));
             Guard.NotNull(_effecter, nameof(_effecter));
             Guard.NotNull(_finalGame, nameof(_finalGame));
-            Guard.IsTrue(_wallet != null, nameof(_wallet),
-                "[VesselRoundController] Wallet reference is missing.");
-            Guard.IsTrue(_sequenceDifficultyLevel != null, nameof(_sequenceDifficultyLevel),
-                "[VesselRoundController] SequenceDifficultyLevel reference is missing.");
-            Guard.IsTrue(_currentPanel != null, nameof(_currentPanel),
-                "[VesselRoundController] Panel is not assigned. Call SetPanel() first.");
+            Guard.NotNull(_roundTracker, nameof(_roundTracker));
+            Guard.NotNull(_currentPanel, nameof(_currentPanel));
         }
     }
 }

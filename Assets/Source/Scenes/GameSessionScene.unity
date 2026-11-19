@@ -110835,7 +110835,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 267297360}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -121156,7 +121156,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 299457045}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -127083,7 +127083,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 340750917}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -152397,6 +152397,7 @@ Transform:
   - {fileID: 1139587300}
   - {fileID: 845990819}
   - {fileID: 1773993230}
+  - {fileID: 405261333}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &392530558
@@ -152411,17 +152412,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d2edd6fdc11b64abc366e6a3745666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _levelCounter: {fileID: 1139587301}
+  _difficultyDatabase: {fileID: 11400000, guid: a0c325b75a00c9641a7203ac82d7b2f8,
+    type: 2}
+  _colorRandomizer: {fileID: 1009920594}
   _columnsFactory: {fileID: 946066169}
   _vesselFactory: {fileID: 654057274}
   _entryColorListsFactory: {fileID: 1086977958}
-  _colorRandomizer: {fileID: 1009920594}
-  _levelCounter: {fileID: 1139587301}
+  _columnDistributor: {fileID: 1892001528}
   _waitingPoint: {fileID: 1861908055}
   _clickImpactHandler: {fileID: 923747164}
-  _columnDistributor: {fileID: 1892001528}
-  _difficultyDatabase: {fileID: 11400000, guid: a0c325b75a00c9641a7203ac82d7b2f8,
-    type: 2}
-  _compositionRoot: {fileID: 1009920595}
+  _vesselRoundController: {fileID: 1773993231}
 --- !u!1 &398186042
 GameObject:
   m_ObjectHideFlags: 0
@@ -157998,6 +157999,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameHandler: {fileID: 392530558}
   TargetPanel: {fileID: 2052286821}
+--- !u!1 &405261332
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 405261333}
+  - component: {fileID: 405261334}
+  m_Layer: 0
+  m_Name: Round Sequence Tracker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &405261333
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 405261332}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 392530555}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &405261334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 405261332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42746d582bbe2144e8424bae8779027e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &416493407
 GameObject:
   m_ObjectHideFlags: 0
@@ -158777,7 +158822,7 @@ RectTransform:
   m_GameObject: {fileID: 445616382}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5870400329428898863}
@@ -194910,7 +194955,7 @@ RectTransform:
   m_GameObject: {fileID: 556551997}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1390659086}
@@ -235826,7 +235871,7 @@ RectTransform:
   m_GameObject: {fileID: 660204378}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2081103677}
@@ -379608,20 +379653,15 @@ MonoBehaviour:
   - {fileID: 908648324}
   - {fileID: 2066365334}
   - {fileID: 460316045}
-  _difficultyDatabase: {fileID: 11400000, guid: a0c325b75a00c9641a7203ac82d7b2f8,
-    type: 2}
-  _platformGameAdapter: {fileID: 1009920593}
   _colorRandomizer: {fileID: 1009920594}
-  _entryColorListsFactory: {fileID: 1086977958}
-  _columnsFactory: {fileID: 946066169}
-  _vesselFactory: {fileID: 654057274}
+  _levelCounter: {fileID: 1139587301}
+  _roundTracker: {fileID: 405261334}
+  _gameHandler: {fileID: 392530558}
+  _platformGameAdapter: {fileID: 1009920593}
   _storeItemFactory: {fileID: 203805686}
-  _columnDistributor: {fileID: 1892001528}
   _magicMixer: {fileID: 1853108563}
   _magicCellRouter: {fileID: 654057276}
   _clickModeSwitcher: {fileID: 923747164}
-  _vesselRoundController: {fileID: 1773993231}
-  _gameSessionHandler: {fileID: 392530558}
 --- !u!1 &1012964950
 GameObject:
   m_ObjectHideFlags: 0
@@ -395247,7 +395287,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1055610349}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -467682,7 +467722,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1253619750}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -472606,7 +472646,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262768806}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -507565,7 +507605,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1299269373}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -533830,7 +533870,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1390659085}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -586827,7 +586867,7 @@ RectTransform:
   m_GameObject: {fileID: 1535726887}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1299269374}
@@ -607059,7 +607099,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1582105186}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -617457,9 +617497,9 @@ RectTransform:
   m_Father: {fileID: 1917943187}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 4.7457275}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1605524756
 MonoBehaviour:
@@ -617692,7 +617732,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1606768824}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -680180,6 +680220,7 @@ MonoBehaviour:
   _tracker: {fileID: 569123143}
   _effecter: {fileID: 43498391}
   _finalGame: {fileID: 1845276654}
+  _roundTracker: {fileID: 405261334}
 --- !u!1 &1793528847
 GameObject:
   m_ObjectHideFlags: 0
@@ -691559,7 +691600,7 @@ RectTransform:
   m_GameObject: {fileID: 1830393025}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1262768807}
@@ -732316,7 +732357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1917943187
 RectTransform:
   m_ObjectHideFlags: 0
@@ -742614,7 +742655,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1954410387}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -804325,7 +804366,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2081103676}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -839163,7 +839204,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3608732300937321170}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -839321,7 +839362,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1884511287189167166}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -839469,7 +839510,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5162157687183764112}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -863841,7 +863882,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3060753559452824149}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1

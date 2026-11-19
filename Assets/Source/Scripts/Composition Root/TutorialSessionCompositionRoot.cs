@@ -1,109 +1,24 @@
-﻿using Assets.Source.Scripts.Colorize;
-using Assets.Source.Scripts.EntryPoint;
-using Assets.Source.Scripts.Extensions;
-using Assets.Source.Scripts.Factory;
-using Assets.Source.Scripts.GameBehaviour;
-using Assets.Source.Scripts.GameDifficulty;
+﻿using Assets.Source.Scripts.EntryPoint;
 using Assets.Source.Scripts.Player;
-using Assets.Source.Scripts.Vessels;
-using System.Collections;
 using UnityEngine;
-using Zenject;
 
 namespace Assets.Source.Scripts.Composition_Root
 {
-    public class TutorialSessionCompositionRoot : CompositionRootBase
+    public class TutorialSessionCompositionRoot : SessionCompositionRootBase
     {
-        [SerializeField] private DifficultyDatabase _difficultyDatabase;
         [SerializeField] private PlatformTutorialGameAdapter _platformSetter;
-        [SerializeField] private ColorRandomizer _colorRandomizer;
-        [SerializeField] private EntryColorListsFactory _entryColorListsFactory;
-        [SerializeField] private ColumnsFactory _columnsFactory;
-        [SerializeField] private VesselFactory _vesselFactory;
-        [SerializeField] private ColorColumnDistributor _columnDistributor;
-        [SerializeField] private VesselRoundController _vesselRoundController;
-        [SerializeField] private TutorialGameHandler _tutorialGameHandler;
 
-        private DifficultyState _difficultyState;
-        private DifficultySettings _currentSettings;
-        private ColorCatalog _colorCatalog;
-        private ColorContext _colorContext;
+        protected override GameMode ResolveMode()
+            => GameMode.Tutorial;
 
-        [Inject]
-        private void Construct(
-            DifficultyState difficultyState,
-            SequenceDifficultyLevel sequenceDifficultyLevel)
+        protected override void ValidateSessionDependencies()
         {
-            Validator.AllNotNull(
-                (difficultyState, nameof(difficultyState)),
-                (sequenceDifficultyLevel, nameof(sequenceDifficultyLevel)));
-
-            _difficultyState = difficultyState;
+            Validator.AllNotNull((_platformSetter, nameof(_platformSetter)));
         }
 
-        protected override void ValidateDependencies()
+        protected override void InitializeSessionSync()
         {
-            Validator.AllNotNull(
-                (_difficultyDatabase, nameof(_difficultyDatabase)),
-                (_platformSetter, nameof(_platformSetter)),
-                (_colorRandomizer, nameof(_colorRandomizer)),
-                (_entryColorListsFactory, nameof(_entryColorListsFactory)),
-                (_columnsFactory, nameof(_columnsFactory)),
-                (_vesselFactory, nameof(_vesselFactory)),
-                (_columnDistributor, nameof(_columnDistributor)),
-                (_tutorialGameHandler, nameof(_tutorialGameHandler)),
-                (_difficultyState, nameof(_difficultyState)));
-        }
-
-        protected override void InitializeSceneDependenciesSync()
-        {
-            _tutorialGameHandler.Initialize();
-            _tutorialGameHandler.RegisterFirstRound();
-
-            _currentSettings = _difficultyDatabase.GetSettings(_difficultyState.CurrentDifficulty);
-
-            Guard.NotNull(_currentSettings, nameof(_currentSettings));
-
-            _colorCatalog = new ColorCatalog();
-            _colorContext = new ColorContext(_colorCatalog);
-
-            _colorRandomizer.Initialize(
-                _colorContext.Catalog,
-                _colorContext.Converter,
-                _colorContext.Recipes);
-            _colorRandomizer.SetDifficultySettings(_currentSettings.ColorsCount);
             _platformSetter.Initialize();
-            _entryColorListsFactory.Initialize(
-                _colorRandomizer.BeginColors,
-                _colorRandomizer.RemainingColors);
-            _vesselFactory.InitRandomizer(_colorRandomizer);
-        }
-
-        protected override IEnumerator InitializeFactoriesAsync()
-        {
-            _vesselFactory.Spawn();
-
-            yield return new WaitUntil(() => _vesselFactory.IsReady);
-
-            Guard.NotNull(_vesselFactory.Objects, nameof(_vesselFactory.Objects));
-            _vesselRoundController.SetVesselsList(_vesselFactory.Objects);
-
-            if (_vesselFactory.Objects.Count > 0)
-            {
-                _columnsFactory.Initialize(
-                    _vesselFactory.Objects,
-                    _currentSettings.ColumnsCount,
-                    _currentSettings.MaxCellsPerColumn);
-                _columnsFactory.Spawn();
-            }
-
-            _columnDistributor.Distribute();
-        }
-
-        protected override void OnEntityInitialized(IObjectInitilizable obj)
-        {
-            if (obj is Inventory inventory)
-                inventory.SetScin();
         }
     }
 }

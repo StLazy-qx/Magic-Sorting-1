@@ -13,8 +13,8 @@
     false,
     false
   ],
-  "idSave": 165,
-  "MainPoints": 1930,
+  "idSave": 168,
+  "MainPoints": 2090,
   "ActualRoundNumber": 1,
   "SavedGameMode": 1,
   "MasterVolume": 0.079486154,
@@ -76,7 +76,7 @@
     "HasSavedMode": true
   },
   "Score": {
-    "Points": 1930
+    "Points": 2090
   },
   "Round": {
     "ActualRoundNumber": 1
@@ -102,6 +102,6 @@
       "(Easy, 0)": 2
     }
   },
-  "Points": 1930,
+  "Points": 2090,
   "EquippedItemIdentifier": "11111"
 }

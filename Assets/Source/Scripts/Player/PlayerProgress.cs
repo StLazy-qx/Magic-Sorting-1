@@ -23,9 +23,9 @@ namespace Assets.Source.Scripts.Player
         public int CurrentRoundNumber => _roundNumber;
         public GameMode CurrentMode => _currentMode;
 
-        [Obsolete("Временная заглушка этапа 1, удалить на этапе 2")]
-        public DifficultyLevel CurrentDifficultyLevel
-            => GetModeData(_currentMode).GetDifficulty(_currentMode == GameMode.FreeMode ? _roundNumber - 1 : 0);
+        //[Obsolete("Временная заглушка этапа 1, удалить на этапе 2")]
+        //public DifficultyLevel CurrentDifficultyLevel
+        //    => GetModeData(_currentMode).GetDifficulty(_currentMode == GameMode.FreeMode ? _roundNumber - 1 : 0);
 
         [Inject]
         private void Construct(IGameModeDataProvider dataProvider)

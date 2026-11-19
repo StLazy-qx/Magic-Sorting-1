@@ -1,35 +1,35 @@
 ﻿//using System.Collections.Generic;
 //using Assets.Source.Scripts.Extensions;
-using Assets.Source.Scripts.Player;
+//using Assets.Source.Scripts.Player;
 
 namespace Assets.Source.Scripts.GameBehaviour
 {
     public class RoundSequenceProvider
     {
-        public const int RoundsPerMode = 6;
+        //public const int RoundsPerMode = 6;
 
-        public int GetStartRoundNumber(GameMode mode) => 1;
+        //public int GetStartRoundNumber(GameMode mode) => 1;
 
-        public int GetEndRoundNumber(GameMode mode) => RoundsPerMode;
+        //public int GetEndRoundNumber(GameMode mode) => RoundsPerMode;
 
-        public int GetTotalRoundsInMode(GameMode mode) => RoundsPerMode;
+        //public int GetTotalRoundsInMode(GameMode mode) => RoundsPerMode;
 
-        public int GetCurrentRoundInMode(int savedRoundNumber, GameMode mode)
-        {
-            if (savedRoundNumber < 1) return 0;
-            if (savedRoundNumber > RoundsPerMode) return RoundsPerMode;
-            return savedRoundNumber;
-        }
+        //public int GetCurrentRoundInMode(int savedRoundNumber, GameMode mode)
+        //{
+        //    if (savedRoundNumber < 1) return 0;
+        //    if (savedRoundNumber > RoundsPerMode) return RoundsPerMode;
+        //    return savedRoundNumber;
+        //}
 
-        public int GetCompletedRoundsInMode(int savedRoundNumber, GameMode mode)
-        {
-            if (savedRoundNumber <= 1) return 0;
-            if (savedRoundNumber > RoundsPerMode) return RoundsPerMode;
-            return savedRoundNumber - 1;
-        }
+        //public int GetCompletedRoundsInMode(int savedRoundNumber, GameMode mode)
+        //{
+        //    if (savedRoundNumber <= 1) return 0;
+        //    if (savedRoundNumber > RoundsPerMode) return RoundsPerMode;
+        //    return savedRoundNumber - 1;
+        //}
 
-        public string GetProgressText(int savedRoundNumber, GameMode mode)
-            => $"{GetCurrentRoundInMode(savedRoundNumber, mode)}/{RoundsPerMode}";
+        //public string GetProgressText(int savedRoundNumber, GameMode mode)
+        //    => $"{GetCurrentRoundInMode(savedRoundNumber, mode)}/{RoundsPerMode}";
     }
 }
 

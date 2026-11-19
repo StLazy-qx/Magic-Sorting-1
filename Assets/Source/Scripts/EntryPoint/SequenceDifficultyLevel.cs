@@ -6,152 +6,152 @@ using Zenject;
 
 namespace Assets.Source.Scripts.EntryPoint
 {
-    public class SequenceDifficultyLevel : IObjectInitilizable
+    public class SequenceDifficultyLevel /*: IObjectInitilizable*/
     {
-        private const int ModeRoundsLength = 5;
-        private const int FreeModeInitialLength = 50;
-        private const int LengthDifficultyLevel = 6;
+        //private const int ModeRoundsLength = 5;
+        //private const int FreeModeInitialLength = 50;
+        //private const int LengthDifficultyLevel = 6;
 
-        private readonly List<DifficultyLevel> _sequence = new();
+        //private readonly List<DifficultyLevel> _sequence = new();
 
-        private bool _isFixedMode;
-        private int _currentIndex;
-        private PlayerProgress _playerProgress;
-        private GameMode _gameMode = GameMode.FreeMode;
-        private GameMode? _builtMode;
+        //private bool _isFixedMode;
+        //private int _currentIndex;
+        //private PlayerProgress _playerProgress;
+        //private GameMode _gameMode = GameMode.FreeMode;
+        //private GameMode? _builtMode;
 
-        public event Action RoundChanged;
-        public event Action SequenceEnded;
+        //public event Action RoundChanged;
+        //public event Action SequenceEnded;
 
-        public bool IsInitialized { get; private set; }
-        public bool IsSequenceEnd => _currentIndex >= _sequence.Count;
-        public GameMode CurrentMode => _gameMode;
-        public int CompletedRoundIndex => _currentIndex;
+        //public bool IsInitialized { get; private set; }
+        //public bool IsSequenceEnd => _currentIndex >= _sequence.Count;
+        //public GameMode CurrentMode => _gameMode;
+        //public int CompletedRoundIndex => _currentIndex;
 
-        [Inject]
-        private void Construct(PlayerProgress playerProgress)
-        {
-            _playerProgress = playerProgress;
-        }
+        //[Inject]
+        //private void Construct(PlayerProgress playerProgress)
+        //{
+        //    _playerProgress = playerProgress;
+        //}
 
-        public void Initialize()
-        {
-            _gameMode = GetCurrentMode();
-            _builtMode = _gameMode;
-            _currentIndex = 0;
+        //public void Initialize()
+        //{
+        //    _gameMode = GetCurrentMode();
+        //    _builtMode = _gameMode;
+        //    _currentIndex = 0;
 
-            _sequence.Clear();
+        //    _sequence.Clear();
 
-            if (_gameMode == GameMode.FreeMode)
-            {
-                _isFixedMode = false;
+        //    if (_gameMode == GameMode.FreeMode)
+        //    {
+        //        _isFixedMode = false;
 
-                CreateFreeModeSequence(FreeModeInitialLength, 0);
-            }
-            else
-            {
-                _isFixedMode = true;
+        //        CreateFreeModeSequence(FreeModeInitialLength, 0);
+        //    }
+        //    else
+        //    {
+        //        _isFixedMode = true;
 
-                _sequence.AddRange(BuildFixedPlan(_gameMode));
-            }
+        //        _sequence.AddRange(BuildFixedPlan(_gameMode));
+        //    }
 
-            IsInitialized = true;
-        }
+        //    IsInitialized = true;
+        //}
 
-        public DifficultyLevel GetCurrent()
-        {
-            if (IsInitialized == false)
-                Initialize();
+        //public DifficultyLevel GetCurrent()
+        //{
+        //    if (IsInitialized == false)
+        //        Initialize();
 
-            return _sequence[_currentIndex];
-        }
+        //    return _sequence[_currentIndex];
+        //}
 
-        public void SyncWithProgress()
-        {
-            GameMode current = GetCurrentMode();
+        //public void SyncWithProgress()
+        //{
+        //    GameMode current = GetCurrentMode();
 
-            if (IsInitialized == false || _builtMode != current)
-                Initialize();
-        }
+        //    if (IsInitialized == false || _builtMode != current)
+        //        Initialize();
+        //}
 
-        public IReadOnlyList<DifficultyLevel> GetTutorialSequence()
-        {
-            return new List<DifficultyLevel>
-            {
-                DifficultyLevel.Easy,
-                DifficultyLevel.MediumEasy,
-                DifficultyLevel.Easy
-            }.AsReadOnly();
-        }
+        //public IReadOnlyList<DifficultyLevel> GetTutorialSequence()
+        //{
+        //    return new List<DifficultyLevel>
+        //    {
+        //        DifficultyLevel.Easy,
+        //        DifficultyLevel.MediumEasy,
+        //        DifficultyLevel.Easy
+        //    }.AsReadOnly();
+        //}
 
-        public DifficultyLevel GetNext()
-        {
-            if (IsInitialized == false)
-                Initialize();
+        //public DifficultyLevel GetNext()
+        //{
+        //    if (IsInitialized == false)
+        //        Initialize();
 
-            if (_gameMode != GameMode.FreeMode)
-            {
-                if (_currentIndex >= _sequence.Count)
-                {
-                    SequenceEnded?.Invoke();
-                }
-            }
+        //    if (_gameMode != GameMode.FreeMode)
+        //    {
+        //        if (_currentIndex >= _sequence.Count)
+        //        {
+        //            SequenceEnded?.Invoke();
+        //        }
+        //    }
 
-            if (_currentIndex >= _sequence.Count)
-            {
-                if (_isFixedMode)
-                    ExtendFixedSequence();
-                else
-                    CreateFreeModeSequence(FreeModeInitialLength, _currentIndex);
-            }
+        //    if (_currentIndex >= _sequence.Count)
+        //    {
+        //        if (_isFixedMode)
+        //            ExtendFixedSequence();
+        //        else
+        //            CreateFreeModeSequence(FreeModeInitialLength, _currentIndex);
+        //    }
 
-            DifficultyLevel level = _sequence[_currentIndex];
-            _currentIndex++;
+        //    DifficultyLevel level = _sequence[_currentIndex];
+        //    _currentIndex++;
 
-            RoundChanged?.Invoke();
+        //    RoundChanged?.Invoke();
 
-            return level;
-        }
+        //    return level;
+        //}
 
-        private GameMode GetCurrentMode()
-        {
-            return _playerProgress != null
-                ? _playerProgress.CurrentMode
-                : GameMode.FreeMode;
-        }
+        //private GameMode GetCurrentMode()
+        //{
+        //    return _playerProgress != null
+        //        ? _playerProgress.CurrentMode
+        //        : GameMode.FreeMode;
+        //}
 
-        private DifficultyLevel[] BuildFixedPlan(GameMode mode)
-        {
-            //DifficultyLevel level = PlayerProgress.GetBaseDifficulty(mode);
-            DifficultyLevel level = _playerProgress.GetModeData(mode).GetDifficulty(0);
+        //private DifficultyLevel[] BuildFixedPlan(GameMode mode)
+        //{
+        //    //DifficultyLevel level = PlayerProgress.GetBaseDifficulty(mode);
+        //    DifficultyLevel level = _playerProgress.GetModeData(mode).GetDifficulty(0);
 
-            DifficultyLevel[] plan = new DifficultyLevel[ModeRoundsLength];
+        //    DifficultyLevel[] plan = new DifficultyLevel[ModeRoundsLength];
 
-            for (int i = 0; i < plan.Length; i++)
-                plan[i] = level;
+        //    for (int i = 0; i < plan.Length; i++)
+        //        plan[i] = level;
 
-            return plan;
-        }
+        //    return plan;
+        //}
 
-        private void CreateFreeModeSequence(int count, int beginNumber)
-        {
-            var levels = (DifficultyLevel[])Enum.GetValues(typeof(DifficultyLevel));
+        //private void CreateFreeModeSequence(int count, int beginNumber)
+        //{
+        //    var levels = (DifficultyLevel[])Enum.GetValues(typeof(DifficultyLevel));
 
-            Array.Sort(levels);
+        //    Array.Sort(levels);
 
-            int end = beginNumber + count;
+        //    int end = beginNumber + count;
 
-            for (int i = beginNumber; i < end; i++)
-            {
-                int levelIndex = (i / LengthDifficultyLevel) % levels.Length;
+        //    for (int i = beginNumber; i < end; i++)
+        //    {
+        //        int levelIndex = (i / LengthDifficultyLevel) % levels.Length;
 
-                _sequence.Add(levels[levelIndex]);
-            }
-        }
+        //        _sequence.Add(levels[levelIndex]);
+        //    }
+        //}
 
-        private void ExtendFixedSequence()
-        {
-            _sequence.AddRange(BuildFixedPlan(_gameMode));
-        }
+        //private void ExtendFixedSequence()
+        //{
+        //    _sequence.AddRange(BuildFixedPlan(_gameMode));
+        //}
     }
 }

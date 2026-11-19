@@ -8,52 +8,52 @@ namespace Assets.Source.Scripts.Tutorial
 {
     public sealed class TutorialProgress
     {
-        private readonly SequenceDifficultyLevel _sequenceDifficultyLevel;
+        //private readonly SequenceDifficultyLevel _sequenceDifficultyLevel;
 
-        private int _currentIndex;
-        private bool _isCompleted;
-        private IReadOnlyList<DifficultyLevel> _sequence;
+        //private int _currentIndex;
+        //private bool _isCompleted;
+        //private IReadOnlyList<DifficultyLevel> _sequence;
 
-        public event Action<int> RoundStarted;
-        public event Action Completed;
+        //public event Action<int> RoundStarted;
+        //public event Action Completed;
 
-        public bool IsFinishRound => _isCompleted;
-        public bool IsLastRoundStarted =>
-            _sequence != null && _currentIndex >= _sequence.Count;
+        //public bool IsFinishRound => _isCompleted;
+        //public bool IsLastRoundStarted =>
+        //    _sequence != null && _currentIndex >= _sequence.Count;
 
-        public TutorialProgress(SequenceDifficultyLevel sequenceDifficultyLevel)
-        {
-            Guard.NotNull(sequenceDifficultyLevel, nameof(sequenceDifficultyLevel));
-            _sequenceDifficultyLevel = sequenceDifficultyLevel;
-        }
+        //public TutorialProgress(SequenceDifficultyLevel sequenceDifficultyLevel)
+        //{
+        //    Guard.NotNull(sequenceDifficultyLevel, nameof(sequenceDifficultyLevel));
+        //    _sequenceDifficultyLevel = sequenceDifficultyLevel;
+        //}
 
-        public void Reset()
-        {
-            _sequence = _sequenceDifficultyLevel.GetTutorialSequence();
-            _currentIndex = 0;
-            _isCompleted = false;
-        }
+        //public void Reset()
+        //{
+        //    _sequence = _sequenceDifficultyLevel.GetTutorialSequence();
+        //    _currentIndex = 0;
+        //    _isCompleted = false;
+        //}
 
-        public bool TryGetNextLevel(out DifficultyLevel level)
-        {
-            level = default;
+        //public bool TryGetNextLevel(out DifficultyLevel level)
+        //{
+        //    level = default;
 
-            if (_isCompleted)
-                return false;
+        //    if (_isCompleted)
+        //        return false;
 
-            if (_sequence == null || _currentIndex >= _sequence.Count)
-            {
-                _isCompleted = true;
-                Completed?.Invoke();
-                return false;
-            }
+        //    if (_sequence == null || _currentIndex >= _sequence.Count)
+        //    {
+        //        _isCompleted = true;
+        //        Completed?.Invoke();
+        //        return false;
+        //    }
 
-            level = _sequence[_currentIndex];
+        //    level = _sequence[_currentIndex];
 
-            RoundStarted?.Invoke(_currentIndex);
-            _currentIndex++;
+        //    RoundStarted?.Invoke(_currentIndex);
+        //    _currentIndex++;
 
-            return true;
-        }
+        //    return true;
+        //}
     }
 }

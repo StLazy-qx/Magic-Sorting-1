@@ -13,13 +13,12 @@ namespace Assets.Source.Scripts.Tutorial
         private const int WaitPointMechanicsPanelIndex = 1;
         private const int ReverseMechanicsPanelIndex = 2;
         private const int AmountCellActionToMainMechanics = 2;
-        private const int ReverseMechanicsRoundNumber = 1;
+        private const int ReverseMechanicsRoundIndex = 1;
         private const float MechanicsPanelDelay = 1.7f;
 
         private readonly AsyncTimer _asyncTimer = new AsyncTimer();
 
         [SerializeField] private TutorialGameHandler _gameHandler;
-        [SerializeField] private TutorialLevelCounter _tutorialLevelCounter;
         [SerializeField] private MagicCellRouter _magicCellRouter;
         [SerializeField] private ReverseButton _reverseButton;
         [SerializeField] private Panel[] _panels;
@@ -30,7 +29,6 @@ namespace Assets.Source.Scripts.Tutorial
         private void Awake()
         {
             Guard.NotNull(_gameHandler, nameof(_gameHandler));
-            Guard.NotNull(_tutorialLevelCounter, nameof(_tutorialLevelCounter));
             Guard.NotNull(_magicCellRouter, nameof(_magicCellRouter));
             Guard.NotNull(_reverseButton, nameof(_reverseButton));
             Guard.NotNullOrEmpty(_panels, nameof(_panels));
@@ -48,14 +46,14 @@ namespace Assets.Source.Scripts.Tutorial
         {
             _magicCellRouter.CellDeparturing += OnAddCellAction;
             _magicCellRouter.WaitingPointUsing += OnWaitingPointPlaceUsed;
-            _tutorialLevelCounter.RoundChanged += OnContinueTraining;
+            _gameHandler.TutorialRoundStarted += OnTutorialRoundStarted;
         }
 
         private void OnDisable()
         {
             _magicCellRouter.CellDeparturing -= OnAddCellAction;
             _magicCellRouter.WaitingPointUsing -= OnWaitingPointPlaceUsed;
-            _tutorialLevelCounter.RoundChanged -= OnContinueTraining;
+            _gameHandler.TutorialRoundStarted -= OnTutorialRoundStarted;
         }
 
         public void ShowBeginPanel()
@@ -77,13 +75,10 @@ namespace Assets.Source.Scripts.Tutorial
             TryShowWaitPointMechanicsPanel();
         }
 
-        private void OnContinueTraining()
+        private void OnTutorialRoundStarted(int roundIndex)
         {
-            if (_tutorialLevelCounter.RoundNumber
-                == ReverseMechanicsRoundNumber)
-            {
+            if (roundIndex == ReverseMechanicsRoundIndex)
                 ShowReverseMechanicsPanel();
-            }
         }
 
         private void OnAddCellAction()

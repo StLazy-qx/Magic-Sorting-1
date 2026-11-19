@@ -10,7 +10,7 @@ namespace Assets.Source.Scripts.GameBehaviour
         public bool IsTutorialCompleted => IsLastRound;
 
         protected override void OnRoundChanged()
-            => TutorialRoundStarted?.Invoke(Counter.RoundNumber);
+            => TutorialRoundStarted?.Invoke(Counter.RoundIndex);
 
         protected override void OnLastRoundReached()
             => TutorialCompleted?.Invoke();

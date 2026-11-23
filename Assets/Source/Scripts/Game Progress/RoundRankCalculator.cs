@@ -9,6 +9,7 @@ namespace Assets.Source.Scripts.Game_Progress
         private const float MediumThreshold = 0.7f;
         private const int MaxScorePerVessel = 50;
 
+        //переписать не статик
         public static RoundRating Calculate(int earnedScore, int vesselCount)
         {
             Guard.Positive(vesselCount, nameof(vesselCount));

@@ -4,6 +4,7 @@ using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.Game_Progress;
 using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Player;
+using Assets.Source.Scripts.UI.GameModeView;
 using Assets.Source.Scripts.UI.GamePanel;
 using System;
 using System.Collections;
@@ -19,6 +20,8 @@ namespace Assets.Source.Scripts.Vessels
         [SerializeField] private VesselCompletionEffecter _effecter;
         [SerializeField] private FinalGameSession _finalGame;
         [SerializeField] private RoundSequenceTracker _roundTracker;
+        [SerializeField] private ModeRatingView _roundRatingView;
+        [SerializeField] private ModeRatingView _modeRatingView;
 
         private Wallet _wallet;
         private Panel _currentPanel;
@@ -81,12 +84,9 @@ namespace Assets.Source.Scripts.Vessels
             _tracker.SetVesselsList(vessels);
         }
 
-        public bool IsAllVesselsComplete() => _tracker.IsAllVesselsComplete;
+        public bool IsAllVesselsComplete() 
+            => _tracker.IsAllVesselsComplete;
 
-        /// <summary>
-        /// Единый сброс состояния раунда: следующий раунд и рестарт приходят одним сигналом.
-        /// Заменяет GameSessionCompositionRoot.ResetRoundState + ResetPool.
-        /// </summary>
         private void OnRoundOpened()
         {
             _roundScore = 0;
@@ -94,9 +94,11 @@ namespace Assets.Source.Scripts.Vessels
             _effecter.ResetPool();
         }
 
-        private void OnRoundReset() => StopAllCoroutines();
+        private void OnRoundReset() 
+            => StopAllCoroutines();
 
-        private void OnAllVesselsCompleted() => VictoryAudioClipEnabled?.Invoke();
+        private void OnAllVesselsCompleted() 
+            => VictoryAudioClipEnabled?.Invoke();
 
         private void OnVesselCompleted(VesselCompletionInfo info)
         {
@@ -126,21 +128,19 @@ namespace Assets.Source.Scripts.Vessels
 
         private void FinishRound()
         {
-            // Максимум считается от числа сосудов ЭТОГО раунда (калькулятор без состояния)
-            RoundRating rating = RoundRankCalculator.Calculate(_roundScore, _tracker.TotalCount);
+            RoundRating rating = RoundRankCalculator.
+                Calculate(_roundScore, _tracker.TotalCount);
 
             _wallet.ConfirmPoints();
             _currentPanel.Close();
-
-            // Wallet.Reset() здесь нет: кошелёк сбрасывается только при запуске раунда (BaseGameHandler.ResetEntity).
-            // События приходят синхронно: сначала RoundCompleted, для последнего раунда ещё ModeCompleted.
+            _roundRatingView.Show(rating);
             _roundTracker.CompleteRound(rating);
         }
 
         private void OnRoundCompleted(GameMode mode, int roundNumber)
         {
             if (_roundTracker.IsLastRound)
-                return; // панель покажет OnModeCompleted
+                return;
 
             _finalGame.ShowEndRoundPanel();
         }
@@ -150,7 +150,16 @@ namespace Assets.Source.Scripts.Vessels
             if (mode == GameMode.Tutorial)
                 _finalGame.ShowTutorialPanel();
             else
+            {
+                RoundRating rating = RoundRankCalculator.Calculate(
+                    _roundScore, _tracker.TotalCount);
+
                 _finalGame.ShowEndModePanel();
+                _wallet.ConfirmPoints();
+                _currentPanel.Close();
+                _roundRatingView.Show(rating);
+                _roundTracker.CompleteRound(rating);
+            }
         }
 
         private void ValidateInitializeArguments()

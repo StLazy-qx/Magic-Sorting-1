@@ -4,8 +4,6 @@ using UnityEngine;
 
 namespace Assets.Source.Scripts.Game_Progress
 {
-    /// Единое правило "сколько звёзд". Звёзды это любые Behaviour (Image и т.п.): включаются свойством enabled.
-    /// Image[] подходит как IReadOnlyList&lt;Behaviour&gt; благодаря ковариантности.
     public static class RoundRatingStars
     {
         public static int GetCount(RoundRating rating)

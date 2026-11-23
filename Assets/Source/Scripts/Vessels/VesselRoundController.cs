@@ -69,13 +69,23 @@ namespace Assets.Source.Scripts.Vessels
             IsInitialized = true;
         }
 
-        public void SetPanel(Panel panel)
+        public void SetFinalPanels(Panel endRoundPanel, Panel endModePanel)
         {
-            Guard.NotNull(panel, nameof(panel));
+            Guard.NotNull(endRoundPanel, nameof(endRoundPanel));
+            Guard.NotNull(endModePanel, nameof(endModePanel));
 
-            _currentPanel = panel;
+            _currentPanel = endRoundPanel;
 
-            _finalGame.SetPanel(panel);
+            _finalGame.SetSessionEndPanels(endRoundPanel, endModePanel);
+        }
+
+        public void SetTutorialEndRoundPanel(Panel endRoundPanel)
+        {
+            Guard.NotNull(endRoundPanel, nameof(endRoundPanel));
+
+            _currentPanel = endRoundPanel;
+
+            _finalGame.SetTutorialPanel(endRoundPanel);
         }
 
         public void SetVesselsList(IReadOnlyList<Vessel> vessels)

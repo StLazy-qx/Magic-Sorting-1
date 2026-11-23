@@ -8,9 +8,9 @@ namespace Assets.Source.Scripts.GameBehaviour
     public class FinalGameSession : MonoBehaviour, IObjectInitilizable
     {
         [SerializeField] private BaseGameHandler _handler;
-        [SerializeField] private Panel _endModePanel;
 
         private Panel _currentPanel;
+        private Panel _currentEndModePanel;
         private Panel _currentTutorialPanel;
 
         public bool IsInitialized { get; private set; }
@@ -25,11 +25,13 @@ namespace Assets.Source.Scripts.GameBehaviour
             IsInitialized = true;
         }
 
-        public void SetPanel(Panel panel)
+        public void SetSessionEndPanels(Panel endRoundPanel, Panel endModePanel)
         {
-            Guard.NotNull(panel, nameof(panel));
+            Guard.NotNull(endRoundPanel, nameof(endRoundPanel));
+            Guard.NotNull(endModePanel, nameof(endModePanel));
 
-            _currentPanel = panel;
+            _currentPanel = endRoundPanel;
+            _currentEndModePanel = endModePanel;
         }
 
         public void SetTutorialPanel(Panel panel)
@@ -46,7 +48,7 @@ namespace Assets.Source.Scripts.GameBehaviour
             => PauseAndOpen(_currentTutorialPanel);
 
         public void ShowEndModePanel() 
-            => PauseAndOpen(_endModePanel);
+            => PauseAndOpen(_currentEndModePanel);
 
         private void PauseAndOpen(Panel panel)
         {

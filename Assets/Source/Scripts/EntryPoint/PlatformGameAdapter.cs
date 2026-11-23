@@ -1,6 +1,5 @@
 using Assets.Source.Scripts.UI.GamePanel;
 using Assets.Source.Scripts.ActionsHandlers;
-using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Vessels;
 using Assets.Source.Scripts.UI.GameModeView;
 using Assets.Source.Scripts.UI.Buttons;
@@ -18,8 +17,10 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private ObjectsBeginPositionSetter _desktopObjectsPosition;
         [SerializeField] private ObjectsBeginPositionSetter _mobileObjectsPosition;
         [Header("UI Elements")]
-        [SerializeField] private Panel _finalMatchPanelDesktop;
-        [SerializeField] private Panel _finalMatchPanelMobile;
+        [SerializeField] private Panel _desktopEndRoundPanel;
+        [SerializeField] private Panel _desktopEndModePanel;
+        [SerializeField] private Panel _mobileEndRoundPanel;
+        [SerializeField] private Panel _mobileEndModePanel;
         [SerializeField] private ReverseButton _reverseButtonDesktop;
         [SerializeField] private ReverseButton _reverseButtonMobile;
         [SerializeField] private IconRewardedAdvertisement _rewardedIconDesktop;
@@ -45,7 +46,7 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             _magicCellsFactory.SetCellPrefab(_magicCellMobile);
             _mobileObjectsPosition.Initialize();
-            _vesselRoundController.SetPanel(_finalMatchPanelMobile);
+            _vesselRoundController.SetFinalPanels(_mobileEndRoundPanel, _mobileEndModePanel);
             _clickModeSwitcher.SetModeButtons(_reverseButtonViewMobile);
             _seeker.SetButtonRewarded(_rewardedIconMobile, _reverseButtonMobile);
         }
@@ -54,7 +55,7 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             _magicCellsFactory.SetCellPrefab(_magicCellDesktop);
             _desktopObjectsPosition.Initialize();
-            _vesselRoundController.SetPanel(_finalMatchPanelDesktop);
+            _vesselRoundController.SetFinalPanels(_desktopEndRoundPanel, _desktopEndModePanel);
             _clickModeSwitcher.SetModeButtons(_reverseButtonViewDesktop);
             _seeker.SetButtonRewarded(_rewardedIconDesktop, _reverseButtonDesktop);
         }
@@ -67,11 +68,17 @@ namespace Assets.Source.Scripts.EntryPoint
             if (_mobileObjectsPosition == null)
                 throw new ArgumentNullException(nameof(_mobileObjectsPosition));
 
-            if (_finalMatchPanelDesktop == null)
-                throw new ArgumentNullException(nameof(_finalMatchPanelDesktop));
+            if (_mobileEndRoundPanel == null)
+                throw new ArgumentNullException(nameof(_mobileEndRoundPanel));
 
-            if (_finalMatchPanelMobile == null)
-                throw new ArgumentNullException(nameof(_finalMatchPanelMobile));
+            if (_mobileEndModePanel == null)
+                throw new ArgumentNullException(nameof(_mobileEndModePanel));
+
+            if (_desktopEndRoundPanel == null)
+                throw new ArgumentNullException(nameof(_desktopEndRoundPanel));
+
+            if (_desktopEndModePanel == null)
+                throw new ArgumentNullException(nameof(_desktopEndModePanel));
 
             if (_vesselRoundController == null)
                 throw new ArgumentNullException(nameof(_vesselRoundController));

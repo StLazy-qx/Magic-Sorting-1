@@ -46,7 +46,7 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             _magicCellsFactory.SetCellPrefab(_magicCellMobile);
             _mobileObjectsPosition.Initialize();
-            _vesselRoundController.SetPanel(_finalMatchPanelMobile);
+            _vesselRoundController.SetTutorialEndRoundPanel(_finalMatchPanelMobile);
             _finalGameSession.SetTutorialPanel(_finishTutorialPanelMobile);
             _clickModeSwitcher.SetModeButtons(_reverseButtonViewMobile);
         }
@@ -55,7 +55,7 @@ namespace Assets.Source.Scripts.EntryPoint
         {
             _magicCellsFactory.SetCellPrefab(_magicCellDesktop);
             _desktopObjectsPosition.Initialize();
-            _vesselRoundController.SetPanel(_finalMatchPanelDesktop);
+            _vesselRoundController.SetTutorialEndRoundPanel(_finalMatchPanelDesktop);
             _finalGameSession.SetTutorialPanel(_finishTutorialPanelDesktop);
             _clickModeSwitcher.SetModeButtons(_reverseButtonViewDesktop);
         }

@@ -3,7 +3,6 @@ using Assets.Source.Scripts.UI.CanvasOption;
 using Assets.Source.Scripts.UI.SoundView;
 using Assets.Source.Scripts.Factory;
 using UnityEngine;
-using System;
 using YG;
 using Assets.Source.Scripts.UI.StoreView;
 using Assets.Source.Scripts.Extensions;

@@ -6,6 +6,8 @@ namespace Assets.Source.Scripts.Game_Progress
 {
     public static class RoundRatingStars
     {
+
+        //переделать не статик
         public static int GetCount(RoundRating rating)
         {
             return rating switch

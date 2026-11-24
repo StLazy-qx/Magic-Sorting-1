@@ -10,6 +10,7 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private Transform _player;
         [SerializeField] private Transform _chair;
         [SerializeField] private Transform _columnsPoints;
+        [SerializeField] private Transform _mixerVessel;
         [Header("Positions & Rotations to objects")]
         [SerializeField] private Vector3 _cameraPosition;
         [SerializeField] private Vector3 _cameraRotation;
@@ -17,6 +18,7 @@ namespace Assets.Source.Scripts.EntryPoint
         [SerializeField] private Vector3 _playerRotation;
         [SerializeField] private Vector3 _chairPosition;
         [SerializeField] private Vector3 _columnsPointsPosition;
+        [SerializeField] private Vector3 _mixerVesselPosition;
 
         public void Initialize()
         {
@@ -49,6 +51,8 @@ namespace Assets.Source.Scripts.EntryPoint
                 _chairPosition, Quaternion.identity);
             _columnsPoints.transform.SetPositionAndRotation(
                 _columnsPointsPosition, Quaternion.identity);
+            _mixerVessel.transform.SetPositionAndRotation(
+                _mixerVesselPosition, Quaternion.identity);
         }
     }
 }

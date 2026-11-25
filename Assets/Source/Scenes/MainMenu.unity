@@ -5406,7 +5406,6 @@ GameObject:
   - component: {fileID: 34719222}
   - component: {fileID: 34719221}
   - component: {fileID: 34719220}
-  - component: {fileID: 34719219}
   m_Layer: 5
   m_Name: EquipButton
   m_TagString: Untagged
@@ -5434,20 +5433,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 88}
   m_SizeDelta: {x: 400, y: 125}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &34719219
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 34719217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc767ae6963c1af479a64dd5f69eb526, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GameHandler: {fileID: 0}
-  TargetPanel: {fileID: 1869293836}
 --- !u!114 &34719220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -519266,7 +519251,6 @@ GameObject:
   - component: {fileID: 1350107564}
   - component: {fileID: 1350107563}
   - component: {fileID: 1350107562}
-  - component: {fileID: 1350107561}
   m_Layer: 5
   m_Name: SelectedButton
   m_TagString: Untagged
@@ -519294,20 +519278,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 88}
   m_SizeDelta: {x: 400, y: 125}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1350107561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1350107559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc767ae6963c1af479a64dd5f69eb526, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GameHandler: {fileID: 0}
-  TargetPanel: {fileID: 1869293836}
 --- !u!114 &1350107562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -578701,7 +578671,6 @@ GameObject:
   - component: {fileID: 1596376043}
   - component: {fileID: 1596376042}
   - component: {fileID: 1596376041}
-  - component: {fileID: 1596376040}
   m_Layer: 5
   m_Name: BuyButton
   m_TagString: Untagged
@@ -578730,20 +578699,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 88}
   m_SizeDelta: {x: 400, y: 125}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1596376040
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1596376038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc767ae6963c1af479a64dd5f69eb526, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GameHandler: {fileID: 0}
-  TargetPanel: {fileID: 1869293836}
 --- !u!114 &1596376041
 MonoBehaviour:
   m_ObjectHideFlags: 0

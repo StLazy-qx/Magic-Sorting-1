@@ -13,23 +13,24 @@
     false,
     false
   ],
-  "idSave": 205,
-  "MainPoints": 2790,
+  "idSave": 222,
+  "MainPoints": 1290,
   "ActualRoundNumber": 1,
   "SavedGameMode": 1,
-  "MasterVolume": 0.079486154,
+  "MasterVolume": 0.0682953745,
   "AmbientVolume": 0.5,
   "EffectVolume": 0.5,
-  "EquippedItem": "11111",
+  "EquippedItem": "22222",
   "SavedLanguage": "ru",
   "PurchasedItemIdentifiers": [
-    "11111"
+    "11111",
+    "22222"
   ],
   "RoundRatingEntries": [
     {
       "GameMode": 1,
       "RoundIndex": 1,
-      "Rating": 3
+      "Rating": 1
     },
     {
       "GameMode": 1,
@@ -39,12 +40,12 @@
     {
       "GameMode": 1,
       "RoundIndex": 3,
-      "Rating": 2
+      "Rating": 1
     },
     {
       "GameMode": 1,
       "RoundIndex": 4,
-      "Rating": 2
+      "Rating": 1
     },
     {
       "GameMode": 1,
@@ -54,17 +55,17 @@
     {
       "GameMode": 1,
       "RoundIndex": 6,
-      "Rating": 1
+      "Rating": 2
     },
     {
       "GameMode": 2,
       "RoundIndex": 1,
-      "Rating": 2
+      "Rating": 3
     },
     {
       "GameMode": 2,
       "RoundIndex": 2,
-      "Rating": 2
+      "Rating": 1
     },
     {
       "GameMode": 1,
@@ -76,14 +77,14 @@
     "HasSavedMode": true
   },
   "Score": {
-    "Points": 2790
+    "Points": 1290
   },
   "Round": {
     "ActualRoundNumber": 1
   },
   "AudioSettings": {},
   "Inventory": {
-    "EquippedItemIdentifier": "11111"
+    "EquippedItemIdentifier": "22222"
   },
   "Language": {
     "Saved": "ru",
@@ -91,17 +92,17 @@
   },
   "RoundRatings": {
     "Ratings": {
-      "(Easy, 1)": 3,
+      "(Easy, 1)": 1,
       "(Easy, 2)": 2,
-      "(Easy, 3)": 2,
-      "(Easy, 4)": 2,
+      "(Easy, 3)": 1,
+      "(Easy, 4)": 1,
       "(Easy, 5)": 2,
-      "(Easy, 6)": 1,
-      "(Medium, 1)": 2,
-      "(Medium, 2)": 2,
+      "(Easy, 6)": 2,
+      "(Medium, 1)": 3,
+      "(Medium, 2)": 1,
       "(Easy, 0)": 2
     }
   },
-  "Points": 2790,
-  "EquippedItemIdentifier": "11111"
+  "Points": 1290,
+  "EquippedItemIdentifier": "22222"
 }

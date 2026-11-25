@@ -41289,7 +41289,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameHandler: {fileID: 392530556}
-  _tutorialLevelCounter: {fileID: 1139587301}
   _magicCellRouter: {fileID: 654057276}
   _reverseButton: {fileID: 1828248176}
   _panels:
@@ -167871,6 +167870,7 @@ Transform:
   - {fileID: 1139587300}
   - {fileID: 845990819}
   - {fileID: 987192685}
+  - {fileID: 1999467321}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &392530556
@@ -167885,16 +167885,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4881740ec30aae448b7b2c9b8db2ba4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _levelCounter: {fileID: 1139587302}
+  _difficultyDatabase: {fileID: 11400000, guid: a0c325b75a00c9641a7203ac82d7b2f8,
+    type: 2}
+  _colorRandomizer: {fileID: 1009920594}
   _columnsFactory: {fileID: 946066169}
   _vesselFactory: {fileID: 654057274}
   _entryColorListsFactory: {fileID: 1086977958}
-  _tutorialLevelCounter: {fileID: 1139587301}
-  _colorRandomizer: {fileID: 1009920594}
+  _columnDistributor: {fileID: 1892001528}
   _waitingPoint: {fileID: 1861908055}
   _clickImpactHandler: {fileID: 923747164}
-  _columnDistributor: {fileID: 1892001528}
-  _difficultyDatabase: {fileID: 11400000, guid: a0c325b75a00c9641a7203ac82d7b2f8,
-    type: 2}
+  _vesselRoundController: {fileID: 987192686}
 --- !u!1 &398186042
 GameObject:
   m_ObjectHideFlags: 0
@@ -365599,6 +365600,9 @@ MonoBehaviour:
   _tracker: {fileID: 569123143}
   _effecter: {fileID: 43498391}
   _finalGame: {fileID: 1845276654}
+  _roundTracker: {fileID: 1999467322}
+  _roundRatingView: {fileID: 0}
+  _modeRatingView: {fileID: 0}
 --- !u!1 &989241293
 GameObject:
   m_ObjectHideFlags: 0
@@ -390339,12 +390343,14 @@ MonoBehaviour:
   _player: {fileID: 2066365345}
   _chair: {fileID: 1861908054}
   _columnsPoints: {fileID: 1381043772}
+  _mixerVessel: {fileID: 1850938334}
   _cameraPosition: {x: 0.218, y: 6.556, z: -9.274}
   _cameraRotation: {x: 58.766, y: -0.635, z: -0.135}
   _playerPosition: {x: 1.52, y: 0.05, z: -1.54}
   _playerRotation: {x: 5, y: 195, z: 0}
   _chairPosition: {x: 3.11, y: 0.82, z: -6.796}
   _columnsPointsPosition: {x: 0, y: 0.519, z: -7.15}
+  _mixerVesselPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &1009920592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390361,12 +390367,14 @@ MonoBehaviour:
   _player: {fileID: 2066365345}
   _chair: {fileID: 1861908054}
   _columnsPoints: {fileID: 1381043772}
+  _mixerVessel: {fileID: 1850938334}
   _cameraPosition: {x: 0.14, y: 8.25, z: -10.7}
   _cameraRotation: {x: 61.76, y: -0.52, z: 0}
   _playerPosition: {x: -0.75, y: 0.12, z: -2.62}
   _playerRotation: {x: -5, y: 150, z: 0}
   _chairPosition: {x: -1.46, y: 0.85, z: -6.6}
   _columnsPointsPosition: {x: -0.2, y: 0.519, z: -7.6}
+  _mixerVesselPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &1009920594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390437,16 +390445,11 @@ MonoBehaviour:
   - {fileID: 908648324}
   - {fileID: 2066365334}
   - {fileID: 460316045}
-  _difficultyDatabase: {fileID: 11400000, guid: a0c325b75a00c9641a7203ac82d7b2f8,
-    type: 2}
-  _platformSetter: {fileID: 1009920596}
   _colorRandomizer: {fileID: 1009920594}
-  _entryColorListsFactory: {fileID: 1086977958}
-  _columnsFactory: {fileID: 946066169}
-  _vesselFactory: {fileID: 654057274}
-  _columnDistributor: {fileID: 1892001528}
-  _vesselRoundController: {fileID: 987192686}
-  _tutorialGameHandler: {fileID: 392530556}
+  _levelCounter: {fileID: 1139587302}
+  _roundTracker: {fileID: 1999467322}
+  _gameHandler: {fileID: 392530556}
+  _platformSetter: {fileID: 1009920596}
 --- !u!1 &1012964950
 GameObject:
   m_ObjectHideFlags: 0
@@ -447228,7 +447231,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1139587300}
-  - component: {fileID: 1139587301}
+  - component: {fileID: 1139587302}
   m_Layer: 0
   m_Name: Level Counter
   m_TagString: Untagged
@@ -447251,7 +447254,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 392530555}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1139587301
+--- !u!114 &1139587302
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -447260,7 +447263,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1139587299}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2e197e85a38be041a3ca5146a672e92, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f36fd83f4943344682de89e2d47273b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1140309751
@@ -614140,7 +614143,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameHandler: {fileID: 392530556}
-  _tutorialLevelCounter: {fileID: 1139587301}
   _magicCellRouter: {fileID: 654057276}
   _reverseButton: {fileID: 503799561}
   _panels:
@@ -686925,7 +686927,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _handler: {fileID: 392530556}
-  _endModePanel: {fileID: 2063806568}
 --- !u!1 &1850938330
 GameObject:
   m_ObjectHideFlags: 0
@@ -763740,6 +763741,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1996827682}
   m_CullTransparentMesh: 1
+--- !u!1 &1999467320
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1999467321}
+  - component: {fileID: 1999467322}
+  m_Layer: 0
+  m_Name: Round Sequence Tracker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1999467321
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1999467320}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 392530555}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1999467322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1999467320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42746d582bbe2144e8424bae8779027e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1999815782
 GameObject:
   m_ObjectHideFlags: 0

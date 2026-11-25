@@ -378906,6 +378906,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e92a0766dde9de2489e716e70857e6e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _vesselRoundController: {fileID: 1773993231}
   _stars:
   - {fileID: 1924422866}
   - {fileID: 244017678}
@@ -605323,6 +605324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e92a0766dde9de2489e716e70857e6e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _vesselRoundController: {fileID: 1773993231}
   _stars:
   - {fileID: 1435118768}
   - {fileID: 786737880}
@@ -652571,6 +652573,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e92a0766dde9de2489e716e70857e6e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _vesselRoundController: {fileID: 1773993231}
   _stars:
   - {fileID: 605021728}
   - {fileID: 1346904615}
@@ -756384,8 +756387,6 @@ MonoBehaviour:
   _effecter: {fileID: 43498391}
   _finalGame: {fileID: 1845276654}
   _roundTracker: {fileID: 405261334}
-  _roundRatingView: {fileID: 1917943192}
-  _modeRatingView: {fileID: 916146998}
 --- !u!1 &1783973196
 GameObject:
   m_ObjectHideFlags: 0
@@ -813893,6 +813894,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e92a0766dde9de2489e716e70857e6e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _vesselRoundController: {fileID: 1773993231}
   _stars:
   - {fileID: 1019663873}
   - {fileID: 1807815134}

@@ -4,7 +4,6 @@ using Assets.Source.Scripts.Extensions;
 using Assets.Source.Scripts.Game_Progress;
 using Assets.Source.Scripts.GameBehaviour;
 using Assets.Source.Scripts.Player;
-using Assets.Source.Scripts.UI.GameModeView;
 using Assets.Source.Scripts.UI.GamePanel;
 using System;
 using System.Collections;
@@ -20,8 +19,6 @@ namespace Assets.Source.Scripts.Vessels
         [SerializeField] private VesselCompletionEffecter _effecter;
         [SerializeField] private FinalGameSession _finalGame;
         [SerializeField] private RoundSequenceTracker _roundTracker;
-        [SerializeField] private ModeRatingView _roundRatingView;
-        [SerializeField] private ModeRatingView _modeRatingView;
 
         private Wallet _wallet;
         private Panel _currentPanel;
@@ -29,6 +26,7 @@ namespace Assets.Source.Scripts.Vessels
 
         public event Action RoundOvering;
         public event Action VictoryAudioClipEnabled;
+        public event Action<RoundRating> ResultSummarizing;
 
         public bool IsInitialized { get; private set; }
 
@@ -143,7 +141,7 @@ namespace Assets.Source.Scripts.Vessels
 
             _wallet.ConfirmPoints();
             _currentPanel.Close();
-            _roundRatingView.Show(rating);
+            ResultSummarizing?.Invoke(rating);
             _roundTracker.CompleteRound(rating);
         }
 
@@ -167,7 +165,7 @@ namespace Assets.Source.Scripts.Vessels
                 _finalGame.ShowEndModePanel();
                 _wallet.ConfirmPoints();
                 _currentPanel.Close();
-                _roundRatingView.Show(rating);
+                ResultSummarizing?.Invoke(rating);
                 _roundTracker.CompleteRound(rating);
             }
         }

@@ -13,10 +13,10 @@
     false,
     false
   ],
-  "idSave": 228,
-  "MainPoints": 1490,
+  "idSave": 242,
+  "MainPoints": 2000,
   "ActualRoundNumber": 1,
-  "SavedGameMode": 0,
+  "SavedGameMode": 1,
   "MasterVolume": 0.0682953745,
   "AmbientVolume": 0.5,
   "EffectVolume": 0.5,
@@ -30,32 +30,32 @@
     {
       "GameMode": 1,
       "RoundIndex": 1,
-      "Rating": 3
-    },
-    {
-      "GameMode": 1,
-      "RoundIndex": 2,
       "Rating": 2
     },
     {
       "GameMode": 1,
+      "RoundIndex": 2,
+      "Rating": 1
+    },
+    {
+      "GameMode": 1,
       "RoundIndex": 3,
-      "Rating": 3
+      "Rating": 1
     },
     {
       "GameMode": 1,
       "RoundIndex": 4,
-      "Rating": 3
+      "Rating": 1
     },
     {
       "GameMode": 1,
       "RoundIndex": 5,
-      "Rating": 1
+      "Rating": 3
     },
     {
       "GameMode": 1,
       "RoundIndex": 6,
-      "Rating": 1
+      "Rating": 3
     },
     {
       "GameMode": 2,
@@ -65,7 +65,7 @@
     {
       "GameMode": 2,
       "RoundIndex": 2,
-      "Rating": 3
+      "Rating": 1
     },
     {
       "GameMode": 1,
@@ -74,10 +74,10 @@
     }
   ],
   "GameMode": {
-    "HasSavedMode": false
+    "HasSavedMode": true
   },
   "Score": {
-    "Points": 1490
+    "Points": 2000
   },
   "Round": {
     "ActualRoundNumber": 1
@@ -92,17 +92,17 @@
   },
   "RoundRatings": {
     "Ratings": {
-      "(Easy, 1)": 3,
-      "(Easy, 2)": 2,
-      "(Easy, 3)": 3,
-      "(Easy, 4)": 3,
-      "(Easy, 5)": 1,
-      "(Easy, 6)": 1,
+      "(Easy, 1)": 2,
+      "(Easy, 2)": 1,
+      "(Easy, 3)": 1,
+      "(Easy, 4)": 1,
+      "(Easy, 5)": 3,
+      "(Easy, 6)": 3,
       "(Medium, 1)": 2,
-      "(Medium, 2)": 3,
+      "(Medium, 2)": 1,
       "(Easy, 0)": 2
     }
   },
-  "Points": 1490,
+  "Points": 2000,
   "EquippedItemIdentifier": "22222"
 }

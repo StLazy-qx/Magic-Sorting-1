@@ -15,15 +15,5 @@ namespace Assets.Source.Scripts.Colorize
             Guard.NotNull(_distributor, nameof(_distributor));
             Guard.NotNull(_view, nameof(_view));
         }
-
-        //public void Configure(int countMixColor)
-        //{
-        //    Guard.Positive(countMixColor, nameof(countMixColor));
-
-        //    if (_distributor.HasTarget == false)
-        //        return;
-
-        //    _view.Apply(_distributor.TargetColor, countMixColor);
-        //}
     }
 }

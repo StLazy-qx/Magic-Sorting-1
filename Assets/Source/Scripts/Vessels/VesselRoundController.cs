@@ -36,27 +36,9 @@ namespace Assets.Source.Scripts.Vessels
             _wallet = wallet;
         }
 
-        private void OnEnable()
-        {
-            _tracker.VesselCompleted += OnVesselCompleted;
-            _tracker.AllVesselsCompleted += OnAllVesselsCompleted;
-            _tracker.RoundReset += OnRoundReset;
+        private void OnEnable() => SetSubscriptions(true);
 
-            _roundTracker.RoundOpened += OnRoundOpened;
-            _roundTracker.RoundCompleted += OnRoundCompleted;
-            _roundTracker.ModeCompleted += OnModeCompleted;
-        }
-
-        private void OnDisable()
-        {
-            _tracker.VesselCompleted -= OnVesselCompleted;
-            _tracker.AllVesselsCompleted -= OnAllVesselsCompleted;
-            _tracker.RoundReset -= OnRoundReset;
-
-            _roundTracker.RoundOpened -= OnRoundOpened;
-            _roundTracker.RoundCompleted -= OnRoundCompleted;
-            _roundTracker.ModeCompleted -= OnModeCompleted;
-        }
+        private void OnDisable() => SetSubscriptions(false);
 
         public void Initialize()
         {
@@ -69,20 +51,15 @@ namespace Assets.Source.Scripts.Vessels
 
         public void SetFinalPanels(Panel endRoundPanel, Panel endModePanel)
         {
-            Guard.NotNull(endRoundPanel, nameof(endRoundPanel));
             Guard.NotNull(endModePanel, nameof(endModePanel));
 
-            _currentPanel = endRoundPanel;
-
+            SetCurrentPanel(endRoundPanel);
             _finalGame.SetSessionEndPanels(endRoundPanel, endModePanel);
         }
 
         public void SetTutorialEndRoundPanel(Panel endRoundPanel)
         {
-            Guard.NotNull(endRoundPanel, nameof(endRoundPanel));
-
-            _currentPanel = endRoundPanel;
-
+            SetCurrentPanel(endRoundPanel);
             _finalGame.SetTutorialPanel(endRoundPanel);
         }
 
@@ -92,8 +69,38 @@ namespace Assets.Source.Scripts.Vessels
             _tracker.SetVesselsList(vessels);
         }
 
-        public bool IsAllVesselsComplete() 
+        public bool IsAllVesselsComplete()
             => _tracker.IsAllVesselsComplete;
+
+        private void SetSubscriptions(bool subscribe)
+        {
+            if (subscribe)
+            {
+                _tracker.VesselCompleted += OnVesselCompleted;
+                _tracker.AllVesselsCompleted += OnAllVesselsCompleted;
+                _tracker.RoundReset += OnRoundReset;
+
+                _roundTracker.RoundOpened += OnRoundOpened;
+                _roundTracker.RoundCompleted += OnRoundCompleted;
+                _roundTracker.ModeCompleted += OnModeCompleted;
+            }
+            else
+            {
+                _tracker.VesselCompleted -= OnVesselCompleted;
+                _tracker.AllVesselsCompleted -= OnAllVesselsCompleted;
+                _tracker.RoundReset -= OnRoundReset;
+
+                _roundTracker.RoundOpened -= OnRoundOpened;
+                _roundTracker.RoundCompleted -= OnRoundCompleted;
+                _roundTracker.ModeCompleted -= OnModeCompleted;
+            }
+        }
+
+        private void SetCurrentPanel(Panel panel)
+        {
+            Guard.NotNull(panel, nameof(panel));
+            _currentPanel = panel;
+        }
 
         private void OnRoundOpened()
         {
@@ -102,10 +109,10 @@ namespace Assets.Source.Scripts.Vessels
             _effecter.ResetPool();
         }
 
-        private void OnRoundReset() 
+        private void OnRoundReset()
             => StopAllCoroutines();
 
-        private void OnAllVesselsCompleted() 
+        private void OnAllVesselsCompleted()
             => VictoryAudioClipEnabled?.Invoke();
 
         private void OnVesselCompleted(VesselCompletionInfo info)
@@ -131,18 +138,7 @@ namespace Assets.Source.Scripts.Vessels
                 yield break;
 
             _tracker.MarkRoundFinished();
-            FinishRound();
-        }
-
-        private void FinishRound()
-        {
-            RoundRating rating = RoundRankCalculator.
-                Calculate(_roundScore, _tracker.TotalCount);
-
-            _wallet.ConfirmPoints();
-            _currentPanel.Close();
-            ResultSummarizing?.Invoke(rating);
-            _roundTracker.CompleteRound(rating);
+            CompleteRoundWithRating();
         }
 
         private void OnRoundCompleted(GameMode mode, int roundNumber)
@@ -156,18 +152,24 @@ namespace Assets.Source.Scripts.Vessels
         private void OnModeCompleted(GameMode mode)
         {
             if (mode == GameMode.Tutorial)
-                _finalGame.ShowTutorialPanel();
-            else
             {
-                RoundRating rating = RoundRankCalculator.Calculate(
-                    _roundScore, _tracker.TotalCount);
-
-                _finalGame.ShowEndModePanel();
-                _wallet.ConfirmPoints();
-                _currentPanel.Close();
-                ResultSummarizing?.Invoke(rating);
-                _roundTracker.CompleteRound(rating);
+                _finalGame.ShowTutorialPanel();
+                return;
             }
+
+            _finalGame.ShowEndModePanel();
+            CompleteRoundWithRating();
+        }
+
+        private void CompleteRoundWithRating()
+        {
+            RoundRating rating = RoundRankCalculator.Calculate(
+                _roundScore, _tracker.TotalCount);
+
+            _wallet.ConfirmPoints();
+            _currentPanel.Close();
+            ResultSummarizing?.Invoke(rating);
+            _roundTracker.CompleteRound(rating);
         }
 
         private void ValidateInitializeArguments()

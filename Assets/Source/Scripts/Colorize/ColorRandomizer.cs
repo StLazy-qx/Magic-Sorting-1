@@ -70,24 +70,6 @@ namespace Assets.Source.Scripts.Colorize
             _targetColor = default;
         }
 
-        //public void SetDifficultySettings(int colorsNumber)
-        //{
-        //    Guard.Positive(colorsNumber, nameof(colorsNumber));
-
-        //    EnsureInitialized();
-
-        //    int count = NormalizeColorsCount(colorsNumber);
-        //    _allColors = BuildRoundColors(count);
-
-        //    Guard.NotNullOrEmpty(_allColors, nameof(_allColors));
-
-        //    int beginCount = Mathf.Min(BeginCountColors, _allColors.Length);
-
-        //    _targetColor = _colorConverter.TransformStrategyToColor(_allColors[0]);
-        //    _beginRoundColors = ConvertColors(_allColors, 0, beginCount);
-        //    _remainingColors = ConvertColors(_allColors, beginCount, _allColors.Length - beginCount);
-        //}
-
         private void EnsureInitialized()
         {
             Guard.IsTrue(
@@ -128,7 +110,7 @@ namespace Assets.Source.Scripts.Colorize
             return result.ToArray();
         }
 
-        private static void AddColor(
+        private void AddColor(
             IColorStrategy color, 
             List<IColorStrategy> result, 
             HashSet<IColorStrategy> used)

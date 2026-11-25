@@ -365601,8 +365601,6 @@ MonoBehaviour:
   _effecter: {fileID: 43498391}
   _finalGame: {fileID: 1845276654}
   _roundTracker: {fileID: 1999467322}
-  _roundRatingView: {fileID: 0}
-  _modeRatingView: {fileID: 0}
 --- !u!1 &989241293
 GameObject:
   m_ObjectHideFlags: 0

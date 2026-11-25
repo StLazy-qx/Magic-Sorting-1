@@ -34,8 +34,11 @@ namespace Assets.Source.Scripts.Colorize
 
         public IReadOnlyDictionary<IColorStrategy, (IColorStrategy First, IColorStrategy Second)> ColorMixtures => _colorMixtures;
 
-        public bool HasRecipe(IColorStrategy color) => _colorMixtures.ContainsKey(color);
-        public bool CanBeIngredient(IColorStrategy color) => _ingredients.Contains(color);
+        public bool HasRecipe(IColorStrategy color) 
+            => _colorMixtures.ContainsKey(color);
+
+        public bool CanBeIngredient(IColorStrategy color) 
+            => _ingredients.Contains(color);
 
         public bool CanMix(IColorStrategy first, IColorStrategy second)
         {

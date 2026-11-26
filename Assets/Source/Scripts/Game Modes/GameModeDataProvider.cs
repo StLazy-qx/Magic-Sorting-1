@@ -16,8 +16,7 @@ namespace Assets.Source.Scripts.Game_Modes
 
             Register(GameModeData.Fixed(GameMode.Tutorial, isRated: false, none,
                 DifficultyLevel.Easy,
-                DifficultyLevel.MediumEasy,
-                DifficultyLevel.Easy));
+                DifficultyLevel.MediumEasy));
             Register(GameModeData.Fixed(GameMode.Easy, isRated: true, none,
                 DifficultyLevel.Easy, DifficultyLevel.Easy, DifficultyLevel.Easy,
                 DifficultyLevel.MediumEasy, DifficultyLevel.MediumEasy, DifficultyLevel.MediumEasy));

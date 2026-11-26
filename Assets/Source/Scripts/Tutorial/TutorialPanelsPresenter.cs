@@ -10,9 +10,11 @@ namespace Assets.Source.Scripts.Tutorial
     public class TutorialPanelsPresenter : MonoBehaviour
     {
         private const int BeginPanelIndex = 0;
-        private const int WaitPointMechanicsPanelIndex = 1;
-        private const int ReverseMechanicsPanelIndex = 2;
-        private const int AmountCellActionToMainMechanics = 2;
+        private const int ColorMixMechanicsPanelIndex = 1;
+        private const int WaitPointMechanicsPanelIndex = 2;
+        private const int ReverseMechanicsPanelIndex = 3;
+        private const int AmountCellActionColorMixMechanics = 2;
+        private const int AmountCellActionWaitingMechanics = 4;
         private const int ReverseMechanicsRoundIndex = 1;
         private const float MechanicsPanelDelay = 1.7f;
 
@@ -25,6 +27,7 @@ namespace Assets.Source.Scripts.Tutorial
 
         private int _cellActionCount;
         private bool _IsShowWaitPointMechanics;
+        private bool _IsShowColorMixMechanics;
 
         private void Awake()
         {
@@ -35,6 +38,7 @@ namespace Assets.Source.Scripts.Tutorial
 
             _cellActionCount = 0;
             _IsShowWaitPointMechanics = false;
+            _IsShowColorMixMechanics = false;
         }
 
         private void Start()
@@ -72,7 +76,7 @@ namespace Assets.Source.Scripts.Tutorial
 
         private void OnWaitingPointPlaceUsed()
         {
-            TryShowWaitPointMechanicsPanel();
+            TryShowWaitingPointMechanicsPanel();
         }
 
         private void OnTutorialRoundStarted(int roundIndex)
@@ -85,13 +89,14 @@ namespace Assets.Source.Scripts.Tutorial
         {
             _cellActionCount++;
 
-            if (_cellActionCount >= AmountCellActionToMainMechanics)
-            {
-                TryShowWaitPointMechanicsPanel();
-            }
+            if (_cellActionCount >= AmountCellActionColorMixMechanics)
+                TryShowColorMixMechanicsPanel();
+
+            if (_cellActionCount >= AmountCellActionWaitingMechanics)
+                TryShowWaitingPointMechanicsPanel();
         }
 
-        private void TryShowWaitPointMechanicsPanel()
+        private void TryShowWaitingPointMechanicsPanel()
         {
             if (_IsShowWaitPointMechanics)
                 return;
@@ -99,6 +104,28 @@ namespace Assets.Source.Scripts.Tutorial
             _IsShowWaitPointMechanics = true;
 
             ShowWaitPointMechanicsPanel();
+        }
+
+        private void TryShowColorMixMechanicsPanel()
+        {
+            if (_IsShowColorMixMechanics)
+                return;
+
+            _IsShowColorMixMechanics = true;
+
+            ShowColorMixtMechanicsPanel();
+        }
+
+        private void ShowColorMixtMechanicsPanel()
+        {
+            _asyncTimer.StopTimer();
+            _asyncTimer.StartTimer(
+                MechanicsPanelDelay,
+                () =>
+                {
+                    _gameHandler.PauseGame();
+                    _panels[ColorMixMechanicsPanelIndex].Open();
+                });
         }
 
         private void ShowWaitPointMechanicsPanel()

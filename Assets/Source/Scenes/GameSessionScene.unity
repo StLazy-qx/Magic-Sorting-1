@@ -439445,7 +439445,7 @@ MonoBehaviour:
   _playerPosition: {x: 1.52, y: 0.05, z: -1.54}
   _playerRotation: {x: 5, y: 195, z: 0}
   _chairPosition: {x: 3.11, y: 0.82, z: -6.796}
-  _columnsPointsPosition: {x: 0, y: 0.519, z: -7.15}
+  _columnsPointsPosition: {x: 0, y: 0.519, z: -7.7}
   _mixerVesselPosition: {x: -2.152, y: 0.679, z: -6.841}
 --- !u!114 &1009920592
 MonoBehaviour:
